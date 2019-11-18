@@ -36,13 +36,13 @@ npm start
 and to run electron
 
 ``` bash
-npm electron
+npm run electron
 ```
 
 ## Build the app
 
 ```bash
-npm build
+npm run build
 ```
 
 The built files are placed in `/build` at the root directory.
@@ -50,7 +50,7 @@ The built files are placed in `/build` at the root directory.
 If you want to run electron with the built files, run the following command:
 
 ```bash
-npm electron:local
+npm run electron:local
 ```
 
 ## App packaging and distribution
@@ -58,10 +58,10 @@ npm electron:local
 To package the app, depending on the desired platform, use the following commands:
 
 ``` bash
-npm dist:win     // Windows
-npm dist:linux   // Linux
-npm dist:osx     // Mac
-npm dist:all     // All platforms
+npm run dist:win     // Windows
+npm run dist:linux   // Linux
+npm run dist:osx     // Mac
+npm run dist:all     // All platforms
 ```
 
 The package files are placed in `/release`.

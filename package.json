@@ -1,17 +1,86 @@
 {
   "name": "sputnik",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "A desktop music player built with Electron and React",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "scripts": {
+    "start": "cross-env BROWSER=none react-scripts start",
+    "build:prod": "cross-env NODE_ENV=production react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electron:start": "electron .",
+    "electron": "cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 nodemon --watch . --exec 'npm run electron:start'",
+    "electron:local": "npm run electron:start",
+    "build": "rimraf build && npm run build:prod",
+    "preDist": "rimraf release && npm run build",
+    "dist:all": "npm run preDist && electron-builder -mwl",
+    "dist:win": "npm run preDist  && electron-builder -w --x64",
+    "dist:linux": "npm run preDist && electron-builder -l",
+    "dist:osx": "npm run preDist && electron-builder -m"
+  },
+  "author": "Diego Bonavida <gecko.bona@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bonavida/sputnik.git"
+  },
+  "keywords": [
+    "electron",
+    "react",
+    "boilerplate",
+    "create-react-app"
+  ],
+  "bugs": {
+    "url": "https://github.com/bonavida/sputnik/issues"
+  },
   "dependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.2.0"
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.2.0",
+    "styled-components": "^4.4.1"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "devDependencies": {
+    "cross-env": "^6.0.3",
+    "electron": "^7.1.1",
+    "electron-builder": "^21.2.0",
+    "nodemon": "^1.19.4",
+    "rimraf": "^3.0.0"
+  },
+  "build": {
+    "productName": "Sputnik",
+    "appId": "sputnik.bonavida.org",
+    "electronVersion": "7.1.1",
+    "extends": null,
+    "files": [
+      "build/**/*",
+      "electron/*"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "public.app-category.music"
+    },
+    "mac": {
+      "category": "public.app-category.music"
+    },
+    "directories": {
+      "output": "release"
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
