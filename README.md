@@ -1,6 +1,6 @@
 # Sputnik
 
-Sputnik is a desktop music player built using web technologies —such as JavaScript, HTML and CSS— along with Electron and React.
+Sputnik :rocket: is a desktop music player built with Electron and React.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
