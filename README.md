@@ -2,7 +2,7 @@
 
 Sputnik :rocket: is a desktop music player built with Electron and React.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+_This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app)._
 
 ## Getting started
 
