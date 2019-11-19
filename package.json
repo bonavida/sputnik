@@ -12,6 +12,7 @@
     "electron:start": "electron .",
     "electron": "cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 nodemon --watch . --exec 'npm run electron:start'",
     "electron:local": "npm run electron:start",
+    "postinstall": "electron-builder install-app-deps",
     "build": "rimraf build && npm run build:prod",
     "preDist": "rimraf release && npm run build",
     "dist:all": "npm run preDist && electron-builder -mwl",
@@ -55,7 +56,8 @@
     "extends": null,
     "files": [
       "build/**/*",
-      "electron/*"
+      "electron/*",
+      "!node_modules"
     ],
     "win": {
       "target": [
