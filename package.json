@@ -78,6 +78,7 @@
       "category": "public.app-category.music"
     },
     "mac": {
+      "target": "dmg",
       "category": "public.app-category.music"
     },
     "directories": {
