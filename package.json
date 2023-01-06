@@ -1,0 +1,107 @@
+{
+  "name": "sputnik",
+  "version": "1.0.0",
+  "description": "A desktop music player built with Electron and React",
+  "main": "electron/main.js",
+  "homepage": "./",
+  "license": "MIT",
+  "author": "Diego Bonavida <gecko.bona@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bonavida/sputnik.git"
+  },
+  "keywords": [
+    "electron",
+    "react",
+    "vite",
+    "music",
+    "desktop"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "start": "concurrently -k \"yarn dev\" \"yarn electron\"",
+    "electron:start": "wait-on tcp:3000 && electron .",
+    "electron": "cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 nodemon --watch . --exec 'yarn electron:start'",
+    "postinstall": "electron-builder install-app-deps",
+    "app:build": "yarn app:build:win",
+    "app:build:win": "yarn build && electron-builder -w --x64",
+    "app:build:linux": "yarn build && electron-builder -l",
+    "app:build:osx": "yarn build && electron-builder -m",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "@vitejs/plugin-react": "^3.0.0",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "eslint": "^8.0.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.11",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "sass": "^1.57.1",
+    "typescript": "*",
+    "vite": "^4.0.0",
+    "wait-on": "^7.0.1"
+  },
+  "build": {
+    "productName": "Sputnik",
+    "appId": "sputnik.bonavida.app",
+    "asar": true,
+    "asarUnpack": "**\\*.{node,dll}",
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "public.app-category.music"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.music"
+    },
+    "directories": {
+      "output": "release"
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  }
+}
