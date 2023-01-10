@@ -22,6 +22,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "start": "concurrently -k \"yarn dev\" \"yarn electron\"",
+    "start:prod": "yarn build && electron .",
     "electron:start": "wait-on tcp:3000 && electron .",
     "electron": "cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 nodemon --watch . --exec 'yarn electron:start'",
     "postinstall": "electron-builder install-app-deps",
@@ -64,12 +65,13 @@
   },
   "build": {
     "productName": "Sputnik",
-    "appId": "sputnik.bonavida.app",
+    "appId": "org.bonavida.sputnik",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "!node_modules"
     ],
     "win": {
       "target": [
@@ -91,8 +93,27 @@
       "category": "public.app-category.music"
     },
     "mac": {
-      "target": "dmg",
-      "category": "public.app-category.music"
+      "target": "default",
+      "category": "public.app-category.music",
+      "type": "distribution",
+      "hardenedRuntime": true,
+      "entitlements": "electron/assets/entitlements.mac.plist",
+      "entitlementsInherit": "electron/assets/entitlements.mac.plist",
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "directories": {
       "output": "release"
