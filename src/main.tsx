@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+/** Utils */
+import registerIcons from '@utils/fontAwesome';
 /** Components */
 import App from './App';
-/** Utils */
-import { registerIcons } from './utils/fontAwesome';
 /** Styles */
 import './index.scss';
 
