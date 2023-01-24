@@ -5,7 +5,7 @@ import registerIcons from '@utils/fontAwesome';
 /** Components */
 import App from './App';
 /** Styles */
-import './index.scss';
+import '@styles/main.scss';
 
 registerIcons();
 
