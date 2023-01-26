@@ -1,5 +1,5 @@
 // Typography
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&display=swap');
 
 // Abstracts
 @import 'abstracts/variables';
@@ -7,3 +7,57 @@
 // Base
 @import 'base/base';
 @import 'base/normalize';
+
+.playlist {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #9c9c9c;
+  border-bottom: 1px solid #c2c2c2;
+
+  &__header {
+    display: grid;
+    grid-template-columns: 0.2fr 1fr 0.8fr 0.7fr 0.3fr;
+    column-gap: 10px;
+    padding: 8px 15px;
+    border-bottom: 1px solid #c2c2c2;
+
+    span {
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 0.2fr 1fr 0.8fr 0.7fr 0.3fr;
+    column-gap: 10px;
+    padding: 10px 15px;
+    transition: box-shadow 0.15s ease-in;
+
+    &--drag {
+      box-shadow: 0 -2px 0 green;
+    }
+
+    &:nth-child(even) {
+      background-color: white;
+    }
+
+    &:nth-child(odd) {
+      background-color: #f4f4f4;
+    }
+
+    &:hover {
+      background-color: #eee;
+    }
+
+    span {
+      font-weight: 400;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+  }
+}
