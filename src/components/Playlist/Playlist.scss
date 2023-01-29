@@ -25,38 +25,6 @@
       white-space: nowrap;
     }
   }
-
-  &__row {
-    display: grid;
-    grid-template-columns: 0.2fr 1fr 0.8fr 0.7fr 0.3fr;
-    column-gap: 10px;
-    padding: 10px 15px;
-    transition: box-shadow 0.15s ease-in;
-
-    &--drag {
-      box-shadow: 0 -2px 0 green;
-    }
-
-    &:nth-child(even) {
-      background-color: white;
-    }
-
-    &:nth-child(odd) {
-      background-color: #f4f4f4;
-    }
-
-    &:hover {
-      background-color: #eee;
-    }
-
-    span {
-      font-weight: 400;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-  }
 }
 
 .dropzone {

@@ -1,6 +1,8 @@
 /** Types */
 import { DraggableEvent } from '@customTypes/playlist';
 import { SongMetadata } from '@customTypes/metadata';
+/** Styles */
+import './PlaylistItem.scss';
 
 interface PlaylistItemProps extends Omit<SongMetadata, 'id' | 'cover'> {
   index: number;
