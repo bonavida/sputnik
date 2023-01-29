@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+/** Modules */
 const ipc = require('./ipc');
 
 const { NODE_ENV, ELECTRON_START_URL } = process.env;
