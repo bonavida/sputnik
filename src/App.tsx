@@ -1,47 +1,88 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
+/** Utils */
+import { parseMusicFiles } from '@utils/electronAPI';
+/** Constants */
+import { ACCEPTED_AUDIO_EXTENSIONS } from '@constants/metadata';
 /** Types */
 import { DraggableEvent } from '@customTypes/drag';
+import { SongMetadata } from '@customTypes/metadata';
 
 const App = () => {
-  const [list, setList] = useState([
+  const [list, setList] = useState<SongMetadata[]>([
     {
-      id: 1,
+      id: '1',
       title: 'I Wanna Be Adored - Remastered',
       artist: 'The Stone Roses',
       album: 'The Stone Roses',
-      duration: '4:53',
+      duration: 251,
+      cover: null,
+      path: 'unknown',
     },
     {
-      id: 2,
+      id: '2',
       title: 'Unfinished Sympathy',
       artist: 'Massive Attack',
       album: 'Blue Lines',
-      duration: '5:08',
+      duration: 308,
+      cover: null,
+      path: 'unknown',
     },
     {
-      id: 3,
+      id: '3',
       title: 'Stop',
       artist: 'J Dilla',
       album: 'Donuts',
-      duration: '1:39',
+      duration: 99,
+      cover: null,
+      path: 'unknown',
     },
     {
-      id: 4,
+      id: '4',
       title: 'B.O.T.A. (Baddest Of Them All) - Edit',
       artist: 'Eliza Rose, Interplanetary Criminal',
       album: 'B.O.T.A. (Baddest Of Them All) / Move To The',
-      duration: '3:46',
+      duration: 226,
+      cover: null,
+      path: 'unknown',
     },
     {
-      id: 5,
+      id: '5',
       title: 'The Will To Death',
       artist: 'John Frusciante',
       album: 'The Will To Death',
-      duration: '3:48',
+      duration: 328,
+      cover: null,
+      path: 'unknown',
     },
   ]);
   const dragItem = useRef<number>();
   const dragOverItem = useRef<number>();
+
+  const onDrop = useCallback(
+    async (
+      acceptedFiles: Array<FileWithPath>,
+      rejectedFiles: Array<FileRejection>
+    ) => {
+      // Do something with the files
+      const filePaths = acceptedFiles
+        .map(({ path = '' }) => path)
+        .filter((path) => path);
+      const songs = await parseMusicFiles(filePaths);
+      console.log(songs);
+      console.log(rejectedFiles);
+      setList([...list, ...songs]);
+    },
+    [list]
+  );
+
+  const { isDragActive, getRootProps, getInputProps } = useDropzone({
+    noClick: true,
+    onDrop,
+    accept: {
+      'audio/mpeg': ACCEPTED_AUDIO_EXTENSIONS,
+    },
+  });
 
   const handleDragStart = (
     e: DraggableEvent<HTMLLIElement>,
@@ -102,43 +143,51 @@ const App = () => {
 
   return (
     <div className="App">
-      {!!list.length && (
-        <ul className="playlist">
-          <li className="playlist__header">
-            <span>#</span>
-            <span>Title</span>
-            <span>Artist</span>
-            <span>Album</span>
-            <span>Duration</span>
-          </li>
-          {list.map(({ id, title, artist, album, duration }, index) => (
-            <li
-              key={`list_item_${id}`}
-              className="playlist__row"
-              draggable
-              onDragStart={(e: DraggableEvent<HTMLLIElement>) =>
-                handleDragStart(e, index)
-              }
-              onDragEnter={(e: DraggableEvent<HTMLLIElement>) =>
-                handleDragEnter(e, index)
-              }
-              onDragLeave={(e: DraggableEvent<HTMLLIElement>) =>
-                handleDragLeave(e, index)
-              }
-              onDragOver={(e: DraggableEvent<HTMLLIElement>) =>
-                handleDragOver(e)
-              }
-              onDragEnd={handleDragEnd}
-            >
-              <span>{index + 1}</span>
-              <span>{title}</span>
-              <span>{artist}</span>
-              <span>{album}</span>
-              <span>{duration}</span>
+      <label {...getRootProps({ className: 'dropzone' })} htmlFor="drop-zone">
+        <input {...getInputProps()} />
+        {isDragActive && (
+          <div className="dropzone__overlay">
+            <span>Drop songs here</span>
+          </div>
+        )}
+        {!!list.length && (
+          <ul className="playlist">
+            <li className="playlist__header">
+              <span>#</span>
+              <span>Title</span>
+              <span>Artist</span>
+              <span>Album</span>
+              <span>Duration</span>
             </li>
-          ))}
-        </ul>
-      )}
+            {list.map(({ id, title, artist, album, duration }, index) => (
+              <li
+                key={`list_item_${id}`}
+                className="playlist__row"
+                draggable
+                onDragStart={(e: DraggableEvent<HTMLLIElement>) =>
+                  handleDragStart(e, index)
+                }
+                onDragEnter={(e: DraggableEvent<HTMLLIElement>) =>
+                  handleDragEnter(e, index)
+                }
+                onDragLeave={(e: DraggableEvent<HTMLLIElement>) =>
+                  handleDragLeave(e, index)
+                }
+                onDragOver={(e: DraggableEvent<HTMLLIElement>) =>
+                  handleDragOver(e)
+                }
+                onDragEnd={handleDragEnd}
+              >
+                <span>{index + 1}</span>
+                <span>{title}</span>
+                <span>{artist}</span>
+                <span>{album}</span>
+                <span>{duration}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </label>
     </div>
   );
 };

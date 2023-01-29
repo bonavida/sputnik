@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  onUpdateTheme: (callback) => ipcRenderer.on('update-theme', callback),
+  parseMusicFiles: async (filePaths) =>
+    ipcRenderer.invoke('app:parse-files', filePaths),
 });

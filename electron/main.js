@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const ipc = require('./ipc');
 
 const { NODE_ENV, ELECTRON_START_URL } = process.env;
 
@@ -9,6 +10,9 @@ const isMacOs = process.platform === 'darwin';
 
 // Keep a global reference of the window object
 let mainWindow;
+
+// Initialize IPC handlers
+ipc.init();
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({

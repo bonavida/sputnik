@@ -13,6 +13,11 @@
   flex-direction: column;
   border-top: 1px solid #9c9c9c;
   border-bottom: 1px solid #c2c2c2;
+  user-select: none;
+
+  &__wrapper {
+    position: relative;
+  }
 
   &__header {
     display: grid;
@@ -58,6 +63,35 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       pointer-events: none;
+    }
+  }
+}
+
+.dropzone {
+  position: relative;
+
+  &__overlay {
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 4px dashed #21a715;
+    border-radius: 8px;
+    opacity: 0.8;
+    z-index: 3;
+
+    span {
+      color: #21a715;
+      font-size: 36px;
+      font-weight: bold;
+      text-transform: uppercase;
     }
   }
 }
