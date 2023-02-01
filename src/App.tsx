@@ -1,10 +1,13 @@
 import Playlist from '@components/Playlist';
+import { AudioProvider } from '@context/useAudio';
 
 const App = () => {
   return (
-    <main className="music-player">
-      <Playlist />
-    </main>
+    <AudioProvider>
+      <main className="music-player">
+        <Playlist />
+      </main>
+    </AudioProvider>
   );
 };
 

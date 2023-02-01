@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const mm = require('music-metadata');
 
 const UNKNOWN = 'Unknown';
+const CUSTOM_PROTOCOL = 'sputnik://';
 
 const parseMusicFile = async (filePath) => {
   try {
@@ -18,7 +19,7 @@ const parseMusicFile = async (filePath) => {
       artist: artist ?? albumartist ?? UNKNOWN,
       album: album ?? UNKNOWN,
       cover: picture && picture.length ? picture[0].data : null,
-      path: filePath,
+      path: `${CUSTOM_PROTOCOL}${filePath}`,
       duration: format.duration ?? 0,
     };
   } catch (e) {

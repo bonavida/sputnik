@@ -14,6 +14,9 @@
       "@constants/*": [
         "constants/*"
       ],
+      "@context/*": [
+        "context/*"
+      ],
       "@customTypes/*": [
         "types/*"
       ],

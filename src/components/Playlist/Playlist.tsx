@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
+/** Context */
+import useAudio from '@context/useAudio';
 /** Components */
 import PlaylistItem from '@components/Playlist/PlaylistItem';
 /** Utils */
@@ -62,6 +64,7 @@ const Playlist = () => {
   ]);
   const dragItem = useRef<number>();
   const dragOverItem = useRef<number>();
+  const { changeNowPlaying } = useAudio();
 
   const onDrop = useCallback(
     async (
@@ -73,9 +76,15 @@ const Playlist = () => {
         .map(({ path = '' }) => path)
         .filter((path) => path);
       const songs = await parseMusicFiles(filePaths);
+
       console.log(songs);
       console.log(rejectedFiles);
+
       setList([...list, ...songs]);
+
+      if (songs.length) {
+        changeNowPlaying(songs[0]);
+      }
     },
     [list]
   );

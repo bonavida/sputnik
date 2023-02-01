@@ -3,6 +3,7 @@ const path = require('path');
 const url = require('url');
 /** Modules */
 const ipc = require('./ipc');
+const protocol = require('./protocol');
 
 const { NODE_ENV, ELECTRON_START_URL } = process.env;
 
@@ -47,7 +48,10 @@ const createWindow = () => {
   }
 };
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+  protocol.init();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   !isMacOs && app.quit();
