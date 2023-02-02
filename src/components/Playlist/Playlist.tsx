@@ -1,5 +1,7 @@
-import { useState, useRef, useCallback } from 'react';
-import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
+import { useState, useEffect, useRef, useCallback, MouseEvent } from 'react';
+import { useDropzone, FileWithPath } from 'react-dropzone';
+/** Hooks */
+import useKeyPress from '@hooks/useKeyPress';
 /** Context */
 import useAudio from '@context/useAudio';
 /** Components */
@@ -62,29 +64,22 @@ const Playlist = () => {
       path: 'unknown',
     },
   ]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const dragItem = useRef<number>();
   const dragOverItem = useRef<number>();
-  const { changeNowPlaying } = useAudio();
+  const { nowPlaying, changeNowPlaying } = useAudio();
+  const arrowUpPressed = useKeyPress('ArrowUp');
+  const arrowDownPressed = useKeyPress('ArrowDown');
 
   const onDrop = useCallback(
-    async (
-      acceptedFiles: Array<FileWithPath>,
-      rejectedFiles: Array<FileRejection>
-    ) => {
+    async (acceptedFiles: Array<FileWithPath>) => {
       // Do something with the files
       const filePaths = acceptedFiles
         .map(({ path = '' }) => path)
         .filter((path) => path);
       const songs = await parseMusicFiles(filePaths);
 
-      console.log(songs);
-      console.log(rejectedFiles);
-
       setList([...list, ...songs]);
-
-      if (songs.length) {
-        changeNowPlaying(songs[0]);
-      }
     },
     [list]
   );
@@ -98,7 +93,7 @@ const Playlist = () => {
   });
 
   const handleDragStart = (
-    e: DraggableEvent<HTMLLIElement>,
+    e: DraggableEvent<HTMLDivElement>,
     position: number
   ) => {
     dragItem.current = position;
@@ -106,7 +101,7 @@ const Playlist = () => {
   };
 
   const handleDragEnter = (
-    e: DraggableEvent<HTMLLIElement>,
+    e: DraggableEvent<HTMLDivElement>,
     position: number
   ) => {
     dragOverItem.current = position;
@@ -116,7 +111,7 @@ const Playlist = () => {
   };
 
   const handleDragLeave = (
-    e: DraggableEvent<HTMLLIElement>,
+    e: DraggableEvent<HTMLDivElement>,
     position: number
   ) => {
     e.target.classList.remove('playlist__row--drag');
@@ -124,7 +119,7 @@ const Playlist = () => {
     e.target.style.opacity = '1';
   };
 
-  const handleDragOver = (e: DraggableEvent<HTMLLIElement>) => {
+  const handleDragOver = (e: DraggableEvent<HTMLDivElement>) => {
     // Necessary to prevent the not-allowed cursor to appear when dragging items
     e.preventDefault();
   };
@@ -147,12 +142,38 @@ const Playlist = () => {
 
     // Remove all residual dragging classes
     document
-      .querySelectorAll<HTMLLIElement>('.playlist__row')
+      .querySelectorAll<HTMLDivElement>('.playlist__row')
       .forEach((row) => {
         row.classList.remove('playlist__row--drag');
         row.style.opacity = '1';
       });
   };
+
+  const handleClick = (e: MouseEvent<HTMLDivElement>, index: number) => {
+    // Handle double-click
+    if (e.detail === 2) {
+      changeNowPlaying(list[index]);
+      return;
+    }
+    // Handle click
+    setSelectedIndex(index);
+  };
+
+  useEffect(() => {
+    if (arrowUpPressed && selectedIndex !== null) {
+      const nextIndex =
+        selectedIndex !== 0 ? selectedIndex - 1 : list.length - 1;
+      setSelectedIndex(nextIndex);
+    }
+  }, [arrowUpPressed]);
+
+  useEffect(() => {
+    if (arrowDownPressed && selectedIndex !== null) {
+      const nextIndex =
+        selectedIndex !== list.length - 1 ? selectedIndex + 1 : 0;
+      setSelectedIndex(nextIndex);
+    }
+  }, [arrowDownPressed]);
 
   return (
     <section className="playlist">
@@ -177,11 +198,14 @@ const Playlist = () => {
                 key={`list_item_${id}`}
                 {...item}
                 index={index}
-                onDragStart={handleDragStart}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
+                isSelected={index === selectedIndex}
+                isPlaying={id === nowPlaying?.id}
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragEnter={(e) => handleDragEnter(e, index)}
+                onDragLeave={(e) => handleDragLeave(e, index)}
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
+                onClick={(e) => handleClick(e, index)}
               />
             ))}
           </ul>
