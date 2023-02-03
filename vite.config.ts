@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
       '@context': path.resolve(__dirname, 'src/context'),
       '@customTypes': path.resolve(__dirname, 'src/types'),
       '@electron': path.resolve(__dirname, 'electron'),
+      '@features': path.resolve(__dirname, 'src/features'),
       '@hooks': path.resolve(__dirname, 'src/hooks'),
       '@services': path.resolve(__dirname, 'src/services'),
       '@styles': path.resolve(__dirname, 'src/styles'),

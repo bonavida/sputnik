@@ -23,6 +23,9 @@
       "@electron/*": [
         "../electron/*"
       ],
+      "@features/*": [
+        "features/*"
+      ],
       "@hooks/*": [
         "hooks/*"
       ],

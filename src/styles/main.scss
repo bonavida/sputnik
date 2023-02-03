@@ -7,3 +7,14 @@
 // Base
 @import 'base/base';
 @import 'base/normalize';
+
+.sputnik {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'details'
+    'playlist'
+    'player';
+}

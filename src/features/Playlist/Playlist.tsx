@@ -1,11 +1,18 @@
-import { useState, useEffect, useRef, useCallback, MouseEvent } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  MouseEvent,
+  useMemo,
+} from 'react';
 import { useDropzone, FileWithPath } from 'react-dropzone';
 /** Hooks */
 import useKeyPress from '@hooks/useKeyPress';
 /** Context */
 import useAudio from '@context/useAudio';
 /** Components */
-import PlaylistItem from '@components/Playlist/PlaylistItem';
+import PlaylistItem from '@features/Playlist/PlaylistItem';
 /** Utils */
 import { parseMusicFiles } from '@utils/electronAPI';
 /** Constants */
@@ -17,59 +24,14 @@ import { SongMetadata } from '@customTypes/metadata';
 import './Playlist.scss';
 
 const Playlist = () => {
-  const [list, setList] = useState<SongMetadata[]>([
-    {
-      id: '1',
-      title: 'I Wanna Be Adored - Remastered',
-      artist: 'The Stone Roses',
-      album: 'The Stone Roses',
-      duration: 251,
-      cover: null,
-      path: 'unknown',
-    },
-    {
-      id: '2',
-      title: 'Unfinished Sympathy',
-      artist: 'Massive Attack',
-      album: 'Blue Lines',
-      duration: 308,
-      cover: null,
-      path: 'unknown',
-    },
-    {
-      id: '3',
-      title: 'Stop',
-      artist: 'J Dilla',
-      album: 'Donuts',
-      duration: 99,
-      cover: null,
-      path: 'unknown',
-    },
-    {
-      id: '4',
-      title: 'B.O.T.A. (Baddest Of Them All) - Edit',
-      artist: 'Eliza Rose, Interplanetary Criminal',
-      album: 'B.O.T.A. (Baddest Of Them All) / Move To The',
-      duration: 226,
-      cover: null,
-      path: 'unknown',
-    },
-    {
-      id: '5',
-      title: 'The Will To Death',
-      artist: 'John Frusciante',
-      album: 'The Will To Death',
-      duration: 328,
-      cover: null,
-      path: 'unknown',
-    },
-  ]);
+  const [list, setList] = useState<SongMetadata[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const dragItem = useRef<number>();
   const dragOverItem = useRef<number>();
   const { nowPlaying, changeNowPlaying } = useAudio();
   const arrowUpPressed = useKeyPress('ArrowUp');
   const arrowDownPressed = useKeyPress('ArrowDown');
+  const isListEmpty = useMemo(() => !list.length, [list]);
 
   const onDrop = useCallback(
     async (acceptedFiles: Array<FileWithPath>) => {
@@ -184,7 +146,11 @@ const Playlist = () => {
             <span>Drop songs here</span>
           </div>
         )}
-        {!!list.length && (
+        {isListEmpty ? (
+          <div className="playlist__empty">
+            <span>Drag and drop songs to add them to the playlist</span>
+          </div>
+        ) : (
           <ul className="playlist__list">
             <li className="playlist__header">
               <span>#</span>
