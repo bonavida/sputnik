@@ -3,7 +3,7 @@ export interface SongMetadata {
   title: string;
   artist: string;
   album: string;
-  cover: Buffer | string | null;
+  cover: Uint8Array | undefined;
   path: string;
   duration: number;
 }

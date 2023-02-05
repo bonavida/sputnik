@@ -3,8 +3,8 @@ import { createContext, useContext, useMemo, useState, useRef } from 'react';
 import { SongMetadata } from '@customTypes/metadata';
 
 interface AudioContextProps {
-  nowPlaying: SongMetadata | null;
-  nowPlayingIndex: number | null;
+  nowPlaying: SongMetadata | undefined;
+  nowPlayingIndex: number | undefined;
   volume: number;
   play: () => void;
   changeNowPlaying: (song: SongMetadata) => void;
@@ -15,8 +15,8 @@ interface AudioProviderProps {
 }
 
 const AudioContext = createContext<AudioContextProps>({
-  nowPlaying: null,
-  nowPlayingIndex: null,
+  nowPlaying: undefined,
+  nowPlayingIndex: undefined,
   volume: 100,
   play: () => '',
   changeNowPlaying: () => '',
@@ -24,8 +24,8 @@ const AudioContext = createContext<AudioContextProps>({
 
 // Export the provider as we need to wrap the entire app with it
 export const AudioProvider = ({ children }: AudioProviderProps) => {
-  const [nowPlaying, setNowPlaying] = useState<SongMetadata | null>(null);
-  const [nowPlayingIndex, setNowPlayingIndex] = useState<number | null>(null);
+  const [nowPlaying, setNowPlaying] = useState<SongMetadata>();
+  const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
   const [volume, setVolume] = useState(100);
   const audioRef = useRef<HTMLAudioElement>(null);
 

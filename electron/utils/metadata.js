@@ -18,7 +18,7 @@ const parseMusicFile = async (filePath) => {
       title: title ?? fileName,
       artist: artist ?? albumartist ?? UNKNOWN,
       album: album ?? UNKNOWN,
-      cover: picture && picture.length ? picture[0].data : null,
+      cover: picture && picture.length ? picture[0].data : undefined,
       path: `${CUSTOM_PROTOCOL}${filePath}`,
       duration: format.duration ?? 0,
     };
