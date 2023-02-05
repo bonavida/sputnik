@@ -31,6 +31,7 @@ const Playlist = () => {
   const { nowPlaying, changeNowPlaying } = useAudio();
   const arrowUpPressed = useKeyPress('ArrowUp');
   const arrowDownPressed = useKeyPress('ArrowDown');
+  const enterPressed = useKeyPress('Enter');
   const isListEmpty = useMemo(() => !list.length, [list]);
 
   const onDrop = useCallback(
@@ -136,6 +137,12 @@ const Playlist = () => {
       setSelectedIndex(nextIndex);
     }
   }, [arrowDownPressed]);
+
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      changeNowPlaying(list[selectedIndex]);
+    }
+  }, [enterPressed]);
 
   return (
     <section className="playlist">

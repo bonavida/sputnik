@@ -1,5 +1,6 @@
 .playlist {
   grid-area: playlist;
+  overflow: auto;
 
   &__empty {
     height: 100%;
