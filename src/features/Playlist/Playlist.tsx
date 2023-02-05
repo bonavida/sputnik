@@ -1,13 +1,7 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  MouseEvent,
-  useMemo,
-} from 'react';
+import { useState, useEffect, useCallback, MouseEvent, useMemo } from 'react';
 import { useDropzone, FileWithPath } from 'react-dropzone';
 /** Hooks */
+import useDraggableList from '@hooks/useDraggableList';
 import useKeyPress from '@hooks/useKeyPress';
 /** Context */
 import useAudio from '@context/useAudio';
@@ -17,24 +11,34 @@ import PlaylistItem from '@features/Playlist/PlaylistItem';
 import { parseMusicFiles } from '@utils/electronAPI';
 /** Constants */
 import { ACCEPTED_AUDIO_EXTENSIONS } from '@constants/metadata';
-/** Types */
-import { DraggableEvent } from '@customTypes/playlist';
-import { SongMetadata } from '@customTypes/metadata';
+import {
+  PLAYLIST_ROW_CLASSNAME,
+  PLAYLIST_DRAGGING_ROW_CLASSNAME,
+  KEYBOARD_ARROW_UP_KEY,
+  KEYBOARD_ARROW_DOWN_KEY,
+  KEYBOARD_ENTER_KEY,
+} from '@constants/common';
 /** Styles */
 import './Playlist.scss';
 
 const Playlist = () => {
-  const [list, setList] = useState<SongMetadata[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const dragItem = useRef<number>();
-  const dragOverItem = useRef<number>();
   const { nowPlaying, changeNowPlaying } = useAudio();
-  const arrowUpPressed = useKeyPress('ArrowUp');
-  const arrowDownPressed = useKeyPress('ArrowDown');
-  const enterPressed = useKeyPress('Enter');
+  const {
+    list,
+    setList,
+    handleDragStart,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDragEnd,
+  } = useDraggableList(PLAYLIST_ROW_CLASSNAME, PLAYLIST_DRAGGING_ROW_CLASSNAME);
+  const arrowUpPressed = useKeyPress(KEYBOARD_ARROW_UP_KEY);
+  const arrowDownPressed = useKeyPress(KEYBOARD_ARROW_DOWN_KEY);
+  const enterPressed = useKeyPress(KEYBOARD_ENTER_KEY);
   const isListEmpty = useMemo(() => !list.length, [list]);
 
-  const onDrop = useCallback(
+  const handleDrop = useCallback(
     async (acceptedFiles: Array<FileWithPath>) => {
       // Do something with the files
       const filePaths = acceptedFiles
@@ -49,68 +53,11 @@ const Playlist = () => {
 
   const { isDragActive, getRootProps, getInputProps } = useDropzone({
     noClick: true,
-    onDrop,
+    onDrop: handleDrop,
     accept: {
       'audio/mpeg': ACCEPTED_AUDIO_EXTENSIONS,
     },
   });
-
-  const handleDragStart = (
-    e: DraggableEvent<HTMLDivElement>,
-    position: number
-  ) => {
-    dragItem.current = position;
-    e.target.style.opacity = '0.7';
-  };
-
-  const handleDragEnter = (
-    e: DraggableEvent<HTMLDivElement>,
-    position: number
-  ) => {
-    dragOverItem.current = position;
-    e.target.classList.add('playlist__row--drag');
-    if (dragItem.current === position) return;
-    e.target.style.opacity = '0.9';
-  };
-
-  const handleDragLeave = (
-    e: DraggableEvent<HTMLDivElement>,
-    position: number
-  ) => {
-    e.target.classList.remove('playlist__row--drag');
-    if (dragItem.current === position) return;
-    e.target.style.opacity = '1';
-  };
-
-  const handleDragOver = (e: DraggableEvent<HTMLDivElement>) => {
-    // Necessary to prevent the not-allowed cursor to appear when dragging items
-    e.preventDefault();
-  };
-
-  const handleDragEnd = () => {
-    if (dragItem.current === undefined || dragOverItem.current === undefined) {
-      return;
-    }
-
-    // Reorder list
-    const copyListItems = [...list];
-    const dragItemContent = copyListItems[dragItem.current];
-    copyListItems.splice(dragItem.current, 1);
-    copyListItems.splice(dragOverItem.current, 0, dragItemContent);
-    setList(copyListItems);
-
-    // Initialize refs
-    dragItem.current = undefined;
-    dragOverItem.current = undefined;
-
-    // Remove all residual dragging classes
-    document
-      .querySelectorAll<HTMLDivElement>('.playlist__row')
-      .forEach((row) => {
-        row.classList.remove('playlist__row--drag');
-        row.style.opacity = '1';
-      });
-  };
 
   const handleClick = (e: MouseEvent<HTMLDivElement>, index: number) => {
     // Handle double-click
