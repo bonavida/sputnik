@@ -3,11 +3,15 @@ import { createContext, useContext, useMemo, useState, useRef } from 'react';
 import { SongMetadata } from '@customTypes/metadata';
 
 interface AudioContextProps {
+  list: SongMetadata[];
   nowPlaying: SongMetadata | undefined;
   nowPlayingIndex: number | undefined;
   volume: number;
+  setList: (list: SongMetadata[]) => void;
+  setNowPlaying: (song: SongMetadata) => void;
+  setNowPlayingIndex: (index: number) => void;
+  setVolume: (value: number) => void;
   play: () => void;
-  changeNowPlaying: (song: SongMetadata) => void;
 }
 
 interface AudioProviderProps {
@@ -15,15 +19,20 @@ interface AudioProviderProps {
 }
 
 const AudioContext = createContext<AudioContextProps>({
+  list: [],
   nowPlaying: undefined,
   nowPlayingIndex: undefined,
   volume: 100,
+  setList: () => '',
+  setNowPlaying: () => '',
+  setNowPlayingIndex: () => '',
+  setVolume: () => '',
   play: () => '',
-  changeNowPlaying: () => '',
 });
 
 // Export the provider as we need to wrap the entire app with it
 export const AudioProvider = ({ children }: AudioProviderProps) => {
+  const [list, setList] = useState<SongMetadata[]>([]);
   const [nowPlaying, setNowPlaying] = useState<SongMetadata>();
   const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
   const [volume, setVolume] = useState(100);
@@ -34,8 +43,17 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     audioRef.current.play();
   };
 
-  const changeNowPlaying = (song: SongMetadata) => {
-    setNowPlaying(song);
+  const handleSongEnd = () => {
+    // If end of playlist has been reached, stop playing and reset now playing state
+    if (nowPlayingIndex === list.length - 1) {
+      setNowPlayingIndex(undefined);
+      setNowPlaying(undefined);
+      return;
+    }
+    // If not, play next song
+    const nextIndex = nowPlayingIndex! + 1;
+    setNowPlayingIndex(nextIndex);
+    setNowPlaying(list[nextIndex]);
   };
 
   // Make the provider update only when it should.
@@ -49,24 +67,27 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   // we want to keep things very performant.
   const memoedValue = useMemo(
     () => ({
+      list,
       nowPlaying,
       nowPlayingIndex,
       volume,
+      setList,
+      setNowPlaying,
+      setNowPlayingIndex,
+      setVolume,
       play,
-      changeNowPlaying,
     }),
-    [nowPlaying, nowPlayingIndex, volume]
+    [list, nowPlaying, nowPlayingIndex, volume]
   );
 
-  // We only want to render the underlying app after we
-  // assert for the presence of a current user.
   return (
     <AudioContext.Provider value={memoedValue}>
       {children}
       <audio
         ref={audioRef}
         src={nowPlaying?.path}
-        onLoadedMetadata={() => play()} // TODO: Remove this
+        onLoadedMetadata={() => play()}
+        onEnded={handleSongEnd}
       />
     </AudioContext.Provider>
   );

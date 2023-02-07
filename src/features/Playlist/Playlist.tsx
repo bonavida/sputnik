@@ -23,7 +23,7 @@ import './Playlist.scss';
 
 const Playlist = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const { nowPlaying, changeNowPlaying } = useAudio();
+  const { nowPlaying, setNowPlaying, setNowPlayingIndex } = useAudio();
   const {
     list,
     setList,
@@ -62,7 +62,8 @@ const Playlist = () => {
   const handleClick = (e: MouseEvent<HTMLDivElement>, index: number) => {
     // Handle double-click
     if (e.detail === 2) {
-      changeNowPlaying(list[index]);
+      setNowPlayingIndex(index);
+      setNowPlaying(list[index]);
       return;
     }
     // Handle click
@@ -87,7 +88,8 @@ const Playlist = () => {
 
   useEffect(() => {
     if (selectedIndex !== null) {
-      changeNowPlaying(list[selectedIndex]);
+      setNowPlayingIndex(selectedIndex);
+      setNowPlaying(list[selectedIndex]);
     }
   }, [enterPressed]);
 

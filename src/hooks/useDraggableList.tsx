@@ -1,13 +1,13 @@
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 /** Types */
 import { DraggableEvent } from '@customTypes/playlist';
-import { SongMetadata } from '@customTypes/metadata';
+import useAudio from '@context/useAudio';
 
 const useDraggableList = (
   rowClassName: string,
   draggingRowClassName: string
 ) => {
-  const [list, setList] = useState<SongMetadata[]>([]);
+  const { list, setList } = useAudio();
   const dragItem = useRef<number>();
   const dragOverItem = useRef<number>();
 
