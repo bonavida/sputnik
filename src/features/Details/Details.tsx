@@ -33,10 +33,10 @@ const Details = () => {
         alt={`Cover of the album ${album} by ${artist}`}
       />
       {isPlaying && (
-        <div>
-          <div>{title}</div>
-          <div>{artist}</div>
-          <div>{album}</div>
+        <div className="details__info">
+          <span className="details__title">{title}</span>
+          <span className="details__artist">{artist}</span>
+          <span className="details__album">{album}</span>
         </div>
       )}
     </section>
