@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback, MouseEvent, useMemo } from 'react';
+import { useEffect, useCallback, MouseEvent, useMemo } from 'react';
 import { useDropzone, FileWithPath } from 'react-dropzone';
 /** Hooks */
 import useDraggableList from '@hooks/useDraggableList';
 import useKeyPress from '@hooks/useKeyPress';
 /** Context */
+import usePlaylist from '@context/usePlaylist';
 import useAudio from '@context/useAudio';
 /** Components */
 import PlaylistItem from '@features/Playlist/PlaylistItem';
@@ -22,11 +23,9 @@ import {
 import './Playlist.scss';
 
 const Playlist = () => {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const { list, setList, selectedIndex, setSelectedIndex } = usePlaylist();
   const { nowPlaying, setNowPlaying, setNowPlayingIndex } = useAudio();
   const {
-    list,
-    setList,
     handleDragStart,
     handleDragEnter,
     handleDragLeave,
@@ -71,7 +70,7 @@ const Playlist = () => {
   };
 
   useEffect(() => {
-    if (arrowUpPressed && selectedIndex !== null) {
+    if (arrowUpPressed && selectedIndex !== undefined) {
       const nextIndex =
         selectedIndex !== 0 ? selectedIndex - 1 : list.length - 1;
       setSelectedIndex(nextIndex);
@@ -79,7 +78,7 @@ const Playlist = () => {
   }, [arrowUpPressed]);
 
   useEffect(() => {
-    if (arrowDownPressed && selectedIndex !== null) {
+    if (arrowDownPressed && selectedIndex !== undefined) {
       const nextIndex =
         selectedIndex !== list.length - 1 ? selectedIndex + 1 : 0;
       setSelectedIndex(nextIndex);
@@ -87,7 +86,7 @@ const Playlist = () => {
   }, [arrowDownPressed]);
 
   useEffect(() => {
-    if (selectedIndex !== null) {
+    if (selectedIndex !== undefined) {
       setNowPlayingIndex(selectedIndex);
       setNowPlaying(list[selectedIndex]);
     }

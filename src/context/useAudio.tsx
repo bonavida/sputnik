@@ -1,13 +1,13 @@
 import { createContext, useContext, useMemo, useState, useRef } from 'react';
 /** Types */
 import { SongMetadata } from '@customTypes/metadata';
+import usePlaylist from './usePlaylist';
 
 interface AudioContextProps {
-  list: SongMetadata[];
   nowPlaying: SongMetadata | undefined;
   nowPlayingIndex: number | undefined;
+  isPlaying: boolean;
   volume: number;
-  setList: (list: SongMetadata[]) => void;
   setNowPlaying: (song: SongMetadata) => void;
   setNowPlayingIndex: (index: number) => void;
   setVolume: (value: number) => void;
@@ -19,11 +19,10 @@ interface AudioProviderProps {
 }
 
 const AudioContext = createContext<AudioContextProps>({
-  list: [],
   nowPlaying: undefined,
   nowPlayingIndex: undefined,
   volume: 100,
-  setList: () => '',
+  isPlaying: false,
   setNowPlaying: () => '',
   setNowPlayingIndex: () => '',
   setVolume: () => '',
@@ -32,15 +31,17 @@ const AudioContext = createContext<AudioContextProps>({
 
 // Export the provider as we need to wrap the entire app with it
 export const AudioProvider = ({ children }: AudioProviderProps) => {
-  const [list, setList] = useState<SongMetadata[]>([]);
+  const { list } = usePlaylist();
   const [nowPlaying, setNowPlaying] = useState<SongMetadata>();
   const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
+  const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const play = () => {
     if (!audioRef.current) return;
     audioRef.current.play();
+    setIsPlaying(true);
   };
 
   const handleSongEnd = () => {
@@ -67,17 +68,16 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   // we want to keep things very performant.
   const memoedValue = useMemo(
     () => ({
-      list,
       nowPlaying,
       nowPlayingIndex,
+      isPlaying,
       volume,
-      setList,
       setNowPlaying,
       setNowPlayingIndex,
       setVolume,
       play,
     }),
-    [list, nowPlaying, nowPlayingIndex, volume]
+    [nowPlaying, nowPlayingIndex, isPlaying, volume]
   );
 
   return (

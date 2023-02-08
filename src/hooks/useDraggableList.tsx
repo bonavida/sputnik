@@ -1,13 +1,14 @@
 import { useRef } from 'react';
+/** Context */
+import usePlaylist from '@context/usePlaylist';
 /** Types */
 import { DraggableEvent } from '@customTypes/playlist';
-import useAudio from '@context/useAudio';
 
 const useDraggableList = (
   rowClassName: string,
   draggingRowClassName: string
 ) => {
-  const { list, setList } = useAudio();
+  const { list, setList } = usePlaylist();
   const dragItem = useRef<number>();
   const dragOverItem = useRef<number>();
 
