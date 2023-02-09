@@ -1,0 +1,1 @@
+export const SECS_BEFORE_PREVIOUS_SONG = 3;

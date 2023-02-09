@@ -1,3 +1,10 @@
 .player {
   grid-area: player;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 15px;
+  padding: 30px 35px;
+  border-top: 1px solid #c2c2c2;
 }
