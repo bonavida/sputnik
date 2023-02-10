@@ -1,0 +1,21 @@
+@import '@styles/utils.scss';
+
+.button {
+  appearance: none;
+  border: none;
+  box-shadow: none;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: 0;
+    text-decoration: none;
+  }
+}

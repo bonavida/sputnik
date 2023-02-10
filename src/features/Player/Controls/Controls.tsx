@@ -1,5 +1,8 @@
-import useAudio from '@context/useAudio';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+/** Components */
+import Button from '@components/Button';
+/** Context */
+import useAudio from '@context/useAudio';
 /** Styles */
 import './Controls.scss';
 
@@ -8,22 +11,19 @@ const Controls = () => {
     useAudio();
   return (
     <div className="controls">
-      <button
-        type="button"
+      <Button
         className="controls__icon-wrapper controls__shuffle"
         onClick={toggleShuffle}
       >
         <FontAwesomeIcon icon="shuffle" className="controls__icon" />
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
         className="controls__icon-wrapper controls__prev"
         onClick={previous}
       >
         <FontAwesomeIcon icon="backward-step" className="controls__icon" />
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
         className="controls__icon-wrapper controls__play"
         onClick={togglePlay}
       >
@@ -32,21 +32,16 @@ const Controls = () => {
         ) : (
           <FontAwesomeIcon icon="play" className="controls__icon" />
         )}
-      </button>
-      <button
-        type="button"
-        className="controls__icon-wrapper controls__next"
-        onClick={next}
-      >
+      </Button>
+      <Button className="controls__icon-wrapper controls__next" onClick={next}>
         <FontAwesomeIcon icon="forward-step" className="controls__icon" />
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
         className="controls__icon-wrapper controls__next"
         onClick={toggleRepeat}
       >
         <FontAwesomeIcon icon="repeat" className="controls__icon" />
-      </button>
+      </Button>
     </div>
   );
 };
