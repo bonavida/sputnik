@@ -2,7 +2,7 @@ import { useRef } from 'react';
 /** Context */
 import usePlaylist from '@context/usePlaylist';
 /** Types */
-import { DraggableEvent } from '@customTypes/playlist';
+import { DraggableEvent } from '@customTypes/events';
 
 const useDraggableList = (
   rowClassName: string,

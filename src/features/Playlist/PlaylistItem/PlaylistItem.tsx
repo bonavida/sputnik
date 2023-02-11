@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react';
 import cx from 'classnames';
 /** Types */
-import { DraggableEvent } from '@customTypes/playlist';
+import { DraggableEvent } from '@customTypes/events';
 import { SongMetadata } from '@customTypes/metadata';
 /** Styles */
 import './PlaylistItem.scss';
