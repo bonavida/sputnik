@@ -1,23 +1,25 @@
 /** Components */
 import RangeSlider from '@components/RangeSlider';
-import { useState } from 'react';
+/** Hooks */
+import { useEffect } from 'react';
 /** Styles */
 import './ProgressBar.scss';
 
 const ProgressBar = () => {
-  const [val, setVal] = useState<string | number | undefined>(10);
-
+  const handleSlide = (value: string | number | undefined) => {
+    console.log('slide');
+  };
   const handleChange = (value: string | number | undefined) => {
-    console.log(value);
-    setVal(value);
+    console.log('up');
   };
 
   return (
     <RangeSlider
       min={0}
       max={100}
-      value={val}
-      step={1}
+      value={10}
+      step={2}
+      onSlide={handleSlide}
       onChange={handleChange}
       classes="additional-css-classes"
     />
