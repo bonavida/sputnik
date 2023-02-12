@@ -27,12 +27,12 @@ const RangeSlider = ({
   }, [value]);
 
   useEffect(() => {
-    if (!onSlide) return;
+    if (!onSlide || !mouseState) return;
     onSlide(sliderVal);
   }, [sliderVal]);
 
   useEffect(() => {
-    if (!onChange || mouseState === 'down') return;
+    if (!onChange || mouseState !== 'up') return;
     onChange(sliderVal);
   }, [mouseState]);
 

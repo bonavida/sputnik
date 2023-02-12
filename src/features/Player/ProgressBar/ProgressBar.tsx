@@ -1,7 +1,5 @@
 /** Components */
 import RangeSlider from '@components/RangeSlider';
-/** Hooks */
-import { useEffect } from 'react';
 /** Styles */
 import './ProgressBar.scss';
 
