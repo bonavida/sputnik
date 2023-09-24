@@ -5,7 +5,6 @@ import RangeSlider from '@components/RangeSlider';
 import useAudio from '@context/useAudio';
 /** Styles */
 import './ProgressBar.scss';
-/** Types */
 
 const ProgressBar = () => {
   const { nowPlaying, time, updateCurrentTime } = useAudio();

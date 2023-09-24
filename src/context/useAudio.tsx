@@ -130,6 +130,18 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     setNowPlaying(list[nextIndex]);
   };
 
+  // We need to explicitely handle the isPlaying state
+  // if the user plays the audio from the system media player
+  const handlePlay = () => {
+    if (!isPlaying) setIsPlaying(true);
+  };
+
+  // We need to explicitely handle the isPlaying state
+  // if the user pauses the audio from the system media player
+  const handlePause = () => {
+    if (isPlaying) setIsPlaying(false);
+  };
+
   const handleTimeUpdate = (e: AudioTimeUpdateEvent<HTMLAudioElement>) => {
     const { currentTime } = e.target;
     setTime(currentTime);
@@ -184,6 +196,8 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
         onLoadedMetadata={() => play()}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleSongEnd}
+        onPlay={handlePlay}
+        onPause={handlePause}
       />
     </AudioContext.Provider>
   );
