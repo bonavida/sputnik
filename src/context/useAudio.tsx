@@ -1,18 +1,28 @@
-import { createContext, useContext, useMemo, useState, useRef } from 'react';
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useRef,
+  ChangeEvent,
+} from 'react';
 /** Context */
 import usePlaylist from '@context/usePlaylist';
 /** Constants */
 import { SECS_BEFORE_PREVIOUS_SONG } from '@constants/audio';
 /** Types */
 import { SongMetadata } from '@customTypes/metadata';
+import { AudioTimeUpdateEvent } from '@customTypes/events';
 
 interface AudioContextProps {
   nowPlaying: SongMetadata | undefined;
   nowPlayingIndex: number | undefined;
   isPlaying: boolean;
+  time: number;
   volume: number;
   setNowPlaying: (song: SongMetadata) => void;
   setNowPlayingIndex: (index: number) => void;
+  updateCurrentTime: (e: ChangeEvent<HTMLInputElement>) => void;
   setVolume: (value: number) => void;
   play: () => void;
   togglePlay: () => void;
@@ -29,10 +39,12 @@ interface AudioProviderProps {
 const AudioContext = createContext<AudioContextProps>({
   nowPlaying: undefined,
   nowPlayingIndex: undefined,
-  volume: 100,
   isPlaying: false,
+  time: 0,
+  volume: 100,
   setNowPlaying: () => '',
   setNowPlayingIndex: () => '',
+  updateCurrentTime: () => '',
   setVolume: () => '',
   play: () => '',
   togglePlay: () => '',
@@ -48,6 +60,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [nowPlaying, setNowPlaying] = useState<SongMetadata>();
   const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [time, setTime] = useState(0);
   const [volume, setVolume] = useState(100);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -108,12 +121,28 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       setNowPlayingIndex(undefined);
       setNowPlaying(undefined);
       setIsPlaying(false);
+      setTime(0);
       return;
     }
     // If not, play next song
     const nextIndex = nowPlayingIndex! + 1;
     setNowPlayingIndex(nextIndex);
     setNowPlaying(list[nextIndex]);
+  };
+
+  const handleTimeUpdate = (e: AudioTimeUpdateEvent<HTMLAudioElement>) => {
+    const { currentTime } = e.target;
+    setTime(currentTime);
+  };
+
+  const updateCurrentTime = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!audioRef.current || !nowPlaying) return;
+
+    const { duration = 0 } = nowPlaying;
+    const numberValue = +e.target.value;
+    const currentTime = (duration / 100) * numberValue;
+
+    audioRef.current.currentTime = currentTime;
   };
 
   // Make the provider update only when it should.
@@ -130,9 +159,11 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       nowPlaying,
       nowPlayingIndex,
       isPlaying,
+      time,
       volume,
       setNowPlaying,
       setNowPlayingIndex,
+      updateCurrentTime,
       setVolume,
       play,
       togglePlay,
@@ -141,7 +172,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       toggleShuffle,
       toggleRepeat,
     }),
-    [nowPlaying, nowPlayingIndex, isPlaying, volume]
+    [nowPlaying, nowPlayingIndex, isPlaying, time, volume]
   );
 
   return (
@@ -151,6 +182,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
         ref={audioRef}
         src={nowPlaying?.path}
         onLoadedMetadata={() => play()}
+        onTimeUpdate={handleTimeUpdate}
         onEnded={handleSongEnd}
       />
     </AudioContext.Provider>

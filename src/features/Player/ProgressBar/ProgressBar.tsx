@@ -1,25 +1,29 @@
+import { useCallback, ChangeEvent } from 'react';
 /** Components */
 import RangeSlider from '@components/RangeSlider';
+/** Context */
+import useAudio from '@context/useAudio';
 /** Styles */
 import './ProgressBar.scss';
+/** Types */
 
 const ProgressBar = () => {
-  const handleSlide = (value: string | number | undefined) => {
-    console.log('slide');
-  };
-  const handleChange = (value: string | number | undefined) => {
-    console.log('up');
-  };
+  const { nowPlaying, time, updateCurrentTime } = useAudio();
+
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      updateCurrentTime(e);
+    },
+    [updateCurrentTime]
+  );
 
   return (
     <RangeSlider
       min={0}
-      max={100}
-      value={10}
-      step={2}
-      onSlide={handleSlide}
+      max={nowPlaying?.duration}
+      value={time}
+      step={0.1}
       onChange={handleChange}
-      classes="additional-css-classes"
     />
   );
 };

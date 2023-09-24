@@ -1,65 +1,56 @@
-import { useState, useEffect, memo, ChangeEvent } from 'react';
+import { useMemo, ChangeEvent } from 'react';
+/** Styles */
+import './RangeSlider.scss';
 
 interface RangeSliderProps {
   min: number | string | undefined;
-  max: number | string | undefined;
-  step: number | string | undefined;
-  value?: string | number | undefined;
-  onChange?: (val: string | number | undefined) => void;
-  onSlide?: (val: string | number | undefined) => void;
+  max: number | undefined;
+  step: number | undefined;
+  value: number | undefined;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   classes?: string;
 }
 
 const RangeSlider = ({
   classes,
   onChange,
-  onSlide,
-  value,
-  ...sliderProps
+  value = 0,
+  max = 0,
+  ...props
 }: RangeSliderProps) => {
-  const [sliderVal, setSliderVal] = useState<string | number | undefined>(
-    value
-  );
-  const [mouseState, setMouseState] = useState<string | null>(null);
-
-  useEffect(() => {
-    setSliderVal(value);
-  }, [value]);
-
-  useEffect(() => {
-    if (!onSlide || !mouseState) return;
-    onSlide(sliderVal);
-  }, [sliderVal]);
-
-  useEffect(() => {
-    if (!onChange || mouseState !== 'up') return;
-    onChange(sliderVal);
-  }, [mouseState]);
-
-  const changeCallback = (e: ChangeEvent<HTMLInputElement>) => {
-    setSliderVal(e.target.value);
-  };
+  const percentage = useMemo(() => {
+    if (!max) return 0;
+    return (value / max) * 100;
+  }, [value, max]);
 
   return (
-    <div className="range-slider">
+    <div className="slider-container">
+      <div
+        className="progress-bar-cover"
+        style={{
+          width: `${percentage}%`,
+        }}
+      />
+      <div
+        className="thumb"
+        style={{
+          left: `${percentage}%`,
+          ...(!percentage && { marginLeft: 0 }),
+        }}
+      />
       <input
         type="range"
-        value={sliderVal ?? ''}
-        {...sliderProps}
+        value={percentage}
         className={`slider ${classes}`}
-        onChange={changeCallback}
-        onMouseDown={() => setMouseState('down')}
-        onMouseUp={() => setMouseState('up')}
+        onChange={onChange}
+        {...props}
       />
     </div>
   );
 };
 
 RangeSlider.defaultProps = {
-  value: '',
-  onChange: () => '',
-  onSlide: () => '',
   classes: '',
 };
 
-export default memo(RangeSlider);
+export default RangeSlider;

@@ -4,11 +4,11 @@
   }
 
   &:nth-child(odd) .playlist__row {
-    background-color: #f4f4f4;
+    background-color: #f9f9f9;
   }
 
   &:hover .playlist__row {
-    background-color: #eee;
+    background-color: #f4f4f4;
   }
 }
 
@@ -33,10 +33,10 @@
   }
 
   &--playing {
-    color: #27e32c;
+    color: #1ed760;
 
     &.playlist__row--selected {
-      color: #2bd32f;
+      color: #1ed760;
     }
   }
 

@@ -1,0 +1,81 @@
+@use 'sass:math';
+@import '@styles/utils';
+
+$progress-bar-height: 6px;
+$thumb-width: 14px;
+$thumb-height: 14px;
+
+.slider-container {
+  position: relative;
+  width: 100%;
+
+  &::before {
+    content: '';
+    background-color: #e6e6e6;
+    width: 100%;
+    height: $progress-bar-height;
+    display: block;
+    position: absolute;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  &:hover {
+    .thumb {
+      opacity: 1;
+    }
+  }
+}
+
+.progress-bar-cover {
+  background-color: #1db954;
+  width: 0%;
+  height: $progress-bar-height;
+  display: block;
+  position: absolute;
+  border-radius: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+.slider {
+  appearance: none;
+  -webkit-appearance: none;
+  height: $progress-bar-height;
+  width: 100%;
+  cursor: pointer;
+  opacity: 0;
+  margin: 0 auto;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: $thumb-width;
+    height: $thumb-height;
+    border: 1px solid #000000;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+}
+
+.thumb {
+  opacity: 0;
+  width: $thumb-width;
+  height: $thumb-height;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.753);
+  z-index: 3;
+  background: rgb(255, 255, 255);
+  position: absolute;
+  border-radius: 50%;
+  top: 50%;
+  transform: translate(0%, -50%);
+  margin-left: math.div(neg($thumb-width), 2);
+  pointer-events: none; /* Remove pointer events on thumb so user can click on the actual thumb beaneath it */
+  user-select: none; /* Prevent Accidentally highlighting the number while sliding the cursor */
+}

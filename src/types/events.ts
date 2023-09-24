@@ -1,7 +1,9 @@
-export type DraggableEvent<T extends HTMLElement> = React.DragEvent<T> & {
+import { DragEvent, SyntheticEvent } from 'react';
+
+export type DraggableEvent<T extends HTMLElement> = DragEvent<T> & {
   target: T;
 };
 
-export type InputChangeEvent<T> = React.ChangeEvent<T> & {
+export type AudioTimeUpdateEvent<T> = SyntheticEvent<T> & {
   target: T;
 };
