@@ -3,6 +3,8 @@ import cx from 'classnames';
 /** Types */
 import { DraggableEvent } from '@customTypes/events';
 import { SongMetadata } from '@customTypes/metadata';
+/** Utils */
+import { formatTime } from '@utils/time';
 /** Styles */
 import './PlaylistItem.scss';
 
@@ -56,7 +58,7 @@ const PlaylistItem = ({
         <span>{title}</span>
         <span>{artist}</span>
         <span>{album}</span>
-        <span>{duration}</span>
+        <span>{formatTime(duration)}</span>
       </div>
     </li>
   );

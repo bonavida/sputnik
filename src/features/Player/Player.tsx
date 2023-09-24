@@ -1,14 +1,14 @@
 /** Components */
 import Controls from './Controls';
+import Progress from './Progress';
 /** Styles */
 import './Player.scss';
-import ProgressBar from './ProgressBar/ProgressBar';
 
 const Player = () => {
   return (
     <section className="player">
       <Controls />
-      <ProgressBar />
+      <Progress />
     </section>
   );
 };
