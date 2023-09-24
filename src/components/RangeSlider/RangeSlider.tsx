@@ -42,7 +42,7 @@ const RangeSlider = ({
         type="range"
         value={percentage}
         className={`slider ${classes}`}
-        onChange={onChange}
+        onInput={onChange}
         {...props}
       />
     </div>
