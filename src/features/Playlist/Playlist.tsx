@@ -1,5 +1,6 @@
 import { useEffect, useCallback, MouseEvent, useMemo } from 'react';
 import { useDropzone, FileWithPath } from 'react-dropzone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 /** Hooks */
 import useDraggableList from '@hooks/useDraggableList';
 import useKeyPress from '@hooks/useKeyPress';
@@ -101,20 +102,22 @@ const Playlist = () => {
             <span>Drop songs here</span>
           </div>
         )}
-        {isListEmpty ? (
-          <div className="playlist__empty">
-            <span>Drag and drop songs to add them to the playlist</span>
-          </div>
-        ) : (
-          <ul className="playlist__list">
-            <li className="playlist__header">
-              <span>#</span>
-              <span>Title</span>
-              <span>Artist</span>
-              <span>Album</span>
-              <span>Duration</span>
+        <ul className="playlist__list">
+          <li className="playlist__header">
+            <span className="playlist__first">#</span>
+            <span>Title</span>
+            <span>Artist</span>
+            <span>Album</span>
+            <span>
+              <FontAwesomeIcon icon={['far', 'clock']} />
+            </span>
+          </li>
+          {isListEmpty ? (
+            <li className="playlist__empty">
+              <span>Drag and drop songs to add them to the playlist</span>
             </li>
-            {list.map(({ id, ...item }, index) => (
+          ) : (
+            list.map(({ id, ...item }, index) => (
               <PlaylistItem
                 key={`list_item_${id}`}
                 {...item}
@@ -128,9 +131,9 @@ const Playlist = () => {
                 onDragEnd={handleDragEnd}
                 onClick={(e) => handleClick(e, index)}
               />
-            ))}
-          </ul>
-        )}
+            ))
+          )}
+        </ul>
       </label>
     </section>
   );

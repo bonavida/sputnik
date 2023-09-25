@@ -54,7 +54,7 @@ const PlaylistItem = ({
         onDragEnd={onDragEnd}
         onClick={onClick}
       >
-        <span>{index + 1}</span>
+        <span className="playlist__first">{index + 1}</span>
         <span>{title}</span>
         <span>{artist}</span>
         <span>{album}</span>

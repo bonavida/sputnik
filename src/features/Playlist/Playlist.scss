@@ -12,6 +12,7 @@
     span {
       color: #666;
       font-size: 20px;
+      text-align: center;
     }
   }
 
@@ -29,8 +30,8 @@
 
   &__header {
     display: grid;
-    grid-template-columns: 0.2fr 1fr 0.8fr 0.7fr 0.3fr;
-    column-gap: 10px;
+    grid-template-columns: 40px 1fr 0.8fr 0.7fr 60px;
+    column-gap: 20px;
     padding: 8px 15px;
     border-bottom: 1px solid #c2c2c2;
 
@@ -41,6 +42,10 @@
       white-space: nowrap;
     }
   }
+
+  &__first {
+    text-align: right;
+  }
 }
 
 .dropzone {
@@ -48,12 +53,12 @@
 
   &__overlay {
     position: absolute;
-    top: 12px;
+    top: 45px; // 12px + 33px (height of the table header row)
     bottom: 12px;
     left: 12px;
     right: 12px;
-    width: calc(100% - 24px);
-    height: calc(100% - 24px);
+    width: calc(100% - 24px); // 12px left + 12px right
+    height: calc(100% - 57px); // 45px top + 12px bottom
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,6 +73,7 @@
       font-size: 36px;
       font-weight: bold;
       text-transform: uppercase;
+      text-align: center;
     }
   }
 }

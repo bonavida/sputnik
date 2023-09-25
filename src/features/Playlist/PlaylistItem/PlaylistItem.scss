@@ -14,8 +14,8 @@
 
 .playlist__row {
   display: grid;
-  grid-template-columns: 0.2fr 1fr 0.8fr 0.7fr 0.3fr;
-  column-gap: 10px;
+  grid-template-columns: 40px 1fr 0.8fr 0.7fr 60px;
+  column-gap: 20px;
   padding: 10px 15px;
   outline: 0;
   color: #003543;

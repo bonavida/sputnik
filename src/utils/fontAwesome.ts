@@ -7,6 +7,7 @@ import {
   faShuffle,
   faRepeat,
 } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 const registerIcons = (): void => {
   // Add fontawesome icons to the library in order to import just used icons
@@ -16,7 +17,8 @@ const registerIcons = (): void => {
     faForwardStep,
     faBackwardStep,
     faShuffle,
-    faRepeat
+    faRepeat,
+    faClock
   );
 };
 
