@@ -1,0 +1,29 @@
+.volume {
+  max-width: 150px;
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  margin-bottom: 20px;
+
+  &__icon-wrapper {
+    min-width: 20px;
+    display: flex;
+    justify-content: flex-start;
+
+    &:hover {
+      .volume__icon {
+        opacity: 0.9;
+        transform: scale(1.03);
+      }
+
+      & + .slider-container .thumb {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__icon {
+    color: #003543;
+    font-size: 16px;
+  }
+}

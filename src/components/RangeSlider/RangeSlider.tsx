@@ -35,7 +35,6 @@ const RangeSlider = ({
         className="thumb"
         style={{
           left: `${percentage}%`,
-          ...(!percentage && { marginLeft: 0 }),
         }}
       />
       <input

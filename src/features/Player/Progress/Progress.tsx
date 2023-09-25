@@ -1,4 +1,3 @@
-import { ChangeEvent } from 'react';
 /** Context */
 import useAudio from '@context/useAudio';
 /** Context */
@@ -17,7 +16,7 @@ const Player = () => {
       <ProgressBar
         currentTime={time}
         duration={nowPlaying?.duration}
-        onUpdate={(e: ChangeEvent<HTMLInputElement>) => updateCurrentTime(e)}
+        onUpdate={(e) => updateCurrentTime(e)}
       />
       <span className="timer timer--total">
         {formatTime(nowPlaying?.duration)}

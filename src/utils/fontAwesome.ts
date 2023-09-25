@@ -6,6 +6,9 @@ import {
   faBackwardStep,
   faShuffle,
   faRepeat,
+  faVolumeLow,
+  faVolumeHigh,
+  faVolumeXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 
@@ -18,7 +21,10 @@ const registerIcons = (): void => {
     faBackwardStep,
     faShuffle,
     faRepeat,
-    faClock
+    faClock,
+    faVolumeLow,
+    faVolumeHigh,
+    faVolumeXmark
   );
 };
 

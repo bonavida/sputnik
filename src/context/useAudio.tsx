@@ -20,16 +20,18 @@ interface AudioContextProps {
   isPlaying: boolean;
   time: number;
   volume: number;
+  isVolumeEnabled: boolean;
   setNowPlaying: (song: SongMetadata) => void;
   setNowPlayingIndex: (index: number) => void;
   updateCurrentTime: (e: ChangeEvent<HTMLInputElement>) => void;
-  setVolume: (value: number) => void;
+  updateVolume: (e: ChangeEvent<HTMLInputElement>) => void;
   play: () => void;
   togglePlay: () => void;
   next: () => void;
   previous: () => void;
   toggleShuffle: () => void;
   toggleRepeat: () => void;
+  toggleVolume: (isEnabled: boolean) => void;
 }
 
 interface AudioProviderProps {
@@ -41,17 +43,19 @@ const AudioContext = createContext<AudioContextProps>({
   nowPlayingIndex: undefined,
   isPlaying: false,
   time: 0,
-  volume: 100,
+  volume: 1,
+  isVolumeEnabled: true,
   setNowPlaying: () => '',
   setNowPlayingIndex: () => '',
   updateCurrentTime: () => '',
-  setVolume: () => '',
+  updateVolume: () => '',
   play: () => '',
   togglePlay: () => '',
   next: () => '',
   previous: () => '',
   toggleShuffle: () => '',
   toggleRepeat: () => '',
+  toggleVolume: () => '',
 });
 
 // Export the provider as we need to wrap the entire app with it
@@ -61,7 +65,8 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [time, setTime] = useState(0);
-  const [volume, setVolume] = useState(100);
+  const [volume, setVolume] = useState(1);
+  const [isVolumeEnabled, setIsVolumeEnabled] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const play = () => {
@@ -155,6 +160,29 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     const currentTime = (duration / 100) * numberValue;
 
     audioRef.current.currentTime = currentTime;
+    setTime(currentTime);
+  };
+
+  const updateVolume = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!audioRef.current) return;
+
+    const numberValue = +e.target.value;
+    const currentVolume = numberValue / 100;
+
+    audioRef.current.volume = currentVolume;
+    setVolume(currentVolume);
+
+    if (currentVolume && !isVolumeEnabled) setIsVolumeEnabled(true);
+    if (!currentVolume) setIsVolumeEnabled(false);
+  };
+
+  const toggleVolume = (isEnabled = false) => {
+    if (!audioRef.current) return;
+
+    const restoredVolume = isEnabled ? 0 : volume;
+    audioRef.current.volume = restoredVolume;
+
+    setIsVolumeEnabled((prev) => !prev);
   };
 
   // Make the provider update only when it should.
@@ -173,16 +201,18 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       isPlaying,
       time,
       volume,
+      isVolumeEnabled,
       setNowPlaying,
       setNowPlayingIndex,
       updateCurrentTime,
-      setVolume,
+      updateVolume,
       play,
       togglePlay,
       next,
       previous,
       toggleShuffle,
       toggleRepeat,
+      toggleVolume,
     }),
     [nowPlaying, nowPlayingIndex, isPlaying, time, volume]
   );
