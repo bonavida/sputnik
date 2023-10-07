@@ -1,6 +1,10 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const {
+  installExtension,
+  REACT_DEVELOPER_TOOLS,
+} = require('electron-extension-installer');
 /** Modules */
 const ipc = require('./ipc');
 const protocol = require('./protocol');
@@ -48,9 +52,16 @@ const createWindow = () => {
   }
 };
 
-app.on('ready', () => {
+app.on('ready', async () => {
   protocol.init();
   createWindow();
+
+  // TODO: Remove
+  await installExtension(REACT_DEVELOPER_TOOLS, {
+    loadExtensionOptions: {
+      allowFileAccess: true,
+    },
+  });
 });
 
 app.on('window-all-closed', () => {
