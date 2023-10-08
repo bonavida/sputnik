@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 /** Context */
 import useAudio from '@context/useAudio';
-import { useMemo } from 'react';
+import usePlaylist from '@context/usePlaylist';
 /** Utils */
 import { processCover } from '@utils/common';
 /** Components */
@@ -9,8 +10,8 @@ import Volume from './Volume';
 import './Details.scss';
 
 const Details = () => {
-  const { nowPlaying, volume, isVolumeEnabled, updateVolume, toggleVolume } =
-    useAudio();
+  const { volume, isVolumeEnabled, updateVolume, toggleVolume } = useAudio();
+  const { nowPlaying } = usePlaylist();
   const isPlaying = useMemo(
     () => !!Object.keys(nowPlaying ?? {}).length,
     [nowPlaying]

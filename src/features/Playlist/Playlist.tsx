@@ -6,7 +6,6 @@ import useDraggableList from '@hooks/useDraggableList';
 import useKeyPress from '@hooks/useKeyPress';
 /** Context */
 import usePlaylist from '@context/usePlaylist';
-import useAudio from '@context/useAudio';
 /** Components */
 import PlaylistItem from '@features/Playlist/PlaylistItem';
 /** Utils */
@@ -24,8 +23,15 @@ import {
 import './Playlist.scss';
 
 const Playlist = () => {
-  const { list, setList, selectedIndex, setSelectedIndex } = usePlaylist();
-  const { nowPlaying, setNowPlaying, setNowPlayingIndex } = useAudio();
+  const {
+    list,
+    setList,
+    selectedIndex,
+    setSelectedIndex,
+    nowPlaying,
+    setNowPlaying,
+    setNowPlayingIndex,
+  } = usePlaylist();
   const {
     handleDragStart,
     handleDragEnter,

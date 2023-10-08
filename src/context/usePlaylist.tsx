@@ -5,8 +5,12 @@ import { SongMetadata } from '@customTypes/metadata';
 interface PlaylistContextProps {
   list: SongMetadata[];
   selectedIndex: number | undefined;
+  nowPlaying: SongMetadata | undefined;
+  nowPlayingIndex: number | undefined;
   setList: (list: SongMetadata[]) => void;
   setSelectedIndex: (index: number) => void;
+  setNowPlaying: (song?: SongMetadata) => void;
+  setNowPlayingIndex: (index?: number) => void;
 }
 
 interface PlaylistProviderProps {
@@ -16,14 +20,20 @@ interface PlaylistProviderProps {
 const PlaylistContext = createContext<PlaylistContextProps>({
   list: [],
   selectedIndex: undefined,
+  nowPlaying: undefined,
+  nowPlayingIndex: undefined,
   setList: () => '',
   setSelectedIndex: () => '',
+  setNowPlaying: () => '',
+  setNowPlayingIndex: () => '',
 });
 
 // Export the provider as we need to wrap the entire app with it
 export const PlaylistProvider = ({ children }: PlaylistProviderProps) => {
   const [list, setList] = useState<SongMetadata[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>();
+  const [nowPlaying, setNowPlaying] = useState<SongMetadata>();
+  const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
 
   // Make the provider update only when it should.
   // We only want to force re-renders if the user,
@@ -38,10 +48,14 @@ export const PlaylistProvider = ({ children }: PlaylistProviderProps) => {
     () => ({
       list,
       selectedIndex,
+      nowPlaying,
+      nowPlayingIndex,
       setList,
       setSelectedIndex,
+      setNowPlaying,
+      setNowPlayingIndex,
     }),
-    [list, selectedIndex]
+    [nowPlaying, nowPlayingIndex, list, selectedIndex]
   );
 
   return (

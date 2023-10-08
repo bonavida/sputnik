@@ -8,29 +8,23 @@ import {
 } from 'react';
 /** Context */
 import usePlaylist from '@context/usePlaylist';
+import useControls from '@context/useControls';
 /** Constants */
 import { SECS_BEFORE_PREVIOUS_SONG } from '@constants/audio';
 /** Types */
-import { SongMetadata } from '@customTypes/metadata';
 import { AudioTimeUpdateEvent } from '@customTypes/events';
 
 interface AudioContextProps {
-  nowPlaying: SongMetadata | undefined;
-  nowPlayingIndex: number | undefined;
   isPlaying: boolean;
   time: number;
   volume: number;
   isVolumeEnabled: boolean;
-  setNowPlaying: (song: SongMetadata) => void;
-  setNowPlayingIndex: (index: number) => void;
   updateCurrentTime: (e: ChangeEvent<HTMLInputElement>) => void;
   updateVolume: (e: ChangeEvent<HTMLInputElement>) => void;
   play: () => void;
   togglePlay: () => void;
   next: () => void;
   previous: () => void;
-  toggleShuffle: () => void;
-  toggleRepeat: () => void;
   toggleVolume: (isEnabled: boolean) => void;
 }
 
@@ -39,35 +33,34 @@ interface AudioProviderProps {
 }
 
 const AudioContext = createContext<AudioContextProps>({
-  nowPlaying: undefined,
-  nowPlayingIndex: undefined,
   isPlaying: false,
   time: 0,
   volume: 1,
   isVolumeEnabled: true,
-  setNowPlaying: () => '',
-  setNowPlayingIndex: () => '',
   updateCurrentTime: () => '',
   updateVolume: () => '',
   play: () => '',
   togglePlay: () => '',
   next: () => '',
   previous: () => '',
-  toggleShuffle: () => '',
-  toggleRepeat: () => '',
   toggleVolume: () => '',
 });
 
 // Export the provider as we need to wrap the entire app with it
 export const AudioProvider = ({ children }: AudioProviderProps) => {
-  const { list } = usePlaylist();
-  const [nowPlaying, setNowPlaying] = useState<SongMetadata>();
-  const [nowPlayingIndex, setNowPlayingIndex] = useState<number>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [time, setTime] = useState(0);
   const [volume, setVolume] = useState(1);
   const [isVolumeEnabled, setIsVolumeEnabled] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const {
+    list,
+    nowPlaying,
+    nowPlayingIndex,
+    setNowPlaying,
+    setNowPlayingIndex,
+  } = usePlaylist();
+  const { shuffle, repeat, shuffledList } = useControls();
 
   const play = () => {
     if (!audioRef.current || !nowPlaying) return;
@@ -86,53 +79,44 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   };
 
   const next = () => {
-    // If end of playlist has been reached, do nothing
-    if (nowPlayingIndex === list.length - 1) {
+    // If end of playlist has been reached and repeat is not active, do nothing
+    if (nowPlayingIndex === list.length - 1 && !repeat) {
+      if (!audioRef.current) return;
+      setNowPlayingIndex(undefined);
+      setNowPlaying(undefined);
+      setIsPlaying(false);
+      setTime(0);
+      audioRef.current.src = '';
       return;
     }
+
     // If not, play next song
-    const nextIndex = nowPlayingIndex! + 1;
+    const nextIndex =
+      nowPlayingIndex === list.length - 1 && repeat ? 0 : nowPlayingIndex! + 1;
+    const currentPlaylist = shuffle ? shuffledList : list;
     setNowPlayingIndex(nextIndex);
-    setNowPlaying(list[nextIndex]);
+    setNowPlaying(currentPlaylist[nextIndex]);
   };
 
   const previous = () => {
     if (!audioRef.current) return;
     const { currentTime = 0 } = audioRef.current;
     // If song has been played more than 3 seconds, start the song over again
-    // Do the same when the beginning of playlist has been reached
-    if (currentTime >= SECS_BEFORE_PREVIOUS_SONG || nowPlayingIndex === 0) {
+    // Do the same if repeat is not active and the beginning of the playlist has been reached
+    if (
+      currentTime >= SECS_BEFORE_PREVIOUS_SONG ||
+      (nowPlayingIndex === 0 && !repeat)
+    ) {
       audioRef.current.currentTime = 0;
       return;
     }
 
     // If not, play previous song
-    const previousIndex = nowPlayingIndex! - 1;
+    const previousIndex =
+      nowPlayingIndex === 0 && repeat ? list.length - 1 : nowPlayingIndex! - 1;
+    const currentPlaylist = shuffle ? shuffledList : list;
     setNowPlayingIndex(previousIndex);
-    setNowPlaying(list[previousIndex]);
-  };
-
-  const toggleShuffle = () => {
-    // TODO: Code me
-  };
-
-  const toggleRepeat = () => {
-    // TODO: Code me
-  };
-
-  const handleSongEnd = () => {
-    // If end of playlist has been reached, stop playing and reset now playing state
-    if (nowPlayingIndex === list.length - 1) {
-      setNowPlayingIndex(undefined);
-      setNowPlaying(undefined);
-      setIsPlaying(false);
-      setTime(0);
-      return;
-    }
-    // If not, play next song
-    const nextIndex = nowPlayingIndex! + 1;
-    setNowPlayingIndex(nextIndex);
-    setNowPlaying(list[nextIndex]);
+    setNowPlaying(currentPlaylist[previousIndex]);
   };
 
   // We need to explicitely handle the isPlaying state
@@ -186,35 +170,31 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   };
 
   // Make the provider update only when it should.
-  // We only want to force re-renders if the user,
-  // loading or error states change.
-  //
-  // Whenever the `value` passed into a provider changes,
-  // the whole tree under the provider re-renders, and
-  // that can be very costly! Even in this case, where
-  // you only get re-renders when logging in and out
-  // we want to keep things very performant.
+  // Whenever the `value` passed into a provider changes, the whole tree under
+  // the provider re-renders, and that can be very costly
   const memoedValue = useMemo(
     () => ({
-      nowPlaying,
-      nowPlayingIndex,
       isPlaying,
       time,
       volume,
       isVolumeEnabled,
-      setNowPlaying,
-      setNowPlayingIndex,
       updateCurrentTime,
       updateVolume,
       play,
       togglePlay,
       next,
       previous,
-      toggleShuffle,
-      toggleRepeat,
       toggleVolume,
     }),
-    [nowPlaying, nowPlayingIndex, isPlaying, time, volume]
+    [
+      nowPlaying,
+      nowPlayingIndex,
+      isPlaying,
+      time,
+      volume,
+      isVolumeEnabled,
+      list,
+    ]
   );
 
   return (
@@ -225,7 +205,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
         src={nowPlaying?.path}
         onLoadedMetadata={() => play()}
         onTimeUpdate={handleTimeUpdate}
-        onEnded={handleSongEnd}
+        onEnded={next}
         onPlay={handlePlay}
         onPause={handlePause}
       />

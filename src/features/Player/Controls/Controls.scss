@@ -14,6 +14,26 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+
+    &--active {
+      position: relative;
+
+      .controls__icon {
+        color: #1db954;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 4px;
+        background-color: #1db954;
+        border-radius: 50%;
+      }
+    }
   }
 
   &__play {
@@ -40,6 +60,7 @@
   &__icon {
     color: #003543;
     font-size: 20px;
+    transition: color 100ms ease;
 
     &:not(.controls__play .controls__icon):hover {
       opacity: 0.9;

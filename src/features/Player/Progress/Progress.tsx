@@ -1,6 +1,7 @@
 /** Context */
 import useAudio from '@context/useAudio';
-/** Context */
+import usePlaylist from '@context/usePlaylist';
+/** Utils */
 import { formatTime } from '@utils/time';
 /** Components */
 import ProgressBar from './ProgressBar';
@@ -8,7 +9,8 @@ import ProgressBar from './ProgressBar';
 import './Progress.scss';
 
 const Player = () => {
-  const { nowPlaying, time, updateCurrentTime } = useAudio();
+  const { time, updateCurrentTime } = useAudio();
+  const { nowPlaying } = usePlaylist();
 
   return (
     <section className="progress">

@@ -4,18 +4,21 @@ import Playlist from '@features/Playlist';
 import Player from '@features/Player';
 /** Context */
 import { PlaylistProvider } from '@context/usePlaylist';
+import { ControlsProvider } from '@context/useControls';
 import { AudioProvider } from '@context/useAudio';
 
 const App = () => {
   return (
     <PlaylistProvider>
-      <AudioProvider>
-        <main className="sputnik">
-          <Details />
-          <Playlist />
-          <Player />
-        </main>
-      </AudioProvider>
+      <ControlsProvider>
+        <AudioProvider>
+          <main className="sputnik">
+            <Details />
+            <Playlist />
+            <Player />
+          </main>
+        </AudioProvider>
+      </ControlsProvider>
     </PlaylistProvider>
   );
 };
