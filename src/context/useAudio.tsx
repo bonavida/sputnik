@@ -21,7 +21,6 @@ interface AudioContextProps {
   isVolumeEnabled: boolean;
   updateCurrentTime: (e: ChangeEvent<HTMLInputElement>) => void;
   updateVolume: (e: ChangeEvent<HTMLInputElement>) => void;
-  play: () => void;
   togglePlay: () => void;
   next: () => void;
   previous: () => void;
@@ -39,7 +38,6 @@ const AudioContext = createContext<AudioContextProps>({
   isVolumeEnabled: true,
   updateCurrentTime: () => '',
   updateVolume: () => '',
-  play: () => '',
   togglePlay: () => '',
   next: () => '',
   previous: () => '',
@@ -180,7 +178,6 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       isVolumeEnabled,
       updateCurrentTime,
       updateVolume,
-      play,
       togglePlay,
       next,
       previous,

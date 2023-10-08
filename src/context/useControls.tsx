@@ -10,6 +10,7 @@ interface ControlsContextProps {
   shuffledList: SongMetadata[];
   toggleShuffle: () => void;
   toggleRepeat: () => void;
+  play: (index: number) => void;
 }
 
 interface ControlsProviderProps {
@@ -22,6 +23,7 @@ const ControlsContext = createContext<ControlsContextProps>({
   shuffledList: [],
   toggleShuffle: () => '',
   toggleRepeat: () => '',
+  play: () => '',
 });
 
 // Export the provider as we need to wrap the entire app with it
@@ -30,6 +32,7 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
     list,
     nowPlaying,
     nowPlayingIndex = 0,
+    setNowPlaying,
     setNowPlayingIndex,
   } = usePlaylist();
   const [shuffle, setShuffle] = useState(false);
@@ -56,10 +59,19 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
 
   useEffect(() => {
     if (!shuffle) return;
-    // If the list changes, we need to update the shuffled list
-    const unshuffled = list.slice(0, nowPlayingIndex + 1);
-    const shuffled = list.slice(nowPlayingIndex + 1);
-    setShuffledList([...unshuffled, ...shuffled]);
+    // Get the songs that have already been played and the ones that haven't
+    const playedsongs = shuffledList.slice(0, nowPlayingIndex + 1);
+    const unplayedSongs = shuffledList.slice(nowPlayingIndex + 1);
+    // Get the new added songs
+    const newSongs = list.filter(
+      (song) => !shuffledList.find(({ id }) => id === song.id)
+    );
+    // Add the new songs to the unplayed songs array
+    const newUnplayedSongs = [...unplayedSongs, ...newSongs].sort(
+      () => Math.random() - 0.5
+    );
+    // Update the shuffled list
+    setShuffledList([...playedsongs, ...newUnplayedSongs]);
   }, [list.length]);
 
   const toggleShuffle = () => {
@@ -68,6 +80,21 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
 
   const toggleRepeat = () => {
     setRepeat((prev) => !prev);
+  };
+
+  // Play a song from the playlist whenever the user clicks on it explicitely
+  const play = (index: number) => {
+    const songToPlay = list[index];
+    const indexToPlay = shuffle ? 0 : index;
+    setNowPlayingIndex(indexToPlay);
+    setNowPlaying(songToPlay);
+
+    if (shuffle) {
+      const shuffled = list.filter((song) => song.id !== songToPlay?.id);
+      shuffled.sort(() => Math.random() - 0.5);
+      shuffled.unshift(songToPlay!);
+      setShuffledList(shuffled);
+    }
   };
 
   // Make the provider update only when it should.
@@ -80,8 +107,9 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
       shuffledList,
       toggleShuffle,
       toggleRepeat,
+      play,
     }),
-    [shuffle, repeat, shuffledList, list]
+    [shuffle, repeat, shuffledList, list, nowPlaying, nowPlayingIndex]
   );
 
   return (

@@ -6,6 +6,7 @@ import useDraggableList from '@hooks/useDraggableList';
 import useKeyPress from '@hooks/useKeyPress';
 /** Context */
 import usePlaylist from '@context/usePlaylist';
+import useControls from '@context/useControls';
 /** Components */
 import PlaylistItem from '@features/Playlist/PlaylistItem';
 /** Utils */
@@ -23,15 +24,9 @@ import {
 import './Playlist.scss';
 
 const Playlist = () => {
-  const {
-    list,
-    setList,
-    selectedIndex,
-    setSelectedIndex,
-    nowPlaying,
-    setNowPlaying,
-    setNowPlayingIndex,
-  } = usePlaylist();
+  const { list, setList, selectedIndex, setSelectedIndex, nowPlaying } =
+    usePlaylist();
+  const { play } = useControls();
   const {
     handleDragStart,
     handleDragEnter,
@@ -68,8 +63,7 @@ const Playlist = () => {
   const handleClick = (e: MouseEvent<HTMLDivElement>, index: number) => {
     // Handle double-click
     if (e.detail === 2) {
-      setNowPlayingIndex(index);
-      setNowPlaying(list[index]);
+      play(index);
       return;
     }
     // Handle click
@@ -94,8 +88,7 @@ const Playlist = () => {
 
   useEffect(() => {
     if (selectedIndex !== undefined) {
-      setNowPlayingIndex(selectedIndex);
-      setNowPlaying(list[selectedIndex]);
+      play(selectedIndex);
     }
   }, [enterPressed]);
 
