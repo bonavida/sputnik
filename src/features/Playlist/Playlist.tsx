@@ -19,6 +19,7 @@ import {
   KEYBOARD_ARROW_UP_KEY,
   KEYBOARD_ARROW_DOWN_KEY,
   KEYBOARD_ENTER_KEY,
+  KEYBOARD_DELETE_KEY,
 } from '@constants/common';
 /** Styles */
 import './Playlist.scss';
@@ -26,7 +27,7 @@ import './Playlist.scss';
 const Playlist = () => {
   const { list, setList, selectedIndex, setSelectedIndex, nowPlaying } =
     usePlaylist();
-  const { play } = useControls();
+  const { play, remove } = useControls();
   const {
     handleDragStart,
     handleDragEnter,
@@ -37,6 +38,7 @@ const Playlist = () => {
   const arrowUpPressed = useKeyPress(KEYBOARD_ARROW_UP_KEY);
   const arrowDownPressed = useKeyPress(KEYBOARD_ARROW_DOWN_KEY);
   const enterPressed = useKeyPress(KEYBOARD_ENTER_KEY);
+  const deletePressed = useKeyPress(KEYBOARD_DELETE_KEY);
   const isListEmpty = useMemo(() => !list.length, [list]);
 
   const handleDrop = useCallback(
@@ -87,10 +89,16 @@ const Playlist = () => {
   }, [arrowDownPressed]);
 
   useEffect(() => {
-    if (selectedIndex !== undefined) {
+    if (enterPressed && selectedIndex !== undefined) {
       play(selectedIndex);
     }
   }, [enterPressed]);
+
+  useEffect(() => {
+    if (deletePressed && selectedIndex !== undefined) {
+      remove(selectedIndex);
+    }
+  }, [deletePressed]);
 
   return (
     <section className="playlist">

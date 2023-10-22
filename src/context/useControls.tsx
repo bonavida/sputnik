@@ -11,6 +11,7 @@ interface ControlsContextProps {
   toggleShuffle: () => void;
   toggleRepeat: () => void;
   play: (index: number) => void;
+  remove: (index: number) => void;
 }
 
 interface ControlsProviderProps {
@@ -24,6 +25,7 @@ const ControlsContext = createContext<ControlsContextProps>({
   toggleShuffle: () => '',
   toggleRepeat: () => '',
   play: () => '',
+  remove: () => '',
 });
 
 // Export the provider as we need to wrap the entire app with it
@@ -32,6 +34,7 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
     list,
     nowPlaying,
     nowPlayingIndex = 0,
+    setList,
     setNowPlaying,
     setNowPlayingIndex,
   } = usePlaylist();
@@ -97,6 +100,33 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
     }
   };
 
+  // Remove a song from the playlist whenever the user clicks on the delete button
+  const remove = (index: number) => {
+    const songToRemove = list[index];
+    const indexToRemove = shuffle
+      ? shuffledList.findIndex((song) => song.id === songToRemove?.id)
+      : index;
+
+    // Remove the song from the list and the shuffled list
+    const newList = list.filter((song) => song.id !== songToRemove?.id);
+    const newShuffledList = shuffledList.filter(
+      (song) => song.id !== songToRemove?.id
+    );
+    setList(newList);
+    setShuffledList(newShuffledList);
+
+    // If the song to remove is the now playing song, reset the state
+    if (indexToRemove === nowPlayingIndex) {
+      setNowPlayingIndex(undefined);
+      setNowPlaying(undefined);
+    }
+
+    // If the song to remove is before the now playing song, decrement the now playing index
+    if (indexToRemove !== -1 && indexToRemove < nowPlayingIndex) {
+      setNowPlayingIndex(nowPlayingIndex - 1);
+    }
+  };
+
   // Make the provider update only when it should.
   // Whenever the `value` passed into a provider changes, the whole tree under
   // the provider re-renders, and that can be very costly!
@@ -108,6 +138,7 @@ export const ControlsProvider = ({ children }: ControlsProviderProps) => {
       toggleShuffle,
       toggleRepeat,
       play,
+      remove,
     }),
     [shuffle, repeat, shuffledList, list, nowPlaying, nowPlayingIndex]
   );

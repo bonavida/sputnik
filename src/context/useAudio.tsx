@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
   useRef,
+  useEffect,
   ChangeEvent,
 } from 'react';
 /** Context */
@@ -59,6 +60,15 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     setNowPlayingIndex,
   } = usePlaylist();
   const { shuffle, repeat, shuffledList } = useControls();
+
+  useEffect(() => {
+    if (!audioRef.current || nowPlaying) return;
+
+    // Reset audio state if there's no song playing
+    audioRef.current.src = '';
+    setIsPlaying(false);
+    setTime(0);
+  }, [nowPlaying]);
 
   const play = () => {
     if (!audioRef.current || !nowPlaying) return;
