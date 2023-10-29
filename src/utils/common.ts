@@ -23,3 +23,6 @@ export const getVolumeIcon = (volume: number, isEnabled: boolean): IconProp => {
     volume < 0.5 ? VOLUME_ICON_KEY.LOW : VOLUME_ICON_KEY.HIGH
   ) as IconProp;
 };
+
+export const isNumber = (value: number | undefined) =>
+  typeof value === 'number';

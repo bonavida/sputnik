@@ -1,6 +1,5 @@
 .playlist {
   grid-area: playlist;
-  overflow: auto;
 
   &__empty {
     height: 100%;
@@ -16,12 +15,16 @@
     }
   }
 
-  &__list {
+  &__list,
+  &__draggable {
+    border-collapse: collapse;
+    width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid #c2c2c2;
     user-select: none;
+  }
+
+  &__list {
+    border-top: 1px solid #c2c2c2;
   }
 
   &__wrapper {
@@ -34,17 +37,22 @@
     column-gap: 20px;
     padding: 8px 15px;
     border-bottom: 1px solid #c2c2c2;
+  }
 
-    span {
-      font-weight: bold;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+  th {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+
+    &.playlist__first {
+      text-align: right;
     }
   }
 
-  &__first {
-    text-align: right;
+  tbody {
+    overflow-y: auto;
   }
 }
 

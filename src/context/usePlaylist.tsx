@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react';
+import type { SetStateAction } from 'react';
 /** Types */
 import { SongMetadata } from '@customTypes/metadata';
 
@@ -7,7 +8,7 @@ interface PlaylistContextProps {
   selectedIndex: number | undefined;
   nowPlaying: SongMetadata | undefined;
   nowPlayingIndex: number | undefined;
-  setList: (list: SongMetadata[]) => void;
+  setList: (list: SetStateAction<SongMetadata[]>) => void;
   setSelectedIndex: (index: number) => void;
   setNowPlaying: (song?: SongMetadata) => void;
   setNowPlayingIndex: (index?: number) => void;

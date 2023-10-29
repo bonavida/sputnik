@@ -1,67 +1,75 @@
-import { MouseEvent } from 'react';
+import { forwardRef, MouseEvent } from 'react';
+import type { ForwardedRef, CSSProperties, HTMLAttributes } from 'react';
 import cx from 'classnames';
 /** Types */
-import { DraggableEvent } from '@customTypes/events';
 import { SongMetadata } from '@customTypes/metadata';
 /** Utils */
 import { formatTime } from '@utils/time';
 /** Styles */
 import './PlaylistItem.scss';
+import { isNumber } from '@utils/common';
 
-interface PlaylistItemProps extends Omit<SongMetadata, 'id' | 'cover'> {
-  index: number;
-  isSelected: boolean;
-  isPlaying: boolean;
-  onDragStart: (e: DraggableEvent<HTMLDivElement>) => void;
-  onDragEnter: (e: DraggableEvent<HTMLDivElement>) => void;
-  onDragLeave: (e: DraggableEvent<HTMLDivElement>) => void;
-  onDragOver: (e: DraggableEvent<HTMLDivElement>) => void;
-  onDragEnd: (e: DraggableEvent<HTMLDivElement>) => void;
-  onClick: (e: MouseEvent<HTMLDivElement>) => void;
-}
+export type PlaylistItemProps = {
+  isSelected?: boolean;
+  isPlaying?: boolean;
+  isDragging?: boolean;
+  itemIndex?: number;
+  style?: CSSProperties;
+  onClick?: (e: MouseEvent<HTMLTableRowElement>) => void;
+} & SongMetadata &
+  HTMLAttributes<HTMLTableRowElement>;
 
-const PlaylistItem = ({
-  title,
-  artist,
-  album,
-  duration,
-  index,
-  isSelected,
-  isPlaying,
-  onDragStart,
-  onDragEnter,
-  onDragLeave,
-  onDragOver,
-  onDragEnd,
-  onClick,
-}: PlaylistItemProps) => {
-  const itemClasses = cx({
-    playlist__row: true,
-    'playlist__row--selected': isSelected,
-    'playlist__row--playing': isPlaying,
-  });
-  return (
-    <li className="playlist__row-wrapper">
-      <div
-        role="button"
-        tabIndex={0}
+const PlaylistItem = forwardRef(
+  (
+    {
+      title,
+      artist,
+      album,
+      duration = 0,
+      itemIndex,
+      isSelected = false,
+      isPlaying = false,
+      isDragging = false,
+      style = {},
+      onClick,
+      cover,
+      ...props
+    }: PlaylistItemProps,
+    ref: ForwardedRef<HTMLTableRowElement>
+  ) => {
+    const itemClasses = cx({
+      playlist__row: true,
+      'playlist__row--selected': isSelected,
+      'playlist__row--playing': isPlaying,
+      'playlist__row--dragging': isDragging,
+    });
+    return (
+      <tr
+        ref={ref}
+        style={style}
         className={itemClasses}
-        draggable
-        onDragStart={onDragStart}
-        onDragEnter={onDragEnter}
-        onDragLeave={onDragLeave}
-        onDragOver={onDragOver}
-        onDragEnd={onDragEnd}
         onClick={onClick}
+        {...props}
       >
-        <span className="playlist__first">{index + 1}</span>
-        <span>{title}</span>
-        <span>{artist}</span>
-        <span>{album}</span>
-        <span>{formatTime(duration)}</span>
-      </div>
-    </li>
-  );
+        <td className="playlist__first">
+          {isNumber(itemIndex) ? itemIndex! + 1 : null}
+        </td>
+        <td>{title}</td>
+        <td>{artist}</td>
+        <td>{album}</td>
+        <td>{formatTime(duration)}</td>
+      </tr>
+    );
+  }
+);
+
+PlaylistItem.defaultProps = {
+  style: {},
+  isSelected: false,
+  isPlaying: false,
+  isDragging: false,
+  itemIndex: undefined,
+  onClick: () => '',
 };
 
 export default PlaylistItem;
