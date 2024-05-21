@@ -54,7 +54,7 @@ const PlaylistItem = forwardRef(
         <td className="playlist__first">
           {isNumber(itemIndex) ? itemIndex! + 1 : null}
         </td>
-        <td>{title}</td>
+        <td className="playlist__title">{title}</td>
         <td>{artist}</td>
         <td>{album}</td>
         <td>{formatTime(duration)}</td>

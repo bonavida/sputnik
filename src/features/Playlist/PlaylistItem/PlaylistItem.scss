@@ -22,14 +22,14 @@
     &.playlist__first {
       text-align: right;
     }
+
+    &.playlist__title {
+      font-weight: 500;
+    }
   }
 
   &--playing:not(.playlist__row--dragging) {
-    color: #1db954;
-
-    &.playlist__row--selected {
-      color: #1ed760;
-    }
+    color: #00b905;
   }
 
   &--selected:not(.playlist__row--dragging) {
@@ -47,6 +47,6 @@
   border: 1px solid #e6e6e6;
 
   &--playing {
-    color: #1db954;
+    color: #00b905;
   }
 }

@@ -56,11 +56,13 @@ const Playlist = () => {
   const arrowDownPressed = useKeyPress(KEYBOARD_ARROW_DOWN_KEY);
   const enterPressed = useKeyPress(KEYBOARD_ENTER_KEY);
   const deletePressed = useKeyPress(KEYBOARD_DELETE_KEY);
+
   const isListEmpty = useMemo(() => !list.length, [list]);
   const activePlaylistItemIndex = useMemo(() => {
     if (!activePlaylistItem) return undefined;
     return list.findIndex(({ id }) => id === activePlaylistItem.id);
   }, [activePlaylistItem, list]);
+
   const sensors = useSensors(
     useSensor(MouseSensor, {
       // Require the mouse to move by 10 pixels before activating.
