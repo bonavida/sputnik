@@ -39,6 +39,10 @@ Before finishing or committing any change: `pnpm verify`.
   which checks the sender. Follow the `add-ipc-channel` procedure.
 - **Media protocol**: `sputnik://media/<id>` only serves ids in the allowlist. Never put
   file paths in URLs.
+- **Paths from files are untrusted**: a playlist may not point to network (UNC) paths on
+  a server other than its own, because touching one makes Windows send the user's NTLM
+  credentials there (`resolveM3uLocations` in `electron/m3uFiles.ts`). Paths the user
+  picks in a dialog or drops are fine, NAS included.
 - **Size**: `dependencies` in package.json stays empty. Ask before adding any package
   and measure the installer with `release-check`.
 - **React Compiler is on**: no `useMemo`, `useCallback`, `memo`, `forwardRef` or
