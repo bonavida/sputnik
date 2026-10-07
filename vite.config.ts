@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => ({
         main: {
           entry: 'electron/main.ts',
           vite: { resolve: { alias: sharedAlias } },
+          // The plugin adds --no-sandbox by default; keep the OS sandbox in dev too
+          onstart: ({ startup }) => {
+            void startup(['.']);
+          },
         },
         preload: {
           input: 'electron/preload.ts',

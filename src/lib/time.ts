@@ -17,9 +17,10 @@ export const formatTime = (seconds: number | undefined): string => {
     : `${minutes}:${pad(rest)}`;
 };
 
-/** Total length of a playlist: `48 min`, `1 h 12 min` */
+/** Total length of a playlist: `48 min`, `1 h 12 min`. Never `0 min` for a non-empty list */
 export const formatTotal = (seconds: number): string => {
-  const minutes = Math.round(Math.max(0, seconds) / SECONDS_PER_MINUTE);
+  const rounded = Math.round(Math.max(0, seconds) / SECONDS_PER_MINUTE);
+  const minutes = seconds > 0 ? Math.max(1, rounded) : 0;
   const hours = Math.floor(minutes / 60);
   return hours > 0 ? `${hours} h ${minutes % 60} min` : `${minutes} min`;
 };

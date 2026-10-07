@@ -21,6 +21,7 @@ describe('formatTime', () => {
 describe('formatTotal', () => {
   it.each([
     [0, '0 min'],
+    [4, '1 min'],
     [89, '1 min'],
     [2_880, '48 min'],
     [4_320, '1 h 12 min'],
