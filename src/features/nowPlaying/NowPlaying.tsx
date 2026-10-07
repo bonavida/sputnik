@@ -26,13 +26,16 @@ export const NowPlaying = () => {
           <h2 className="truncate text-base font-medium md:line-clamp-2 md:whitespace-normal md:text-2xl md:font-semibold md:leading-tight">
             {track?.title ?? t('nothingPlaying')}
           </h2>
-          <p className="truncate text-sm text-fg-muted md:mt-1.5 md:text-base">
+          {/* Title, then the artist in the cover's accent, then the album, quieter */}
+          <p
+            className={`truncate text-sm md:mt-1.5 md:text-lg ${track ? 'font-medium text-accent' : 'text-fg-muted'}`}
+          >
             {track
               ? (track.artist ?? t('unknownArtist'))
               : t('nothingPlayingHint')}
           </p>
           {track && (
-            <p className="hidden truncate text-sm text-fg-muted md:block">
+            <p className="hidden truncate text-sm text-fg-muted md:mt-0.5 md:block">
               {track.album ?? t('unknownAlbum')}
             </p>
           )}
