@@ -18,6 +18,7 @@
     "dev:web": "vite --mode web",
     "build": "node scripts/clean.mjs && tsc -b && vite build",
     "typecheck": "tsc -b --noEmit",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
     "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

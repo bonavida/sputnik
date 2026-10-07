@@ -9,6 +9,7 @@ runtime dependencies: Vite bundles everything.
 ```bash
 pnpm dev            # Electron + Vite with HMR
 pnpm dev:web        # renderer only, in a browser, with demo data (see preview-ui)
+pnpm verify         # typecheck + lint + format check + tests, stops at the first failure
 pnpm typecheck      # tsc -b (main, preload, renderer, tests)
 pnpm lint           # oxlint
 pnpm test           # all Vitest tests (test:unit, test:int, test:coverage)
@@ -16,7 +17,7 @@ pnpm format         # Prettier
 pnpm dist:win       # Windows installer in release/ (dist:mac, dist:linux)
 ```
 
-Before finishing any change: `pnpm typecheck && pnpm lint && pnpm test`.
+Before finishing or committing any change: `pnpm verify`.
 
 ## Map
 
