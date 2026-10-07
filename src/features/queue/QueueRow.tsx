@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { CircleAlert, X } from 'lucide-react';
+import { CoverArt } from '@/components/CoverArt';
 import { IconButton } from '@/components/IconButton';
 import { useT } from '@/hooks/useT';
 import type { QueueEntry } from '@/lib/queue';
@@ -93,19 +94,22 @@ export const QueueRow = ({
           position
         )}
       </span>
-      <span className="min-w-0">
-        <span className="flex items-center gap-1.5">
-          {isUnplayable && (
-            <CircleAlert
-              aria-label={t('unplayable')}
-              className="size-4 shrink-0"
-              strokeWidth={1.75}
-            />
-          )}
-          <span className="truncate font-medium">{track.title}</span>
-        </span>
-        <span className="block truncate text-sm text-fg-muted">
-          {track.artist ?? t('unknownArtist')}
+      <span className="flex min-w-0 items-center gap-3">
+        <CoverArt url={track.coverUrl} isLazy className="size-10" />
+        <span className="min-w-0">
+          <span className="flex items-center gap-1.5">
+            {isUnplayable && (
+              <CircleAlert
+                aria-label={t('unplayable')}
+                className="size-4 shrink-0"
+                strokeWidth={1.75}
+              />
+            )}
+            <span className="truncate font-medium">{track.title}</span>
+          </span>
+          <span className="block truncate text-sm text-fg-muted">
+            {track.artist ?? t('unknownArtist')}
+          </span>
         </span>
       </span>
       <span className="hidden truncate text-sm text-fg-muted @2xl:block">
