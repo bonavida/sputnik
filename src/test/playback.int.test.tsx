@@ -228,4 +228,22 @@ describe('playback', () => {
     expect(audio.currentTime).toBe(200);
     expect(slider).toHaveAttribute('aria-valuetext', '3:20 de 3:20');
   });
+
+  it('shows the time a click would jump to while hovering the position slider', async () => {
+    const { user, audio } = await setup();
+    await user.dblClick(row('Song 1'));
+    act(() => audio.loaded(200));
+    const slider = screen.getByRole('slider', { name: 'Posición' });
+    // jsdom has no layout: a 212 px slider whose thumb travels from 6 to 206 px
+    vi.spyOn(slider, 'getBoundingClientRect').mockReturnValue({
+      left: 100,
+      width: 212,
+    } as DOMRect);
+
+    fireEvent.mouseMove(slider, { clientX: 100 + 6 + 75 });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('1:15');
+
+    fireEvent.mouseLeave(slider);
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
 });

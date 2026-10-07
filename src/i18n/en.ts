@@ -27,6 +27,10 @@ export const en = {
 
   // Queue
   playlist: 'Playlist',
+  columnNumber: '#',
+  columnTitle: 'Title',
+  columnAlbum: 'Album',
+  columnDuration: 'Duration',
   emptyTitle: 'Your playlist is empty',
   emptyBody: 'Drag songs or folders here, or add them from your computer.',
   dropHere: 'Drop to add',

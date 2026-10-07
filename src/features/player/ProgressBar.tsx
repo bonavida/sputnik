@@ -10,12 +10,15 @@ export const ProgressBar = () => {
   const t = useT();
   const position = usePlayerStore((state) => state.position);
   const duration = usePlayerStore((state) => state.duration);
+  const hasTrack = usePlayerStore(
+    (state) => state.queue.currentUid !== undefined
+  );
   const seek = usePlayerStore((state) => state.seek);
   const current = formatTime(position);
   const total = formatTime(duration);
 
   return (
-    <div className="flex items-center gap-3 text-xs tabular-nums text-fg-muted">
+    <div className="flex w-full items-center gap-1.5 text-xs tabular-nums text-fg-muted">
       <span className="w-10 text-right">{current}</span>
       <Slider
         label={t('position')}
@@ -23,7 +26,9 @@ export const ProgressBar = () => {
         max={duration}
         step={SEEK_STEP}
         valueText={t('timeOf', { current, total })}
+        formatPreview={formatTime}
         onChange={seek}
+        disabled={!hasTrack}
         className="flex-1"
       />
       <span className="w-10">{total}</span>

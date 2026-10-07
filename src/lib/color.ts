@@ -4,7 +4,11 @@ export type Mode = 'light' | 'dark';
 
 /** Theme tokens as #rrggbb, applied as CSS variables (see index.css) */
 export interface Palette {
+  /** Window background: title bar, player bar and the gaps between panels */
   canvas: string;
+  /** The now playing and playlist panels */
+  panel: string;
+  /** Hovered and selected rows, menus and other surfaces on top of a panel */
   raised: string;
   fg: string;
   fgMuted: string;
@@ -28,16 +32,18 @@ const LIGHTNESS_STEP = 0.01;
 
 export const NEUTRAL_PALETTES: Record<Mode, Palette> = {
   light: {
-    canvas: '#f7f7f5',
-    raised: '#ebebe8',
+    canvas: '#fafaf8',
+    panel: '#efefec',
+    raised: '#e4e4e0',
     fg: '#1b1b1b',
     fgMuted: '#62625f',
-    line: '#deded9',
+    line: '#d9d9d4',
     accent: '#1b1b1b',
   },
   dark: {
-    canvas: '#161616',
-    raised: '#262626',
+    canvas: '#0f0f0f',
+    panel: '#181818',
+    raised: '#282828',
     fg: '#f1f1f1',
     fgMuted: '#a3a3a3',
     line: '#333333',
@@ -47,11 +53,13 @@ export const NEUTRAL_PALETTES: Record<Mode, Palette> = {
 
 /**
  * Target lightness and maximum chroma per token. The cover only lends its hue:
- * chroma is capped so backgrounds stay calm, CarPlay style.
+ * chroma is capped so backgrounds stay calm, CarPlay style. Surfaces rise from
+ * canvas to panel to raised: lighter in dark mode, darker in light mode.
  */
 const TINT_TARGETS: Record<Mode, Record<Token, { l: number; c: number }>> = {
   dark: {
-    canvas: { l: 0.27, c: 0.05 },
+    canvas: { l: 0.22, c: 0.045 },
+    panel: { l: 0.27, c: 0.05 },
     raised: { l: 0.33, c: 0.055 },
     fg: { l: 0.97, c: 0.012 },
     fgMuted: { l: 0.8, c: 0.03 },
@@ -59,8 +67,9 @@ const TINT_TARGETS: Record<Mode, Record<Token, { l: number; c: number }>> = {
     accent: { l: 0.86, c: 0.1 },
   },
   light: {
-    canvas: { l: 0.955, c: 0.02 },
-    raised: { l: 0.91, c: 0.03 },
+    canvas: { l: 0.975, c: 0.012 },
+    panel: { l: 0.945, c: 0.02 },
+    raised: { l: 0.905, c: 0.03 },
     fg: { l: 0.24, c: 0.035 },
     fgMuted: { l: 0.46, c: 0.035 },
     line: { l: 0.86, c: 0.03 },
@@ -202,16 +211,23 @@ export const buildPalette = (mode: Mode, cover?: Rgb): Palette => {
   });
 
   const canvas = oklchToRgb(tinted('canvas'));
+  const panel = oklchToRgb(tinted('panel'));
   const raised = oklchToRgb(tinted('raised'));
   const readable = (token: Token) =>
     toHex(
       oklchToRgb(
-        ensureContrast(tinted(token), [canvas, raised], TEXT_CONTRAST, mode)
+        ensureContrast(
+          tinted(token),
+          [canvas, panel, raised],
+          TEXT_CONTRAST,
+          mode
+        )
       )
     );
 
   return {
     canvas: toHex(canvas),
+    panel: toHex(panel),
     raised: toHex(raised),
     fg: readable('fg'),
     fgMuted: readable('fgMuted'),

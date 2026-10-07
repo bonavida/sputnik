@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { useT } from '@/hooks/useT';
 import { usePlayerStore } from '@/stores/playerStore';
 import { EmptyQueue } from './EmptyQueue';
+import { QueueHeader } from './QueueHeader';
 import { QueueRow, rowId } from './QueueRow';
 
 // Small threshold so clicks and double clicks are not taken as drags
@@ -67,8 +68,11 @@ export const Queue = () => {
           aria-label={t('playlist')}
           aria-activedescendant={selectedUid ? rowId(selectedUid) : undefined}
           tabIndex={0}
-          className="min-h-0 flex-1 overflow-y-auto px-2 pb-4 md:px-4"
+          // Container queries: the album column depends on the list width, not the window.
+          // Scroll padding keeps rows reached with the keyboard below the sticky header
+          className="@container min-h-0 flex-1 scroll-pt-10 overflow-y-auto px-2 pb-4 md:px-4"
         >
+          <QueueHeader />
           {entries.map((entry, index) => (
             <QueueRow
               key={entry.uid}

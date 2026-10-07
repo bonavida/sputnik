@@ -33,6 +33,7 @@ const toggleStyle = (isActive: boolean) =>
 export const TransportControls = () => {
   const t = useT();
   const isPlaying = usePlayerStore((state) => state.status === 'playing');
+  const isEmpty = usePlayerStore((state) => state.queue.entries.length === 0);
   const shuffle = usePlayerStore((state) => state.queue.shuffle);
   const repeat = usePlayerStore((state) => state.queue.repeat);
 
@@ -48,18 +49,21 @@ export const TransportControls = () => {
       <IconButton
         label={t('previous')}
         icon={SkipBack}
+        disabled={isEmpty}
         onClick={() => player().previous()}
       />
       <IconButton
         label={isPlaying ? t('pause') : t('play')}
         icon={isPlaying ? Pause : Play}
         size="lg"
+        variant="solid"
+        disabled={isEmpty}
         onClick={() => player().togglePlay()}
-        className="bg-fg text-canvas hover:bg-fg hover:opacity-90 [&_svg]:fill-current"
       />
       <IconButton
         label={t('next')}
         icon={SkipForward}
+        disabled={isEmpty}
         onClick={() => player().next()}
       />
       <IconButton

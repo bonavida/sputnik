@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { importPaths } from '@/app/actions';
-import { createTestBridge, makeTracks, renderApp } from './renderApp';
+import { createTestBridge, getRow, makeTracks, renderApp } from './renderApp';
 
 const rowTitles = () =>
   screen
@@ -33,6 +33,30 @@ describe('importing songs', () => {
       title: 'Añadir canciones',
       filterName: 'Archivos de audio',
     });
+  });
+
+  it('disables play, previous, next and seeking until there is something to play', async () => {
+    const tracks = makeTracks(2);
+    const bridge = createTestBridge({ tracks });
+    bridge.dialogs.files = tracks.map(({ path }) => path);
+    const { user } = await renderApp({ bridge });
+    const transport = ['Anterior', 'Reproducir', 'Siguiente'].map((name) =>
+      screen.getByRole('button', { name })
+    );
+    const seek = screen.getByRole('slider', { name: 'Posición' });
+
+    transport.forEach((button) => expect(button).toBeDisabled());
+    expect(seek).toBeDisabled();
+    // Modes can be set before adding songs
+    expect(screen.getByRole('button', { name: 'Aleatorio' })).toBeEnabled();
+
+    await user.click(screen.getByRole('button', { name: 'Añadir canciones' }));
+    await screen.findAllByRole('option');
+    transport.forEach((button) => expect(button).toBeEnabled());
+    expect(seek).toBeDisabled();
+
+    await user.dblClick(getRow('Song 1'));
+    expect(seek).toBeEnabled();
   });
 
   it('adds a whole folder from the add menu', async () => {

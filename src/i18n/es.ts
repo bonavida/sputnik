@@ -25,6 +25,10 @@ export const es = {
 
   // Queue
   playlist: 'Lista de reproducción',
+  columnNumber: '#',
+  columnTitle: 'Título',
+  columnAlbum: 'Álbum',
+  columnDuration: 'Duración',
   emptyTitle: 'Tu lista está vacía',
   emptyBody: 'Arrastra canciones o carpetas aquí, o añádelas desde tu equipo.',
   dropHere: 'Suelta para añadir',

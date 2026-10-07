@@ -7,8 +7,8 @@ export const TITLE_BAR_HEIGHT = 40;
 
 // Match the renderer's neutral palette so there is no flash before it paints
 const NEUTRAL = {
-  light: { background: '#f7f7f5', symbol: '#1b1b1b' },
-  dark: { background: '#161616', symbol: '#f1f1f1' },
+  light: { background: '#fafaf8', symbol: '#1b1b1b' },
+  dark: { background: '#0f0f0f', symbol: '#f1f1f1' },
 };
 
 interface MainWindowOptions {

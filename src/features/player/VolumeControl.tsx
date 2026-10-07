@@ -30,17 +30,18 @@ export const VolumeControl = ({ className = '' }: { className?: string }) => {
         onClick={toggleMute}
         className="text-fg-muted"
       />
-      <Slider
-        label={t('volume')}
-        value={level}
-        max={1}
-        step={VOLUME_STEP}
-        valueText={new Intl.NumberFormat(locale, { style: 'percent' }).format(
-          level
-        )}
-        onChange={setVolume}
-        className="hidden w-24 sm:block"
-      />
+      <div className="hidden w-24 sm:block">
+        <Slider
+          label={t('volume')}
+          value={level}
+          max={1}
+          step={VOLUME_STEP}
+          valueText={new Intl.NumberFormat(locale, {
+            style: 'percent',
+          }).format(level)}
+          onChange={setVolume}
+        />
+      </div>
     </div>
   );
 };

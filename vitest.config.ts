@@ -45,6 +45,7 @@ export default defineConfig({
       include: [
         'src/lib/queue.ts',
         'src/lib/color.ts',
+        'src/lib/slider.ts',
         'shared/m3u.ts',
         'shared/guards.ts',
         'electron/range.ts',

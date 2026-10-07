@@ -14,6 +14,8 @@ import {
 } from './color';
 
 const MODES: Mode[] = ['light', 'dark'];
+// Smallest OKLab lightness gap that still reads as a separate surface
+const MIN_LAYER_STEP = 0.025;
 
 const contrast = (
   palette: Palette,
@@ -23,7 +25,7 @@ const contrast = (
 
 /** Every rule the UI relies on to stay readable */
 const expectReadable = (palette: Palette) => {
-  (['canvas', 'raised'] as const).forEach((background) => {
+  (['canvas', 'panel', 'raised'] as const).forEach((background) => {
     expect(contrast(palette, 'fg', background)).toBeGreaterThanOrEqual(
       TEXT_CONTRAST
     );
@@ -35,8 +37,24 @@ const expectReadable = (palette: Palette) => {
       TEXT_CONTRAST
     );
   });
-  // Play button: canvas-colored icon on an fg-colored circle
-  expect(contrast(palette, 'canvas', 'fg')).toBeGreaterThanOrEqual(UI_CONTRAST);
+  // Play button: canvas-colored icon on an accent-colored circle
+  expect(contrast(palette, 'canvas', 'accent')).toBeGreaterThanOrEqual(
+    UI_CONTRAST
+  );
+};
+
+const lightness = (palette: Palette, token: keyof Palette) =>
+  rgbToOklch(fromHex(palette[token])).l;
+
+/** Panels stand out from the window, and hovered rows from the panels */
+const expectLayered = (mode: Mode, palette: Palette) => {
+  const [canvas, panel, raised] = (['canvas', 'panel', 'raised'] as const).map(
+    (token) => lightness(palette, token)
+  ) as [number, number, number];
+  // Dark themes get lighter as surfaces rise; light themes get darker
+  const rise = mode === 'dark' ? 1 : -1;
+  expect((panel - canvas) * rise).toBeGreaterThan(MIN_LAYER_STEP);
+  expect((raised - panel) * rise).toBeGreaterThan(MIN_LAYER_STEP);
 };
 
 describe('color conversions', () => {
@@ -89,6 +107,7 @@ describe('buildPalette', () => {
   it.each(MODES)('keeps the neutral %s palette readable', (mode) => {
     expect(buildPalette(mode)).toBe(NEUTRAL_PALETTES[mode]);
     expectReadable(NEUTRAL_PALETTES[mode]);
+    expectLayered(mode, NEUTRAL_PALETTES[mode]);
   });
 
   it.each<[string, Rgb]>([
@@ -111,11 +130,13 @@ describe('buildPalette', () => {
   );
 
   it.each(MODES)(
-    'generates readable %s palettes for any cover color',
+    'generates readable, layered %s palettes for any cover color',
     (mode) => {
-      sweep.forEach((color) =>
-        expectReadable(buildPalette(mode, oklchToRgb(color)))
-      );
+      sweep.forEach((color) => {
+        const palette = buildPalette(mode, oklchToRgb(color));
+        expectReadable(palette);
+        expectLayered(mode, palette);
+      });
     }
   );
 

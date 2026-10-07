@@ -9,6 +9,7 @@ import { useMediaQuery } from './useMediaQuery';
 
 const CSS_VARIABLES = {
   canvas: '--theme-canvas',
+  panel: '--theme-panel',
   raised: '--theme-raised',
   fg: '--theme-fg',
   fgMuted: '--theme-fg-muted',
@@ -33,17 +34,17 @@ export const useAppTheme = (): Mode => {
 
   const mode = resolveMode(theme, prefersDark);
   const palette = buildPalette(mode, albumTint ? coverColor : undefined);
-  const { canvas, raised, fg, fgMuted, line, accent } = palette;
+  const { canvas, panel, raised, fg, fgMuted, line, accent } = palette;
 
   useEffect(() => {
     const root = document.documentElement;
-    const values = { canvas, raised, fg, fgMuted, line, accent };
+    const values = { canvas, panel, raised, fg, fgMuted, line, accent };
     Object.entries(CSS_VARIABLES).forEach(([token, variable]) => {
       root.style.setProperty(variable, values[token as keyof typeof values]);
     });
     root.style.colorScheme = mode;
     void bridge().setTheme(theme, { background: canvas, symbol: fg });
-  }, [theme, mode, canvas, raised, fg, fgMuted, line, accent]);
+  }, [theme, mode, canvas, panel, raised, fg, fgMuted, line, accent]);
 
   return mode;
 };

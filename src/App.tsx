@@ -26,9 +26,9 @@ export const App = () => {
   return (
     <div className="grid h-dvh grid-rows-[auto_minmax(0,1fr)_auto] bg-canvas text-fg transition-colors duration-500 motion-reduce:transition-none">
       <TitleBar />
-      <main className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[minmax(15rem,20rem)_minmax(0,1fr)] md:grid-rows-1">
+      <main className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-2 px-2 md:grid-cols-[clamp(16rem,38%,28rem)_minmax(0,1fr)] md:grid-rows-1">
         <NowPlaying />
-        <section className="relative flex min-h-0 flex-col md:border-l md:border-line">
+        <section className="relative flex min-h-0 flex-col overflow-hidden rounded-xl bg-panel transition-colors duration-500 motion-reduce:transition-none">
           <PlaylistHeader />
           <NoticeBar />
           <Queue />

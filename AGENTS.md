@@ -49,9 +49,10 @@ Before finishing or committing any change: `pnpm verify`.
   `defaultProps`. Effects only sync with external systems.
 - **Zustand**: select primitives or use `useShallow`; a selector that returns a new
   object loops. Event handlers read actions with `useXStore.getState()` when they fire.
-- **Colors**: only theme tokens (`bg-canvas`, `bg-raised`, `text-fg`, `text-fg-muted`,
-  `border-line`, `text-accent`), never hex values in components: the cover tint and
-  the contrast guarantees (`src/lib/color.ts`) depend on it.
+- **Colors**: only theme tokens (`bg-canvas` for the window, `bg-panel` for the two
+  panels, `bg-raised` for surfaces on a panel, `text-fg`, `text-fg-muted`, `border-line`,
+  `text-accent`), never hex values in components: the cover tint and the contrast
+  guarantees (`src/lib/color.ts`) depend on it.
 - **Text**: no literals in JSX (oxlint enforces it). Add keys to `src/i18n/es.ts` (the
   reference) and `en.ts`; a missing key fails the typecheck.
 - **Accessibility**: icon-only buttons use `IconButton` with a `label`. Tests query by

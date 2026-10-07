@@ -17,7 +17,23 @@ interface QueueRowProps {
 
 export const rowId = (uid: string): string => `queue-row-${uid}`;
 
+// Shared with QueueHeader: every row is its own grid, so columns align only if
+// all of them use fixed or fractional tracks (the last one fits duration + remove)
+export const ROW_GRID =
+  'grid grid-cols-[2rem_minmax(0,1fr)_4.5rem] items-center gap-3 px-3 @2xl:grid-cols-[2rem_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem]';
+
 const player = () => usePlayerStore.getState();
+
+// One background per state: a dragged row must be opaque over the others
+const rowBackground = (
+  isDragging: boolean,
+  isSelected: boolean,
+  isCurrent: boolean
+) => {
+  if (isDragging || isSelected) return 'bg-raised';
+  if (isCurrent) return 'bg-raised/50';
+  return 'hover:bg-raised/60';
+};
 
 export const QueueRow = ({
   entry,
@@ -33,7 +49,7 @@ export const QueueRow = ({
     useSortable({ id: uid });
 
   const stateStyle = [
-    isSelected ? 'bg-raised' : 'hover:bg-raised/60',
+    rowBackground(isDragging, isSelected, isCurrent),
     isCurrent ? 'text-accent' : '',
     isUnplayable ? 'opacity-50' : '',
     isDragging ? 'relative z-10 shadow-lg' : '',
@@ -54,7 +70,7 @@ export const QueueRow = ({
       onClick={() => player().select(uid)}
       onDoubleClick={() => player().playUid(uid)}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={`group grid cursor-default select-none grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg bg-canvas px-3 py-2 md:grid-cols-[2rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] ${stateStyle}`}
+      className={`${ROW_GRID} group cursor-default select-none rounded-lg py-2 ${stateStyle}`}
     >
       <span className="flex justify-end text-sm tabular-nums text-fg-muted">
         {isCurrent ? (
@@ -82,10 +98,10 @@ export const QueueRow = ({
           {track.artist ?? t('unknownArtist')}
         </span>
       </span>
-      <span className="hidden truncate text-sm text-fg-muted md:block">
+      <span className="hidden truncate text-sm text-fg-muted @2xl:block">
         {track.album}
       </span>
-      <span className="flex items-center gap-1">
+      <span className="flex items-center justify-end gap-1">
         <span className="w-10 text-right text-sm tabular-nums text-fg-muted">
           {formatTime(track.duration)}
         </span>

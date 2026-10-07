@@ -5,19 +5,21 @@
  * cover tint); these defaults only avoid a flash before React mounts.
  */
 :root {
-  --theme-canvas: #f7f7f5;
-  --theme-raised: #ebebe8;
+  --theme-canvas: #fafaf8;
+  --theme-panel: #efefec;
+  --theme-raised: #e4e4e0;
   --theme-fg: #1b1b1b;
   --theme-fg-muted: #62625f;
-  --theme-line: #deded9;
+  --theme-line: #d9d9d4;
   --theme-accent: #1b1b1b;
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --theme-canvas: #161616;
-    --theme-raised: #262626;
+    --theme-canvas: #0f0f0f;
+    --theme-panel: #181818;
+    --theme-raised: #282828;
     --theme-fg: #f1f1f1;
     --theme-fg-muted: #a3a3a3;
     --theme-line: #333333;
@@ -27,6 +29,7 @@
 
 @theme inline {
   --color-canvas: var(--theme-canvas);
+  --color-panel: var(--theme-panel);
   --color-raised: var(--theme-raised);
   --color-fg: var(--theme-fg);
   --color-fg-muted: var(--theme-fg-muted);
@@ -52,11 +55,44 @@
   ::selection {
     background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
   }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-fg-muted) 45%, transparent)
+      transparent;
+  }
 }
 
 @layer components {
-  /* Native range input: --fill is set inline with the current percentage */
+  /*
+   * Slider (components/Slider.tsx): a transparent native range input over a
+   * drawn bar. --fill (0 to 1) and --thumb are set inline. The thumb center
+   * travels from half a thumb to the width minus half a thumb, so the bar spans
+   * exactly that and the fill always ends at the thumb center.
+   */
+  .slider-track,
+  .slider-fill {
+    position: absolute;
+    top: 50%;
+    height: 4px;
+    translate: 0 -50%;
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .slider-track {
+    inset-inline: calc(var(--thumb) / 2);
+    background: var(--color-line);
+  }
+
+  .slider-fill {
+    left: calc(var(--thumb) / 2);
+    width: calc((100% - var(--thumb)) * var(--fill));
+    background: var(--color-accent);
+  }
+
   .slider {
+    position: relative;
     appearance: none;
     width: 100%;
     height: 1rem;
@@ -65,29 +101,27 @@
   }
 
   .slider::-webkit-slider-runnable-track {
-    height: 4px;
-    border-radius: 9999px;
-    background: linear-gradient(
-      to right,
-      var(--color-fg) var(--fill, 0%),
-      var(--color-line) var(--fill, 0%)
-    );
+    height: var(--thumb);
+    background: transparent;
   }
 
   .slider::-webkit-slider-thumb {
     appearance: none;
-    width: 12px;
-    height: 12px;
-    margin-top: -4px;
+    width: var(--thumb);
+    height: var(--thumb);
     border-radius: 9999px;
-    background: var(--color-fg);
+    background: var(--color-accent);
     opacity: 0;
     transition: opacity 150ms;
   }
 
-  .slider:hover::-webkit-slider-thumb,
+  .slider:enabled:hover::-webkit-slider-thumb,
   .slider:focus-visible::-webkit-slider-thumb {
     opacity: 1;
+  }
+
+  .slider:disabled {
+    cursor: default;
   }
 
   .slider:focus-visible {
