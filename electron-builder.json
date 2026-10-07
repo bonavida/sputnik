@@ -35,6 +35,7 @@
     "artifactName": "${productName}-${version}-setup.${ext}"
   },
   "mac": {
+    "icon": "build/icon-mac.png",
     "target": [
       {
         "target": "dmg",

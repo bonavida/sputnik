@@ -15,6 +15,8 @@ interface MainWindowOptions {
   preload: string;
   bounds?: WindowBounds;
   isDev: boolean;
+  /** Window and taskbar icon; only needed when it is not in the executable (dev) */
+  icon?: string;
   isTrustedUrl: (url: string) => boolean;
   onBoundsChange: (bounds: WindowBounds) => void;
 }
@@ -39,6 +41,7 @@ export const createMainWindow = ({
   preload,
   bounds,
   isDev,
+  icon,
   isTrustedUrl,
   onBoundsChange,
 }: MainWindowOptions): BrowserWindow => {
@@ -51,6 +54,7 @@ export const createMainWindow = ({
     minWidth: MIN_SIZE.width,
     minHeight: MIN_SIZE.height,
     title: 'Sputnik',
+    ...(icon && { icon }),
     show: false,
     backgroundColor: colors.background,
     titleBarStyle: isMac ? 'hiddenInset' : 'hidden',

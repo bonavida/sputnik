@@ -28,6 +28,15 @@ const IS_DEV = Boolean(DEV_SERVER_URL);
 const APP_DIR = path.join(import.meta.dirname, '../dist');
 const PRELOAD = path.join(import.meta.dirname, 'preload.cjs');
 const COVER_THUMBNAIL_SIZE = 32;
+// Packaged builds take their icon from the executable or app bundle; in dev the
+// window would show Electron's own icon. macOS uses the version with Apple's margin
+const DEV_ICON = IS_DEV
+  ? path.join(
+      import.meta.dirname,
+      '../build',
+      process.platform === 'darwin' ? 'icon-mac.png' : 'icon.png'
+    )
+  : undefined;
 
 // Must run before `ready`: lets `sputnik://` stream media and use fetch like https
 protocol.registerSchemesAsPrivileged([
@@ -58,6 +67,7 @@ const coverBitmap = (data: Uint8Array) => {
 };
 
 const start = async () => {
+  if (DEV_ICON) app.dock?.setIcon(DEV_ICON);
   const userData = app.getPath('userData');
   const covers = createCoverStore({
     dir: path.join(userData, 'covers'),
@@ -105,6 +115,7 @@ const start = async () => {
       preload: PRELOAD,
       bounds: state.windowBounds,
       isDev: IS_DEV,
+      icon: DEV_ICON,
       isTrustedUrl: trusted,
       onBoundsChange: (windowBounds) => update({ windowBounds }),
     });
