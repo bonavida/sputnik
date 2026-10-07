@@ -22,16 +22,13 @@ export const es = {
   nothingPlayingHint: 'Elige una canción de la lista',
   unknownArtist: 'Artista desconocido',
   unknownAlbum: 'Álbum desconocido',
-  coverOf: 'Portada de {album}',
 
   // Queue
   playlist: 'Lista de reproducción',
-  columnTitle: 'Título',
-  columnAlbum: 'Álbum',
-  columnDuration: 'Duración',
   emptyTitle: 'Tu lista está vacía',
   emptyBody: 'Arrastra canciones o carpetas aquí, o añádelas desde tu equipo.',
   dropHere: 'Suelta para añadir',
+  add: 'Añadir',
   addSongs: 'Añadir canciones',
   addFolder: 'Añadir carpeta',
   adding: 'Añadiendo…',

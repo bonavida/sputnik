@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+/*
+ * Theme tokens. useAppTheme overwrites --theme-* at runtime (light/dark and the
+ * cover tint); these defaults only avoid a flash before React mounts.
+ */
+:root {
+  --theme-canvas: #f7f7f5;
+  --theme-raised: #ebebe8;
+  --theme-fg: #1b1b1b;
+  --theme-fg-muted: #62625f;
+  --theme-line: #deded9;
+  --theme-accent: #1b1b1b;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-canvas: #161616;
+    --theme-raised: #262626;
+    --theme-fg: #f1f1f1;
+    --theme-fg-muted: #a3a3a3;
+    --theme-line: #333333;
+    --theme-accent: #f1f1f1;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--theme-canvas);
+  --color-raised: var(--theme-raised);
+  --color-fg: var(--theme-fg);
+  --color-fg-muted: var(--theme-fg-muted);
+  --color-line: var(--theme-line);
+  --color-accent: var(--theme-accent);
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-fg);
+    overscroll-behavior: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+}
+
+@layer components {
+  /* Native range input: --fill is set inline with the current percentage */
+  .slider {
+    appearance: none;
+    width: 100%;
+    height: 1rem;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .slider::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      var(--color-fg) var(--fill, 0%),
+      var(--color-line) var(--fill, 0%)
+    );
+  }
+
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4px;
+    border-radius: 9999px;
+    background: var(--color-fg);
+    opacity: 0;
+    transition: opacity 150ms;
+  }
+
+  .slider:hover::-webkit-slider-thumb,
+  .slider:focus-visible::-webkit-slider-thumb {
+    opacity: 1;
+  }
+
+  .slider:focus-visible {
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* Frameless window: the title bar area drags the window, its controls do not */
+  .drag-region {
+    -webkit-app-region: drag;
+    app-region: drag;
+  }
+
+  .no-drag {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+  }
+
+  /* Window Controls Overlay: keep clear of the native buttons on Windows/Linux.
+     Without an overlay (browser demo, macOS) the env() fallbacks give 0.5rem */
+  .title-bar {
+    padding-right: max(
+      0.5rem,
+      calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw))
+    );
+  }
+}

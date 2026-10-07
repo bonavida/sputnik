@@ -21,14 +21,25 @@
     "typescript/no-explicit-any": "error",
     "vitest/expect-expect": [
       "error",
-      { "assertFunctionNames": ["expect", "expect*"] }
+      {
+        "assertFunctionNames": ["expect", "expect*"]
+      }
     ],
-    "no-console": "error"
+    "no-console": "error",
+    "react/react-in-jsx-scope": "off",
+    "import/no-unassigned-import": [
+      "warn",
+      {
+        "allow": ["**/*.css", "@testing-library/jest-dom/vitest"]
+      }
+    ]
   },
   "overrides": [
     {
       "files": ["**/*.test.ts", "**/*.test.tsx", "src/test/**", "test/**"],
-      "rules": { "react/jsx-no-literals": "off" }
+      "rules": {
+        "react/jsx-no-literals": "off"
+      }
     }
   ],
   "ignorePatterns": ["dist", "dist-electron", "release", "coverage"]

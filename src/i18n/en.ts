@@ -24,16 +24,13 @@ export const en = {
   nothingPlayingHint: 'Pick a song from the list',
   unknownArtist: 'Unknown artist',
   unknownAlbum: 'Unknown album',
-  coverOf: 'Cover of {album}',
 
   // Queue
   playlist: 'Playlist',
-  columnTitle: 'Title',
-  columnAlbum: 'Album',
-  columnDuration: 'Duration',
   emptyTitle: 'Your playlist is empty',
   emptyBody: 'Drag songs or folders here, or add them from your computer.',
   dropHere: 'Drop to add',
+  add: 'Add',
   addSongs: 'Add songs',
   addFolder: 'Add folder',
   adding: 'Adding…',
