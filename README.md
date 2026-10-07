@@ -32,9 +32,35 @@ Plays MP3, AAC/M4A, FLAC, WAV, Ogg Vorbis and Opus (WMA and ALAC are not support
 
 ## Download
 
-Installers for every platform are built by GitHub Actions on each push (see the
-Build workflow artifacts). They are not code-signed yet, so Windows SmartScreen and
-macOS Gatekeeper will warn on first launch.
+Get the installer for your system from the
+[latest release](https://github.com/bonavida/sputnik/releases/latest):
+
+| System                | File                                          |
+| --------------------- | --------------------------------------------- |
+| Windows 10/11 (x64)   | `Sputnik-<version>-setup.exe`                 |
+| macOS (Apple Silicon) | `Sputnik-<version>-arm64.dmg`                 |
+| macOS (Intel)         | `Sputnik-<version>-x64.dmg`                   |
+| Linux                 | `Sputnik-<version>-x86_64.AppImage` or `.deb` |
+
+### First launch: the installers are not signed
+
+Signing needs paid certificates from Microsoft and Apple, so the system warns the
+first time you open Sputnik. The app is safe to run; this is how to get past the
+warning:
+
+- **Windows**: SmartScreen shows "Windows protected your PC". Click **More info**,
+  then **Run anyway**.
+- **macOS**: open the `.dmg` and drag Sputnik to Applications. The first time,
+  right-click (or Control-click) Sputnik in Applications and choose **Open**, then
+  **Open** again. If macOS says the app "is damaged and can't be opened", run this
+  once in Terminal and open it again:
+
+  ```bash
+  xattr -cr /Applications/Sputnik.app
+  ```
+
+- **Linux**: make the AppImage executable (`chmod +x Sputnik-*.AppImage`) or install
+  the `.deb` with `sudo apt install ./Sputnik-*.deb`.
 
 Size on Windows x64 (Electron 44):
 

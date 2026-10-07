@@ -3,6 +3,8 @@ name: Build
 on:
   push:
     branches: [main, next]
+    # A version tag (v2.0.0) also publishes a GitHub release with the installers
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -47,3 +49,36 @@ jobs:
             release/*.deb
           if-no-files-found: error
           retention-days: 14
+
+  release:
+    name: GitHub release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    # Only this job can write to the repository
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag matches package.json
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: installers
+          merge-multiple: true
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" installers/* \
+            --title "Sputnik ${GITHUB_REF_NAME#v}" \
+            --notes-file .github/release-notes.md \
+            --generate-notes
