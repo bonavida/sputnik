@@ -31,6 +31,7 @@
     "dist:mac": "pnpm build && electron-builder --mac --publish never",
     "dist:linux": "pnpm build && electron-builder --linux --publish never"
   },
+  "packageManager": "pnpm@10.24.0",
   "pnpm": {
     "ignoredBuiltDependencies": [
       "electron-winstaller"
@@ -68,5 +69,8 @@
     "vite-plugin-electron": "^1.1.2",
     "vitest": "^5.0.3",
     "zustand": "^5.0.15"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }
