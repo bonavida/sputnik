@@ -39,6 +39,7 @@ export const es = {
   remove: 'Quitar de la lista',
   unplayable: 'No se puede reproducir',
   nowPlaying: 'Sonando',
+  nowPaused: 'En pausa',
   tracks_one: '{count} canción',
   tracks_other: '{count} canciones',
   failedFiles_one: 'No se pudo añadir {count} archivo',

@@ -32,6 +32,7 @@ export const Queue = () => {
   const t = useT();
   const entries = usePlayerStore((state) => state.queue.entries);
   const currentUid = usePlayerStore((state) => state.queue.currentUid);
+  const isPlaying = usePlayerStore((state) => state.status === 'playing');
   const selectedUid = usePlayerStore((state) => state.selectedUid);
   const unplayable = usePlayerStore((state) => state.unplayable);
   const sensors = useSensors(
@@ -79,6 +80,7 @@ export const Queue = () => {
               entry={entry}
               position={index + 1}
               isCurrent={entry.uid === currentUid}
+              isPlaying={isPlaying && entry.uid === currentUid}
               isSelected={entry.uid === selectedUid}
               isUnplayable={unplayable.includes(entry.track.id)}
             />

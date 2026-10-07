@@ -70,6 +70,20 @@ describe('playback', () => {
     expect(row('Song 2')).toHaveAttribute('aria-current', 'true');
   });
 
+  it('marks the current song as playing or paused in the list', async () => {
+    const { user } = await setup();
+    await user.dblClick(row('Song 2'));
+
+    expect(
+      within(row('Song 2')).getByRole('img', { name: 'Sonando' })
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Pausar' }));
+    expect(
+      within(row('Song 2')).getByRole('img', { name: 'En pausa' })
+    ).toBeInTheDocument();
+  });
+
   it('pauses and resumes with the play button', async () => {
     const { user, audio } = await setup();
     await user.dblClick(row('Song 1'));

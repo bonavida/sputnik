@@ -1,16 +1,19 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AudioLines, CircleAlert, X } from 'lucide-react';
+import { CircleAlert, X } from 'lucide-react';
 import { IconButton } from '@/components/IconButton';
 import { useT } from '@/hooks/useT';
 import type { QueueEntry } from '@/lib/queue';
 import { formatTime } from '@/lib/time';
 import { usePlayerStore } from '@/stores/playerStore';
+import { PlayingBars } from './PlayingBars';
 
 interface QueueRowProps {
   entry: QueueEntry;
   position: number;
   isCurrent: boolean;
+  /** Only meaningful for the current row */
+  isPlaying: boolean;
   isSelected: boolean;
   isUnplayable: boolean;
 }
@@ -39,6 +42,7 @@ export const QueueRow = ({
   entry,
   position,
   isCurrent,
+  isPlaying,
   isSelected,
   isUnplayable,
 }: QueueRowProps) => {
@@ -74,11 +78,17 @@ export const QueueRow = ({
     >
       <span className="flex justify-end text-sm tabular-nums text-fg-muted">
         {isCurrent ? (
-          <AudioLines
-            aria-label={t('nowPlaying')}
-            className="size-4 text-accent"
-            strokeWidth={1.75}
-          />
+          <>
+            {/* Hovering the row shows its number instead of the bars */}
+            <PlayingBars
+              isPlaying={isPlaying}
+              label={isPlaying ? t('nowPlaying') : t('nowPaused')}
+              className="group-hover:hidden"
+            />
+            <span className="hidden text-accent group-hover:inline">
+              {position}
+            </span>
+          </>
         ) : (
           position
         )}

@@ -41,6 +41,7 @@ export const en = {
   remove: 'Remove from playlist',
   unplayable: "Can't be played",
   nowPlaying: 'Playing',
+  nowPaused: 'Paused',
   tracks_one: '{count} song',
   tracks_other: '{count} songs',
   failedFiles_one: "{count} file couldn't be added",
