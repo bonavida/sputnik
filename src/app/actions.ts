@@ -143,6 +143,7 @@ export const restoreState = async (): Promise<void> => {
 
   if (!session) return;
   await loadIntoQueue(session.queue, session.currentIndex);
+  if (session.position) usePlayerStore.getState().seek(session.position);
   const saved = playlists.find(({ id }) => id === session.playlistId);
   usePlaylistsStore.getState().setCurrent(saved, session.playlistName);
 };

@@ -43,6 +43,8 @@ export interface Playlist {
 export interface Session {
   queue: Track[];
   currentIndex?: number;
+  /** Seconds into the current song */
+  position?: number;
   /** Saved playlist the queue was opened from, if any */
   playlistId?: string;
   /** Undefined for a new, untitled list */

@@ -72,14 +72,15 @@ export const createAudioEngine = ({
   mediaUrl,
   mediaSession,
 }: AudioEngineOptions): (() => void) => {
-  const load = (track: Track | undefined) => {
+  // Before the metadata loads, currentTime is kept as the start position
+  const load = (track: Track | undefined, startAt = 0) => {
     if (!track) {
       audio.removeAttribute('src');
       audio.load();
       return;
     }
     audio.src = mediaUrl(track.id);
-    audio.currentTime = 0;
+    audio.currentTime = startAt;
   };
 
   const applyStatus = (state: PlayerStore) => {
@@ -200,7 +201,8 @@ export const createAudioEngine = ({
   const initial = player();
   audio.volume = initial.volume;
   audio.muted = initial.muted;
-  load(currentTrack(initial));
+  // The restored session may start mid-song
+  load(currentTrack(initial), initial.position);
   updateMetadata(currentTrack(initial));
   updateMediaSession(initial);
 

@@ -118,4 +118,19 @@ describe('isPersistedPatch', () => {
     const session = { queue: [], currentIndex: -1, playlistName: 'Lista' };
     expect(isPersistedPatch({ session })).toBe(false);
   });
+
+  it.each([-1, Number.NaN, Number.POSITIVE_INFINITY, '12'])(
+    'rejects a playback position of %s',
+    (position) => {
+      expect(isPersistedPatch({ session: { queue: [], position } })).toBe(
+        false
+      );
+    }
+  );
+
+  it('accepts a playback position in seconds', () => {
+    expect(isPersistedPatch({ session: { queue: [], position: 83.4 } })).toBe(
+      true
+    );
+  });
 });

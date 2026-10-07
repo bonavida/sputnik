@@ -6,13 +6,16 @@ import {
   within,
 } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { FakeAudio } from './fakeAudio';
 import {
   createTestBridge,
   getRow as row,
   makeTrack,
   makeTracks,
   renderApp,
+  runTeardowns,
 } from './renderApp';
+import { resetAllStores } from './zustandMock';
 
 const TRACK_COUNT = 3;
 
@@ -23,6 +26,21 @@ const setup = async () => {
     state: { session: { queue: tracks } },
   });
   return renderApp({ bridge });
+};
+
+/** Plays Song 2, lets `leave` act on the audio, then restarts the app */
+const playAndClose = async (
+  leave: (audio: FakeAudio) => void
+): Promise<Awaited<ReturnType<typeof renderApp>>> => {
+  const first = await setup();
+  await first.user.dblClick(row('Song 2'));
+  act(() => first.audio.loaded(200));
+  act(() => leave(first.audio));
+
+  first.unmount();
+  runTeardowns();
+  resetAllStores();
+  return renderApp({ bridge: first.bridge });
 };
 
 const nowPlayingTitle = () =>
@@ -227,6 +245,52 @@ describe('playback', () => {
 
     expect(audio.currentTime).toBe(200);
     expect(slider).toHaveAttribute('aria-valuetext', '3:20 de 3:20');
+  });
+
+  describe('after closing and reopening the app', () => {
+    it('resumes a paused song where it was left', async () => {
+      const { audio } = await playAndClose((playing) => {
+        playing.progress(83.4);
+        playing.pause();
+      });
+
+      expect(audio.src).toBe('memory://media/t2');
+      expect(audio.currentTime).toBe(83.4);
+      expect(audio.paused).toBe(true);
+      expect(screen.getByRole('slider', { name: 'Posición' })).toHaveAttribute(
+        'aria-valuetext',
+        '1:23 de 3:00'
+      );
+    });
+
+    it('resumes a song that was playing when the window closed', async () => {
+      // Less than the periodic save interval: only the save on close keeps it
+      const { audio } = await playAndClose((playing) => {
+        playing.progress(7);
+        window.dispatchEvent(new Event('beforeunload'));
+      });
+
+      expect(audio.currentTime).toBe(7);
+    });
+
+    it('keeps the position within a few seconds even if the app quits abruptly', async () => {
+      const { audio } = await playAndClose((playing) => {
+        playing.progress(42);
+        playing.progress(44);
+      });
+
+      expect(audio.currentTime).toBeGreaterThanOrEqual(42);
+    });
+
+    it('starts the next song from the beginning', async () => {
+      const { audio } = await playAndClose((playing) => {
+        playing.progress(150);
+        playing.finish();
+      });
+
+      expect(audio.src).toBe('memory://media/t3');
+      expect(audio.currentTime).toBe(0);
+    });
   });
 
   it('shows the time a click would jump to while hovering the position slider', async () => {

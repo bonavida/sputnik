@@ -90,6 +90,8 @@ const isSession = (value: unknown): value is Session =>
   (value.currentIndex === undefined ||
     (Number.isInteger(value.currentIndex) &&
       (value.currentIndex as number) >= 0)) &&
+  (value.position === undefined ||
+    (isFiniteNumber(value.position) && value.position >= 0)) &&
   (value.playlistId === undefined || isText(value.playlistId)) &&
   (value.playlistName === undefined || isText(value.playlistName));
 

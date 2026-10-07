@@ -97,3 +97,5 @@ Before finishing or committing any change: `pnpm verify`.
 - `vite-plugin-electron` launches Electron with `--no-sandbox` by default;
   `vite.config.ts` overrides it so dev keeps the sandbox.
 - RIFF INFO tags in WAV files are Latin-1.
+- IPC sent from `pagehide` or `unload` never reaches the main process; save on
+  `beforeunload`, which arrives before `before-quit` flushes the state file.

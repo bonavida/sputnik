@@ -4,6 +4,11 @@ import { usePlayerStore } from '@/stores/playerStore';
 import { usePlaylistsStore } from '@/stores/playlistsStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 
+// The position changes four times a second, too often to rewrite the state file:
+// it is saved when it matters (pause, seek, closing the window) and every few
+// seconds while playing, in case the app does not close cleanly
+const POSITION_SAVE_INTERVAL_S = 10;
+
 const settingsSnapshot = (): Settings => {
   const { theme, albumTint, locale } = useSettingsStore.getState();
   const { volume, muted, queue } = usePlayerStore.getState();
@@ -19,14 +24,16 @@ const settingsSnapshot = (): Settings => {
 };
 
 const sessionSnapshot = (): Session => {
-  const { queue } = usePlayerStore.getState();
+  const { queue, position } = usePlayerStore.getState();
   const { currentId, name } = usePlaylistsStore.getState();
   const currentIndex = queue.entries.findIndex(
     ({ uid }) => uid === queue.currentUid
   );
+  const hasCurrent = currentIndex !== -1;
   return {
     queue: queue.entries.map(({ track }) => track),
-    currentIndex: currentIndex === -1 ? undefined : currentIndex,
+    currentIndex: hasCurrent ? currentIndex : undefined,
+    position: hasCurrent ? position : undefined,
     playlistId: currentId,
     playlistName: name,
   };
@@ -40,13 +47,26 @@ const save = (patch: Partial<PersistedState>) => void bridge().saveState(patch);
  * Returns a function that stops saving.
  */
 export const startPersistence = (): (() => void) => {
+  let savedPosition = usePlayerStore.getState().position;
+  const saveSession = () => {
+    savedPosition = usePlayerStore.getState().position;
+    save({ session: sessionSnapshot() });
+  };
+  // Not pagehide: Electron drops IPC sent while the page unloads, but a message
+  // sent from beforeunload reaches the main process before it flushes and quits
+  window.addEventListener('beforeunload', saveSession);
+
   const unsubscribers = [
+    () => window.removeEventListener('beforeunload', saveSession),
     usePlayerStore.subscribe((state, previous) => {
       if (
         state.queue.entries !== previous.queue.entries ||
-        state.queue.currentUid !== previous.queue.currentUid
+        state.queue.currentUid !== previous.queue.currentUid ||
+        state.status !== previous.status ||
+        state.seekRequest !== previous.seekRequest ||
+        Math.abs(state.position - savedPosition) >= POSITION_SAVE_INTERVAL_S
       ) {
-        save({ session: sessionSnapshot() });
+        saveSession();
       }
       if (
         state.volume !== previous.volume ||
@@ -64,7 +84,7 @@ export const startPersistence = (): (() => void) => {
         state.currentId !== previous.currentId ||
         state.name !== previous.name
       ) {
-        save({ session: sessionSnapshot() });
+        saveSession();
       }
     }),
     useSettingsStore.subscribe(() => save({ settings: settingsSnapshot() })),
