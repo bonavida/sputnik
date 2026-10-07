@@ -31,7 +31,8 @@ export const CONTENT_SECURITY_POLICY = [
   "img-src 'self' data: sputnik:",
   'media-src sputnik:',
   "font-src 'self'",
-  "connect-src 'self'",
+  // The renderer fetches covers to hand them to the OS media controls
+  "connect-src 'self' sputnik:",
   "base-uri 'none'",
   "form-action 'none'",
   "frame-ancestors 'none'",
@@ -116,6 +117,8 @@ export const createProtocolHandler = ({
       headers: {
         'Content-Type': COVER_MIME_TYPES[extension] ?? OCTET_STREAM,
         'Cache-Control': IMMUTABLE,
+        // Content-addressed album art: safe to read from any origin (dev server included)
+        'Access-Control-Allow-Origin': '*',
       },
     });
   };

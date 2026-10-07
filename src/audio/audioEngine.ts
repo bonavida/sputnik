@@ -38,17 +38,22 @@ const MEDIA_ACTIONS = [
   'seekto',
 ] as const;
 
-const toMetadata = ({
-  title,
-  artist,
-  album,
-  coverUrl,
-}: Track): MediaMetadataInit => ({
+const toMetadata = (
+  { title, artist, album }: Track,
+  artworkUrl?: string
+): MediaMetadataInit => ({
   title,
   artist: artist ?? '',
   album: album ?? '',
-  artwork: coverUrl ? [{ src: coverUrl }] : [],
+  artwork: artworkUrl ? [{ src: artworkUrl }] : [],
 });
+
+/** Chromium only accepts http(s), data and blob artwork, so covers become blobs */
+const fetchArtwork = async (coverUrl: string): Promise<Blob> => {
+  const response = await fetch(coverUrl);
+  if (!response.ok) throw new Error(`Cover request failed: ${response.status}`);
+  return response.blob();
+};
 
 const player = () => usePlayerStore.getState();
 
@@ -93,13 +98,31 @@ export const createAudioEngine = ({
     if (mediaSession) mediaSession.playbackState = playbackStateOf(state);
   };
 
-  const updateMetadata = (track: Track | undefined) => {
+  let artworkUrl: string | undefined;
+
+  const setMetadata = (track: Track | undefined, artwork?: string) => {
     if (!mediaSession) return;
-    const init = track && toMetadata(track);
+    const init = track && toMetadata(track, artwork);
     mediaSession.metadata =
       init && typeof MediaMetadata !== 'undefined'
         ? new MediaMetadata(init)
         : null;
+  };
+
+  // Text first, cover when it arrives (unless the song changed meanwhile)
+  const updateMetadata = (track: Track | undefined) => {
+    setMetadata(track);
+    if (!mediaSession || !track?.coverUrl) return;
+    fetchArtwork(track.coverUrl)
+      .then((blob) => {
+        if (currentTrack(player()) !== track) return;
+        if (artworkUrl) URL.revokeObjectURL(artworkUrl);
+        artworkUrl = URL.createObjectURL(blob);
+        setMetadata(track, artworkUrl);
+      })
+      .catch(() => {
+        // No artwork in the OS controls; the rest keeps working
+      });
   };
 
   const updatePosition = () => {

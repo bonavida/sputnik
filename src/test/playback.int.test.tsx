@@ -1,8 +1,15 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   createTestBridge,
   getRow as row,
+  makeTrack,
   makeTracks,
   renderApp,
 } from './renderApp';
@@ -21,6 +28,11 @@ const setup = async () => {
 const nowPlayingTitle = () =>
   within(screen.getByRole('region', { name: 'Sonando' })).getByRole('heading')
     .textContent;
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe('playback', () => {
   it('plays a song on double click and shows it everywhere', async () => {
@@ -150,6 +162,29 @@ describe('playback', () => {
     await user.click(screen.getByRole('button', { name: 'Reproducir' }));
 
     expect(audio.src).toBe('memory://media/t1');
+  });
+
+  it('gives the OS media controls the cover as a blob URL', async () => {
+    // Chromium drops Media Session artwork that is not http(s), data or blob
+    const fetchCover = vi.fn<typeof fetch>(
+      async () => new Response(new Blob(['png'], { type: 'image/png' }))
+    );
+    vi.stubGlobal('fetch', fetchCover);
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:cover');
+    const tracks = [makeTrack(1, { coverUrl: 'sputnik://cover/abc.png' })];
+    const { user, mediaSession } = await renderApp({
+      bridge: createTestBridge({
+        tracks,
+        state: { session: { queue: tracks } },
+      }),
+    });
+
+    await user.dblClick(row('Song 1'));
+
+    await waitFor(() =>
+      expect(mediaSession.metadata?.artwork).toEqual([{ src: 'blob:cover' }])
+    );
+    expect(fetchCover).toHaveBeenCalledWith('sputnik://cover/abc.png');
   });
 
   it('follows the OS media controls (Media Session)', async () => {

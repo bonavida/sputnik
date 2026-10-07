@@ -101,6 +101,14 @@ describe('cover', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toBe('image/png');
     expect(response.headers.get('cache-control')).toContain('immutable');
+    // The renderer fetches them for the Media Session artwork
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+  });
+
+  it('does not open media files to other origins', async () => {
+    const response = await request(mediaUrl(TRACK_ID));
+
+    expect(response.headers.get('access-control-allow-origin')).toBeNull();
   });
 
   it.each(['..%2Fsecret.txt', 'not-a-hash.png', `${'b'.repeat(40)}.exe`])(
