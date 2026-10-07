@@ -1,3 +1,5 @@
+<img src="build/icon.png" alt="" width="96" />
+
 # Sputnik
 
 A minimalist desktop music player for Windows, macOS and Linux.

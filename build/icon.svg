@@ -1,12 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Source of build/icon.png (electron-builder derives .ico and .icns from it) -->
-  <rect x="64" y="64" width="896" height="896" rx="208" fill="#1b1b1b"/>
-  <g stroke="#f1f1f1" stroke-width="20" stroke-linecap="round">
-    <line x1="560" y1="470" x2="168" y2="616"/>
-    <line x1="560" y1="470" x2="200" y2="760"/>
-    <line x1="560" y1="470" x2="300" y2="860"/>
-    <line x1="560" y1="470" x2="440" y2="900"/>
-  </g>
-  <circle cx="610" cy="420" r="176" fill="#f1f1f1"/>
-  <circle cx="742" cy="246" r="26" fill="#c4623f"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="120 120 1014 1014">
+<!-- Source of build/icon.png (electron-builder derives .ico and .icns from it) -->
+<title>Sputnik · Lima · Disco y patas ampliados</title>
+<rect x="120" y="120" width="1014" height="1014" rx="243.36" fill="#B6F000" />
+
+<g transform="translate(627 627) scale(1.22) translate(-713.5 -594.5)">
+<g fill="#171b24" stroke="#171b24" stroke-width="55.2" stroke-linecap="round">
+<path d="M850 350L460 272M752 447L525 492M776 580L381 863M972 636L752 917" fill="none" />
+</g>
+<g transform="translate(895 500) scale(1.1) translate(-895 -500)"><circle cx="895" cy="500" r="175" stroke="none" fill="#171b24" />
+<g fill="none" stroke="#B6F000" stroke-width="12" stroke-linecap="round">
+<path d="M945 368A143 143 0 0 1 1033 490M937 402A110 110 0 0 1 998 471M804 552A108 108 0 0 0 865 602M778 571A140 140 0 0 0 860 632" />
+</g>
+<circle cx="895" cy="500" r="70" fill="#B6F000" /><circle cx="895" cy="500" r="14" fill="#171b24" />
+
+</g></g>
 </svg>
