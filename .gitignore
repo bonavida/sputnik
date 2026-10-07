@@ -1,25 +1,22 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
+# Dependencies
 node_modules
-dist
-dist-ssr
-*.local
-release
 
-# Editor directories and files
+# Build output
+dist
+dist-electron
+release
+coverage
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Local env and editor
+*.local
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+# Claude Code (personal settings only; shared settings are committed)
+.claude/settings.local.json

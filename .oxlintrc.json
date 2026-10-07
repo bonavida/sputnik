@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "react",
+    "jsx-a11y",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/no-array-index-key": "error",
+    "react/jsx-no-literals": "error",
+    "typescript/no-explicit-any": "error",
+    "vitest/expect-expect": [
+      "error",
+      { "assertFunctionNames": ["expect", "expect*"] }
+    ],
+    "no-console": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "src/test/**", "test/**"],
+      "rules": { "react/jsx-no-literals": "off" }
+    }
+  ],
+  "ignorePatterns": ["dist", "dist-electron", "release", "coverage"]
+}

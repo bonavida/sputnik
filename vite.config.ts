@@ -1,32 +1,39 @@
+import path from 'node:path';
+import babel from '@rolldown/plugin-babel';
+import tailwindcss from '@tailwindcss/vite';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import electron from 'vite-plugin-electron/simple';
 
-// https://vitejs.dev/config/
+// `vite --mode web` runs only the renderer in a browser with a fake bridge (demo mode)
+const WEB_MODE = 'web';
+
+const sharedAlias = { '@shared': path.resolve(import.meta.dirname, 'shared') };
+
 export default defineConfig(({ mode }) => ({
-  build: {
-    outDir: './dist',
-    chunkSizeWarningLimit: 1000,
-  },
   resolve: {
-    alias: {
-      '@assets': path.resolve(__dirname, 'src/assets'),
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@config': path.resolve(__dirname, 'src/config'),
-      '@constants': path.resolve(__dirname, 'src/constants'),
-      '@context': path.resolve(__dirname, 'src/context'),
-      '@customTypes': path.resolve(__dirname, 'src/types'),
-      '@electron': path.resolve(__dirname, 'electron'),
-      '@features': path.resolve(__dirname, 'src/features'),
-      '@hooks': path.resolve(__dirname, 'src/hooks'),
-      '@services': path.resolve(__dirname, 'src/services'),
-      '@styles': path.resolve(__dirname, 'src/styles'),
-      '@utils': path.resolve(__dirname, 'src/utils'),
-    },
+    alias: { '@': path.resolve(import.meta.dirname, 'src'), ...sharedAlias },
   },
-  base: mode === 'development' ? '' : './',
-  plugins: [react()],
-  server: {
-    port: 3000,
-  },
+  plugins: [
+    react(),
+    babel({ presets: [reactCompilerPreset()] }),
+    tailwindcss(),
+    mode !== WEB_MODE &&
+      electron({
+        main: {
+          entry: 'electron/main.ts',
+          vite: { resolve: { alias: sharedAlias } },
+        },
+        preload: {
+          input: 'electron/preload.ts',
+          vite: {
+            resolve: { alias: sharedAlias },
+            // Sandboxed preloads must be CommonJS; `.cjs` keeps Node from reading them as ESM
+            build: {
+              rolldownOptions: { output: { entryFileNames: '[name].cjs' } },
+            },
+          },
+        },
+      }),
+  ],
 }));

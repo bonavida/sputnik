@@ -1,140 +1,72 @@
 {
   "name": "sputnik",
-  "version": "1.0.0",
-  "description": "A desktop music player built with Electron and React",
-  "main": "electron/main.js",
-  "homepage": "./",
+  "productName": "Sputnik",
+  "version": "2.0.0-alpha.0",
+  "description": "A minimalist desktop music player",
+  "private": true,
+  "type": "module",
+  "main": "dist-electron/main.js",
   "license": "MIT",
   "author": "Diego Bonavida <gecko.bona@gmail.com>",
+  "homepage": "https://github.com/bonavida/sputnik",
   "repository": {
     "type": "git",
     "url": "git@github.com:bonavida/sputnik.git"
   },
-  "keywords": [
-    "electron",
-    "react",
-    "vite",
-    "music",
-    "desktop"
-  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start": "concurrently -k \"yarn dev\" \"yarn electron\"",
-    "start:prod": "yarn build && electron .",
-    "electron:start": "wait-on tcp:3000 && electron .",
-    "electron": "cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 nodemon --watch . --exec 'yarn electron:start'",
-    "postinstall": "electron-builder install-app-deps",
-    "app:build": "yarn app:build:win",
-    "app:build:win": "yarn build && electron-builder -w --x64",
-    "app:build:linux": "yarn build && electron-builder -l",
-    "app:build:osx": "yarn build && electron-builder -m",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "dev:web": "vite --mode web",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "oxlint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:unit": "vitest run --exclude \"**/*.int.test.*\"",
+    "test:int": "vitest run int.test",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "dist": "pnpm build && electron-builder --publish never",
+    "dist:win": "pnpm build && electron-builder --win --publish never",
+    "dist:mac": "pnpm build && electron-builder --mac --publish never",
+    "dist:linux": "pnpm build && electron-builder --linux --publish never"
   },
-  "dependencies": {
-    "@dnd-kit/core": "^6.0.8",
-    "@dnd-kit/modifiers": "^6.0.1",
-    "@dnd-kit/sortable": "^7.0.2",
-    "@dnd-kit/utilities": "^3.2.1",
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-regular-svg-icons": "^6.4.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "classnames": "^2.3.2",
-    "music-metadata": "7.13.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-dropzone": "^14.2.3",
-    "uuid": "^9.0.1"
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "electron-winstaller"
+    ]
   },
   "devDependencies": {
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.48.0",
-    "@vitejs/plugin-react": "^3.0.0",
-    "concurrently": "^7.6.0",
-    "cross-env": "^7.0.3",
-    "electron": "^22.0.0",
-    "electron-builder": "^23.6.0",
-    "electron-extension-installer": "^1.2.0",
-    "eslint": "^8.0.1",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.6.0",
-    "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.31.11",
-    "nodemon": "^2.0.20",
-    "prettier": "^2.8.1",
-    "sass": "^1.57.1",
-    "typescript": "*",
-    "vite": "^4.0.0",
-    "wait-on": "^7.0.1"
-  },
-  "build": {
-    "productName": "Sputnik",
-    "appId": "org.bonavida.sputnik",
-    "asar": true,
-    "asarUnpack": "**\\*.{node,dll}",
-    "files": [
-      "dist/**/*",
-      "electron/**/*",
-      "!node_modules"
-    ],
-    "win": {
-      "target": [
-        "nsis"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowElevation": true,
-      "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": true
-    },
-    "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ],
-      "category": "public.app-category.music"
-    },
-    "mac": {
-      "target": "default",
-      "category": "public.app-category.music",
-      "type": "distribution",
-      "hardenedRuntime": true,
-      "entitlements": "electron/assets/entitlements.mac.plist",
-      "entitlementsInherit": "electron/assets/entitlements.mac.plist",
-      "gatekeeperAssess": false
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "directories": {
-      "output": "release"
-    }
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "@babel/core": "^8.0.7",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@rolldown/plugin-babel": "^0.2.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^24.19.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "^5.0.3",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "electron": "^44.6.0",
+    "electron-builder": "^26.15.3",
+    "jsdom": "^30.1.2",
+    "lucide-react": "^1.52.0",
+    "music-metadata": "^12.0.0",
+    "oxlint": "^1.87.0",
+    "prettier": "^3.9.9",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3",
+    "vite-plugin-electron": "^1.1.2",
+    "vitest": "^5.0.3",
+    "zustand": "^5.0.15"
   }
 }
