@@ -25,8 +25,9 @@ describe('networkHost', () => {
 
 describe('resolveM3uLocations', () => {
   // A network path makes Windows authenticate to that server with the user's
-  // NTLM credentials, so a downloaded playlist must not choose the server
-  it('never resolves paths on another network server', () => {
+  // NTLM credentials, so a downloaded playlist must not choose the server.
+  // Elsewhere these are plain local file names, so the test is Windows only
+  it.runIf(isWindows)('never resolves paths on another network server', () => {
     const locations = [
       '\\\\attacker.example\\music\\a.mp3',
       '//attacker.example/music/b.mp3',
@@ -36,11 +37,23 @@ describe('resolveM3uLocations', () => {
 
     const { paths, unsupported } = resolveM3uLocations(
       locations,
-      '/home/me/list.m3u8'
+      'C:\\Users\\me\\list.m3u8'
     );
 
     expect(paths).toEqual([]);
     expect(unsupported).toEqual(locations);
+  });
+
+  it('never resolves file URLs that name a server', () => {
+    const location = 'file://attacker.example/music/a.mp3';
+
+    const { paths, unsupported } = resolveM3uLocations(
+      [location],
+      isWindows ? 'C:\\Users\\me\\list.m3u8' : '/home/me/list.m3u8'
+    );
+
+    expect(paths).toEqual([]);
+    expect(unsupported).toEqual([location]);
   });
 
   it.runIf(isWindows)(
