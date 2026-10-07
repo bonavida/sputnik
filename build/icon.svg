@@ -3,11 +3,11 @@
 <title>Sputnik · Lima · Disco y patas ampliados</title>
 <rect x="120" y="120" width="1014" height="1014" rx="243.36" fill="#B6F000" />
 
-<g transform="translate(627 627) scale(1.22) translate(-713.5 -594.5)">
-<g fill="#171b24" stroke="#171b24" stroke-width="55.2" stroke-linecap="round">
+<g transform="translate(627 627) scale(1.22) translate(-728.005 -594.5)">
+<g fill="#171b24" stroke="#171b24" stroke-width="63.48" stroke-linecap="round">
 <path d="M850 350L460 272M752 447L525 492M776 580L381 863M972 636L752 917" fill="none" />
 </g>
-<g transform="translate(895 500) scale(1.1) translate(-895 -500)"><circle cx="895" cy="500" r="175" stroke="none" fill="#171b24" />
+<g transform="translate(895 500) scale(1.21) translate(-895 -500)"><circle cx="895" cy="500" r="175" stroke="none" fill="#171b24" />
 <g fill="none" stroke="#B6F000" stroke-width="12" stroke-linecap="round">
 <path d="M945 368A143 143 0 0 1 1033 490M937 402A110 110 0 0 1 998 471M804 552A108 108 0 0 0 865 602M778 571A140 140 0 0 0 860 632" />
 </g>
