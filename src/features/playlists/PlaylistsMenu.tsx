@@ -15,8 +15,8 @@ import {
   openPlaylist,
   savePlaylistCopy,
 } from '@/app/actions';
-import { Menu } from '@/components/Menu';
-import type { MenuItem } from '@/components/Menu';
+import { Menu } from '@/ui/Menu';
+import type { MenuItem } from '@/ui/Menu';
 import { useT } from '@/hooks/useT';
 import { usePlaylistsStore } from '@/stores/playlistsStore';
 

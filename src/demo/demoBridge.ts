@@ -12,8 +12,8 @@ import type {
   ThemeSource,
   Track,
 } from '@shared/types';
-import { createMemoryBridge } from '@/lib/memoryBridge';
-import type { MemoryBridge } from '@/lib/memoryBridge';
+import { createMemoryBridge } from '@/bridge/memoryBridge';
+import type { MemoryBridge } from '@/bridge/memoryBridge';
 
 interface DemoAlbum {
   album: string;

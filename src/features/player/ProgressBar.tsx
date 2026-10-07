@@ -1,6 +1,6 @@
-import { Slider } from '@/components/Slider';
+import { Slider } from '@/ui/Slider';
 import { useT } from '@/hooks/useT';
-import { formatTime } from '@/lib/time';
+import { formatTime } from '@/utils/time';
 import { usePlayerStore } from '@/stores/playerStore';
 
 const SEEK_STEP = 0.1;

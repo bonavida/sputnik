@@ -4,10 +4,18 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
 const NODE_TESTS = [
-  'shared/**/*.test.ts',
-  'electron/**/*.test.ts',
-  'src/lib/**/*.test.ts',
-  'src/i18n/**/*.test.ts',
+  'shared/**/__tests__/*.test.ts',
+  'electron/**/__tests__/*.test.ts',
+  'src/utils/**/__tests__/*.test.ts',
+  'src/i18n/**/__tests__/*.test.ts',
+];
+
+// Everything else in src/ runs in jsdom. Kept disjoint from NODE_TESTS with an
+// include instead of an exclude: a project's own exclude replaces the CLI
+// --exclude that `test:unit` relies on, which let integration tests through
+const RENDERER_TESTS = [
+  'src/__tests__/*.test.{ts,tsx}',
+  'src/!(utils|i18n)/**/__tests__/*.test.{ts,tsx}',
 ];
 
 // Renderer integration tests boot the whole app and type key by key: about 1 s
@@ -33,9 +41,8 @@ export default defineConfig({
         test: {
           name: 'renderer',
           environment: 'jsdom',
-          include: ['src/**/*.test.{ts,tsx}'],
-          exclude: NODE_TESTS,
-          setupFiles: ['src/test/setup.ts'],
+          include: RENDERER_TESTS,
+          setupFiles: ['src/testing/setup.ts'],
           testTimeout: RENDERER_TEST_TIMEOUT_MS,
         },
       },
@@ -43,13 +50,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: [
-        'src/lib/queue.ts',
-        'src/lib/color.ts',
-        'src/lib/slider.ts',
+        'src/utils/queue.ts',
+        'src/utils/color.ts',
+        'src/utils/slider.ts',
         'shared/m3u.ts',
         'shared/guards.ts',
-        'electron/range.ts',
-        'electron/dominantColor.ts',
+        'electron/protocol/range.ts',
+        'electron/library/dominantColor.ts',
       ],
       thresholds: { lines: 90, functions: 90, statements: 90, branches: 85 },
     },

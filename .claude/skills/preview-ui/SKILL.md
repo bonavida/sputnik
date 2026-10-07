@@ -28,7 +28,7 @@ For every visual change, check at least:
 - Widths 380, 720 and 1200 px (resize the browser viewport), light and dark,
   with tint on and off, and `long-names` (truncation) and `empty`.
 - Double click a song with another cover color: the whole palette changes and text
-  stays readable. Contrast is guaranteed by `src/lib/color.ts`; never hardcode colors.
+  stays readable. Contrast is guaranteed by `src/utils/color.ts`; never hardcode colors.
 - Keyboard: Tab through the controls (visible focus), arrows in the list, menus with
   arrows and Escape.
 
@@ -45,7 +45,7 @@ node scripts/devtools.mjs eval "document.querySelectorAll('[role=option]').lengt
 
 In dev, `eval` can reach the app modules, for example
 `(await import('/src/app/actions.ts')).importPaths(['C:\\path\\to\\music'])`. Test audio with
-cover art can be generated with `test/fixtures/makeAudio.ts`. Stop the dev process
+cover art can be generated with `electron/testing/makeAudio.ts`. Stop the dev process
 when done (it also locks folders on Windows).
 
 Packaged build: `release/win-unpacked/Sputnik.exe --remote-debugging-port=9333`

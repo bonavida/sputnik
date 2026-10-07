@@ -1,4 +1,4 @@
-import { CoverArt } from '@/components/CoverArt';
+import { CoverArt } from '@/ui/CoverArt';
 import { useT } from '@/hooks/useT';
 import { currentTrack, usePlayerStore } from '@/stores/playerStore';
 

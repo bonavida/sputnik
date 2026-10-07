@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { RepeatMode, Track } from '@shared/types';
-import type { Queue, QueueEntry, Random } from '@/lib/queue';
+import type { Queue, QueueEntry, Random } from '@/utils/queue';
 import {
   EMPTY_QUEUE,
   addEntries,
@@ -13,7 +13,7 @@ import {
   previousUid,
   removeEntries,
   setShuffle,
-} from '@/lib/queue';
+} from '@/utils/queue';
 
 /** Playing for less than this, «previous» goes to the previous track instead of restarting */
 export const RESTART_THRESHOLD_SECONDS = 3;

@@ -1,7 +1,7 @@
 import { Volume1, Volume2, VolumeX } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { IconButton } from '@/components/IconButton';
-import { Slider } from '@/components/Slider';
+import { IconButton } from '@/ui/IconButton';
+import { Slider } from '@/ui/Slider';
 import { useLocale, useT } from '@/hooks/useT';
 import { usePlayerStore } from '@/stores/playerStore';
 

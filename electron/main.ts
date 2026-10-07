@@ -9,15 +9,19 @@ import {
 } from 'electron';
 import { APP_ID, APP_ORIGIN, APP_SCHEME } from '@shared/constants';
 import type { PersistedState } from '@shared/types';
-import { createCoverStore } from './covers';
-import { registerIpc } from './ipc';
-import { isTrustedUrl } from './ipcArgs';
-import { createJsonStore } from './jsonStore';
-import { createLibrary } from './library';
-import { createProtocolHandler } from './protocol';
-import { DEFAULT_STATE, parseStoredState, toPersistedState } from './state';
-import type { StoredState } from './state';
-import { createMainWindow } from './window';
+import { createCoverStore } from './library/covers';
+import { registerIpc } from './ipc/handlers';
+import { isTrustedUrl } from './ipc/validators';
+import { createJsonStore } from './storage/jsonStore';
+import { createLibrary } from './library/library';
+import { createProtocolHandler } from './protocol/protocol';
+import {
+  DEFAULT_STATE,
+  parseStoredState,
+  toPersistedState,
+} from './storage/state';
+import type { StoredState } from './storage/state';
+import { createMainWindow } from './window/window';
 
 const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 const IS_DEV = Boolean(DEV_SERVER_URL);

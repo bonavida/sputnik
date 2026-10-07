@@ -2,8 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { boot } from './app/boot';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { setBridge } from './lib/bridge';
+import { ErrorBoundary } from './ui/ErrorBoundary';
+import { setBridge } from './bridge/bridge';
 import './index.css';
 
 const start = async () => {

@@ -1,11 +1,11 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { CircleAlert, X } from 'lucide-react';
-import { CoverArt } from '@/components/CoverArt';
-import { IconButton } from '@/components/IconButton';
+import { CoverArt } from '@/ui/CoverArt';
+import { IconButton } from '@/ui/IconButton';
 import { useT } from '@/hooks/useT';
-import type { QueueEntry } from '@/lib/queue';
-import { formatTime } from '@/lib/time';
+import type { QueueEntry } from '@/utils/queue';
+import { formatTime } from '@/utils/time';
 import { usePlayerStore } from '@/stores/playerStore';
 import { PlayingBars } from './PlayingBars';
 

@@ -4,7 +4,7 @@
  */
 import type { DialogLabels, Playlist, Track } from '@shared/types';
 import type { TranslationKey } from '@/i18n/t';
-import { bridge } from '@/lib/bridge';
+import { bridge } from '@/bridge/bridge';
 import { usePlayerStore } from '@/stores/playerStore';
 import { hasUnsavedChanges, usePlaylistsStore } from '@/stores/playlistsStore';
 import { getTranslate, useSettingsStore } from '@/stores/settingsStore';

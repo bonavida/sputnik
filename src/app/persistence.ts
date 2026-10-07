@@ -1,5 +1,5 @@
 import type { PersistedState, Session, Settings } from '@shared/types';
-import { bridge } from '@/lib/bridge';
+import { bridge } from '@/bridge/bridge';
 import { usePlayerStore } from '@/stores/playerStore';
 import { usePlaylistsStore } from '@/stores/playlistsStore';
 import { useSettingsStore } from '@/stores/settingsStore';

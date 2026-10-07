@@ -25,11 +25,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": [
-    "electron",
-    "shared",
-    "test",
-    "vite.config.ts",
-    "vitest.config.ts"
-  ]
+  "include": ["electron", "shared", "vite.config.ts", "vitest.config.ts"]
 }

@@ -4,7 +4,7 @@ import type { Platform, SputnikApi } from '@shared/types';
 
 /**
  * The only bridge between the renderer and the system. Keep it minimal: each
- * method maps to one validated IPC channel (see electron/ipc.ts).
+ * method maps to one validated IPC channel (see electron/ipc/handlers.ts).
  */
 const api: SputnikApi = {
   platform: process.platform as Platform,

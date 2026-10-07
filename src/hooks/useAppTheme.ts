@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import type { ThemeSource } from '@shared/types';
-import { buildPalette } from '@/lib/color';
-import type { Mode } from '@/lib/color';
-import { bridge } from '@/lib/bridge';
+import { buildPalette } from '@/utils/color';
+import type { Mode } from '@/utils/color';
+import { bridge } from '@/bridge/bridge';
 import { currentTrack, usePlayerStore } from '@/stores/playerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useMediaQuery } from './useMediaQuery';

@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useState } from 'react';
-import { bridge } from '@/lib/bridge';
+import { bridge } from '@/bridge/bridge';
 
 const hasFiles = (event: DragEvent) =>
   event.dataTransfer?.types.includes('Files') ?? false;

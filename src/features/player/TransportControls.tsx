@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { RepeatMode } from '@shared/types';
-import { IconButton } from '@/components/IconButton';
+import { IconButton } from '@/ui/IconButton';
 import { useT } from '@/hooks/useT';
 import type { TranslationKey } from '@/i18n/t';
 import { usePlayerStore } from '@/stores/playerStore';

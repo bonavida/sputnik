@@ -36,7 +36,7 @@
   },
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/*.test.tsx", "src/test/**", "test/**"],
+      "files": ["**/__tests__/**", "**/testing/**"],
       "rules": {
         "react/jsx-no-literals": "off"
       }

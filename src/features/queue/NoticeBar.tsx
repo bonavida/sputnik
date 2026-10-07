@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CircleAlert, CircleCheck, X } from 'lucide-react';
 import type { ImportFailureReason } from '@shared/types';
-import { IconButton } from '@/components/IconButton';
+import { IconButton } from '@/ui/IconButton';
 import { useT } from '@/hooks/useT';
 import type { Translate, TranslationKey } from '@/i18n/t';
 import type { Notice } from '@/stores/uiStore';

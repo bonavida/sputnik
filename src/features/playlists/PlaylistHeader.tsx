@@ -1,9 +1,9 @@
 import { Save } from 'lucide-react';
 import { savePlaylist } from '@/app/actions';
-import { IconButton } from '@/components/IconButton';
+import { IconButton } from '@/ui/IconButton';
 import { useT } from '@/hooks/useT';
 import type { Translate } from '@/i18n/t';
-import { formatTotal } from '@/lib/time';
+import { formatTotal } from '@/utils/time';
 import { usePlayerStore } from '@/stores/playerStore';
 import { hasUnsavedChanges, usePlaylistsStore } from '@/stores/playlistsStore';
 import { useUiStore } from '@/stores/uiStore';

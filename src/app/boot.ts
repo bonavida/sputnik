@@ -1,6 +1,6 @@
 import type { AudioLike, MediaSessionLike } from '@/audio/audioEngine';
 import { createAudioEngine } from '@/audio/audioEngine';
-import { bridge } from '@/lib/bridge';
+import { bridge } from '@/bridge/bridge';
 import { restoreState } from './actions';
 import { startPersistence } from './persistence';
 

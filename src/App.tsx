@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { importPaths } from '@/app/actions';
-import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { TitleBar } from '@/components/TitleBar';
+import { ConfirmDialog } from '@/ui/ConfirmDialog';
+import { TitleBar } from '@/ui/TitleBar';
 import { NowPlaying } from '@/features/nowPlaying/NowPlaying';
 import { PlayerBar } from '@/features/player/PlayerBar';
 import { PlaylistHeader } from '@/features/playlists/PlaylistHeader';

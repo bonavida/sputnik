@@ -1,6 +1,6 @@
 import { FolderPlus, Music, Plus } from 'lucide-react';
 import { addFolder, addSongs } from '@/app/actions';
-import { Menu } from '@/components/Menu';
+import { Menu } from '@/ui/Menu';
 import { useT } from '@/hooks/useT';
 
 export const AddMenu = () => {

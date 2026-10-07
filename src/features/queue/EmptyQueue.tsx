@@ -1,6 +1,6 @@
 import { FolderPlus, ListMusic, Plus } from 'lucide-react';
 import { addFolder, addSongs } from '@/app/actions';
-import { Button } from '@/components/Button';
+import { Button } from '@/ui/Button';
 import { useT } from '@/hooks/useT';
 
 export const EmptyQueue = () => {
