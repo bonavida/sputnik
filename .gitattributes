@@ -1,0 +1,7 @@
+# Store text files with LF in the repo and the working tree, on every OS
+* text=auto eol=lf
+
+# Binary assets
+*.png binary
+*.ico binary
+*.icns binary
