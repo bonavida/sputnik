@@ -1,4 +1,4 @@
-const BAR_COUNT = 3;
+const BAR_COUNT = 4;
 
 interface PlayingBarsProps {
   isPlaying: boolean;
