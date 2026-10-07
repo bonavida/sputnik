@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "vite",
     "dev:web": "vite --mode web",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/clean.mjs && tsc -b && vite build",
     "typecheck": "tsc -b --noEmit",
     "lint": "oxlint",
     "format": "prettier --write .",
