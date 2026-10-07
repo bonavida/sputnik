@@ -14,6 +14,13 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: { '@': path.resolve(import.meta.dirname, 'src'), ...sharedAlias },
   },
+  server: {
+    // On Windows a watched folder cannot be renamed: without this, packaging
+    // while `pnpm dev` runs fails with EPERM inside release/
+    watch: {
+      ignored: ['**/release/**', '**/dist-electron/**', '**/coverage/**'],
+    },
+  },
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),

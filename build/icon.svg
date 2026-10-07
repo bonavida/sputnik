@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Source of build/icon.png (electron-builder derives .ico and .icns from it) -->
+  <rect x="64" y="64" width="896" height="896" rx="208" fill="#1b1b1b"/>
+  <g stroke="#f1f1f1" stroke-width="20" stroke-linecap="round">
+    <line x1="560" y1="470" x2="168" y2="616"/>
+    <line x1="560" y1="470" x2="200" y2="760"/>
+    <line x1="560" y1="470" x2="300" y2="860"/>
+    <line x1="560" y1="470" x2="440" y2="900"/>
+  </g>
+  <circle cx="610" cy="420" r="176" fill="#f1f1f1"/>
+  <circle cx="742" cy="246" r="26" fill="#c4623f"/>
+</svg>
