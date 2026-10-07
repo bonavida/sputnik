@@ -10,6 +10,10 @@ const NODE_TESTS = [
   'src/i18n/**/*.test.ts',
 ];
 
+// Renderer integration tests boot the whole app and type key by key: about 1 s
+// locally, but over the 5 s default on a busy GitHub Windows runner
+const RENDERER_TEST_TIMEOUT_MS = 20_000;
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -32,6 +36,7 @@ export default defineConfig({
           include: ['src/**/*.test.{ts,tsx}'],
           exclude: NODE_TESTS,
           setupFiles: ['src/test/setup.ts'],
+          testTimeout: RENDERER_TEST_TIMEOUT_MS,
         },
       },
     ],
