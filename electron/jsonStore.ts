@@ -69,6 +69,8 @@ export const createJsonStore = <Data>({
     if (!next) return queue;
 
     queue = queue
+      // A failed write must not block the ones after it
+      .catch(() => undefined)
       .then(() => writeAtomic(next.data))
       .catch((error: unknown) => {
         // Keep the data for the next attempt unless newer data arrived meanwhile

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { parseFile } from 'music-metadata';
 import { isAudioPath } from '@shared/audioFormats';
 import { coverUrl } from '@shared/constants';
+import { MAX_TEXT_LENGTH } from '@shared/guards';
 import type { ImportFailure, ImportResult, Track } from '@shared/types';
 import type { CoverStore } from './covers';
 
@@ -39,8 +40,39 @@ const statOrUndefined = (filePath: string) =>
 const isFailure = (result: Track | ImportFailure): result is ImportFailure =>
   'reason' in result;
 
+const finiteOrZero = (value: number | undefined): number =>
+  value !== undefined && Number.isFinite(value) ? value : 0;
+
+/** Trimmed and capped to what the IPC guards accept, so a huge tag cannot block saving */
 const cleanText = (text: string | undefined): string | undefined =>
-  text?.trim() || undefined;
+  text?.trim().slice(0, MAX_TEXT_LENGTH) || undefined;
+
+/**
+ * Audio files under `dir`. Folders that cannot be listed (permissions, Windows
+ * junctions such as "My Music") are reported instead of failing the import, and
+ * links are not followed, so they cannot create loops.
+ */
+const listAudioFiles = async (dir: string): Promise<Expanded> => {
+  const entries = await readdir(dir, { withFileTypes: true }).catch(
+    () => undefined
+  );
+  if (!entries)
+    return { files: [], failed: [{ path: dir, reason: 'unreadable' }] };
+
+  const nested = await Promise.all(
+    entries.map(async (entry): Promise<Expanded> => {
+      const entryPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) return listAudioFiles(entryPath);
+      // Non-audio files inside folders (covers, .nfo, .txt…) are skipped silently
+      const isAudio = entry.isFile() && isAudioPath(entryPath);
+      return { files: isAudio ? [entryPath] : [], failed: [] };
+    })
+  );
+  return {
+    files: nested.flatMap(({ files }) => files),
+    failed: nested.flatMap(({ failed }) => failed),
+  };
+};
 
 const expandPath = async (input: string): Promise<Expanded> => {
   const stats = await statOrUndefined(input);
@@ -48,13 +80,8 @@ const expandPath = async (input: string): Promise<Expanded> => {
     return { files: [], failed: [{ path: input, reason: 'missing' }] };
 
   if (stats.isDirectory()) {
-    const entries = await readdir(input, { recursive: true });
-    // Non-audio files inside folders (covers, .nfo, .txt…) are skipped silently
-    const files = entries
-      .map((entry) => path.join(input, entry))
-      .filter(isAudioPath)
-      .toSorted(naturalOrder.compare);
-    return { files, failed: [] };
+    const { files, failed } = await listAudioFiles(input);
+    return { files: files.toSorted(naturalOrder.compare), failed };
   }
 
   return isAudioPath(input)
@@ -111,7 +138,7 @@ export const createLibrary = ({ covers }: { covers: CoverStore }): Library => {
         title: cleanText(common.title) ?? path.parse(filePath).name,
         artist: cleanText(common.artist ?? common.albumartist),
         album: cleanText(common.album),
-        duration: format.duration ?? 0,
+        duration: finiteOrZero(format.duration),
         coverUrl: cover && coverUrl(cover.fileName),
         color: cover?.color,
       };

@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { MAX_TEXT_LENGTH } from '@shared/guards';
 import { buildM3u, parseM3u } from '@shared/m3u';
 import type { Track } from '@shared/types';
 
@@ -55,7 +56,8 @@ export const readM3uFile = async (file: string): Promise<M3uFileContent> => {
   );
 
   return {
-    name: name ?? path.parse(file).name,
+    // Capped like every text the renderer persists (see shared/guards.ts)
+    name: (name ?? path.parse(file).name).slice(0, MAX_TEXT_LENGTH),
     paths: resolved.flatMap((entry) => ('path' in entry ? [entry.path] : [])),
     unsupported: resolved.flatMap((entry) =>
       'unsupported' in entry ? [entry.unsupported] : []

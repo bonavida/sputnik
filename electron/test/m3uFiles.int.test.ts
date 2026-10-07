@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { MAX_TEXT_LENGTH } from '@shared/guards';
 import type { Track } from '@shared/types';
 import { mp3, writeFixture } from '../../test/fixtures/makeAudio';
 import { createCoverStore } from '../covers';
@@ -67,6 +68,16 @@ describe('M3U files', () => {
       ],
       unsupported: ['https://radio.example/stream'],
     });
+  });
+
+  it('caps a huge playlist name so the list can still be saved', async () => {
+    const file = await writeFixture(
+      root,
+      'huge.m3u8',
+      `#EXTM3U\n#PLAYLIST:${'n'.repeat(5_000)}\na.mp3\n`
+    );
+
+    expect((await readM3uFile(file)).name).toHaveLength(MAX_TEXT_LENGTH);
   });
 
   it('reports entries that no longer exist when importing them', async () => {

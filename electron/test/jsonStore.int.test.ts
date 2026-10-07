@@ -1,4 +1,11 @@
-import { access, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  access,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -73,6 +80,23 @@ describe('createJsonStore', () => {
     await vi.advanceTimersByTimeAsync(300);
     await store.flush();
 
+    expect(JSON.parse(await readFile(file, 'utf8'))).toEqual({ count: 2 });
+  });
+
+  it('keeps writing after a failed write and retries the data it could not save', async () => {
+    const store = createJsonStore({ file, defaults: DEFAULTS, parse });
+    // A folder where the file should be makes the final rename fail
+    await mkdir(file, { recursive: true });
+
+    store.write({ count: 1 });
+    await expect(store.flush()).rejects.toHaveProperty('code');
+
+    await rm(file, { recursive: true });
+    await store.flush();
+    expect(JSON.parse(await readFile(file, 'utf8'))).toEqual({ count: 1 });
+
+    store.write({ count: 2 });
+    await store.flush();
     expect(JSON.parse(await readFile(file, 'utf8'))).toEqual({ count: 2 });
   });
 

@@ -1,7 +1,8 @@
 import { mkdtemp, readdir, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MAX_TEXT_LENGTH, isTrack } from '@shared/guards';
 import {
   COVER_PNG,
   mp3,
@@ -10,6 +11,17 @@ import {
 } from '../../test/fixtures/makeAudio';
 import { createCoverStore } from '../covers';
 import { createLibrary, trackIdFor } from '../library';
+
+// Pass-through mock: lets a test make one folder unreadable, which cannot be set
+// up portably with real permissions
+vi.mock('node:fs/promises', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:fs/promises')>();
+  return { ...actual, readdir: vi.fn<typeof actual.readdir>(actual.readdir) };
+});
+
+const actualReaddir = (
+  await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises')
+).readdir;
 
 const RED_BGRA = Uint8Array.from(
   Array.from({ length: 16 }, () => [40, 30, 220, 255]).flat()
@@ -29,6 +41,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  vi.mocked(readdir).mockImplementation(actualReaddir);
   await rm(root, { recursive: true, force: true });
 });
 
@@ -138,6 +151,36 @@ describe('importPaths', () => {
     const { tracks } = await setup().importPaths([file]);
 
     expect(tracks[0]?.color).toEqual([220, 30, 40]);
+  });
+
+  it('imports the readable folders and reports the ones it cannot list', async () => {
+    await writeFixture(root, 'docs/Music/a.mp3', mp3({ title: 'A' }));
+    await writeFixture(root, 'docs/Locked/b.mp3', mp3({ title: 'B' }));
+    const locked = path.join(root, 'docs', 'Locked');
+    vi.mocked(readdir).mockImplementation(((dir: string, options: never) =>
+      dir === locked
+        ? Promise.reject(Object.assign(new Error('EPERM'), { code: 'EPERM' }))
+        : actualReaddir(dir, options)) as typeof readdir);
+
+    const { tracks, failed } = await setup().importPaths([
+      path.join(root, 'docs'),
+    ]);
+
+    expect(tracks.map(({ title }) => title)).toEqual(['A']);
+    expect(failed).toEqual([{ path: locked, reason: 'unreadable' }]);
+  });
+
+  it('caps huge tags so the track can still be saved', async () => {
+    const file = await writeFixture(
+      root,
+      'long.mp3',
+      mp3({ title: 'x'.repeat(5_000), artist: 'y'.repeat(5_000) })
+    );
+
+    const { tracks } = await setup().importPaths([file]);
+
+    expect(tracks[0]?.title).toHaveLength(MAX_TEXT_LENGTH);
+    expect(isTrack(tracks[0])).toBe(true);
   });
 
   it('imports each path once when it is passed twice', async () => {
