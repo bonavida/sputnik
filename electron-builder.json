@@ -1,0 +1,52 @@
+{
+  "appId": "org.bonavida.sputnik",
+  "productName": "Sputnik",
+  "copyright": "Copyright © 2026 Diego Bonavida",
+  "directories": {
+    "output": "release",
+    "buildResources": "build"
+  },
+  "files": ["dist/**", "dist-electron/**", "package.json"],
+  "asar": true,
+  "compression": "maximum",
+  "electronLanguages": ["es", "en-US"],
+  "afterPack": "./scripts/afterPack.cjs",
+  "electronFuses": {
+    "runAsNode": false,
+    "enableCookieEncryption": true,
+    "enableNodeOptionsEnvironmentVariable": false,
+    "enableNodeCliInspectArguments": false,
+    "enableEmbeddedAsarIntegrityValidation": true,
+    "onlyLoadAppFromAsar": true,
+    "grantFileProtocolExtraPrivileges": false
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "differentialPackage": false,
+    "artifactName": "${productName}-${version}-setup.${ext}"
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["arm64", "x64"]
+      }
+    ],
+    "category": "public.app-category.music",
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "category": "Audio",
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
+  }
+}

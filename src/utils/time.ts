@@ -1,19 +1,26 @@
-export const formatTime = (time: number | undefined) => {
-  if (!time || Number.isNaN(time)) return '0:00';
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 3_600;
 
-  const hours = Math.floor(time / 3600);
-  const remainingSeconds = time % 3600;
-  const minutes = Math.floor(remainingSeconds / 60);
-  const remainingSecs = Math.floor(remainingSeconds % 60);
+const pad = (value: number) => String(value).padStart(2, '0');
 
-  const formattedParts = [];
+/** `m:ss`, or `h:mm:ss` from one hour on */
+export const formatTime = (seconds: number | undefined): string => {
+  if (!seconds || !Number.isFinite(seconds) || seconds < 0) return '0:00';
 
-  if (hours > 0) {
-    formattedParts.push(hours);
-  }
+  const total = Math.floor(seconds);
+  const hours = Math.floor(total / SECONDS_PER_HOUR);
+  const minutes = Math.floor((total % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+  const rest = total % SECONDS_PER_MINUTE;
 
-  formattedParts.push(hours && minutes < 10 ? `0${minutes}` : minutes);
-  formattedParts.push(remainingSecs < 10 ? `0${remainingSecs}` : remainingSecs);
+  return hours > 0
+    ? `${hours}:${pad(minutes)}:${pad(rest)}`
+    : `${minutes}:${pad(rest)}`;
+};
 
-  return formattedParts.join(':');
+/** Total length of a playlist: `48 min`, `1 h 12 min`. Never `0 min` for a non-empty list */
+export const formatTotal = (seconds: number): string => {
+  const rounded = Math.round(Math.max(0, seconds) / SECONDS_PER_MINUTE);
+  const minutes = seconds > 0 ? Math.max(1, rounded) : 0;
+  const hours = Math.floor(minutes / 60);
+  return hours > 0 ? `${hours} h ${minutes % 60} min` : `${minutes} min`;
 };

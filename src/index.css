@@ -1,0 +1,207 @@
+@import 'tailwindcss';
+
+/*
+ * Theme tokens. useAppTheme overwrites --theme-* at runtime (light/dark and the
+ * cover tint); these defaults only avoid a flash before React mounts.
+ */
+:root {
+  --theme-canvas: #fafaf8;
+  --theme-panel: #efefec;
+  --theme-raised: #e4e4e0;
+  --theme-fg: #1b1b1b;
+  --theme-fg-muted: #62625f;
+  --theme-line: #d9d9d4;
+  --theme-accent: #1b1b1b;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-canvas: #0f0f0f;
+    --theme-panel: #181818;
+    --theme-raised: #282828;
+    --theme-fg: #f1f1f1;
+    --theme-fg-muted: #a3a3a3;
+    --theme-line: #333333;
+    --theme-accent: #f1f1f1;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--theme-canvas);
+  --color-panel: var(--theme-panel);
+  --color-raised: var(--theme-raised);
+  --color-fg: var(--theme-fg);
+  --color-fg-muted: var(--theme-fg-muted);
+  --color-line: var(--theme-line);
+  --color-accent: var(--theme-accent);
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-fg);
+    overscroll-behavior: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-fg-muted) 45%, transparent)
+      transparent;
+  }
+}
+
+@layer components {
+  /*
+   * Slider (components/Slider.tsx): a transparent native range input over a
+   * drawn bar. --fill (0 to 1) and --thumb are set inline. The thumb center
+   * travels from half a thumb to the width minus half a thumb, so the bar spans
+   * exactly that and the fill always ends at the thumb center.
+   */
+  .slider-track,
+  .slider-fill {
+    position: absolute;
+    top: 50%;
+    height: 4px;
+    translate: 0 -50%;
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .slider-track {
+    inset-inline: calc(var(--thumb) / 2);
+    background: var(--color-line);
+  }
+
+  .slider-fill {
+    left: calc(var(--thumb) / 2);
+    width: calc((100% - var(--thumb)) * var(--fill));
+    background: var(--color-accent);
+  }
+
+  .slider {
+    position: relative;
+    appearance: none;
+    width: 100%;
+    height: 1rem;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .slider::-webkit-slider-runnable-track {
+    height: var(--thumb);
+    background: transparent;
+  }
+
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--thumb);
+    height: var(--thumb);
+    border-radius: 9999px;
+    background: var(--color-accent);
+    opacity: 0;
+    transition: opacity 150ms;
+  }
+
+  .slider:enabled:hover::-webkit-slider-thumb,
+  .slider:focus-visible::-webkit-slider-thumb {
+    opacity: 1;
+  }
+
+  .slider:disabled {
+    cursor: default;
+  }
+
+  .slider:focus-visible {
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /*
+   * Equalizer bars on the current song (features/queue/PlayingBars.tsx). Each bar
+   * has its own duration and phase so they never move in step; when paused the
+   * animation freezes, leaving bars of different heights.
+   */
+  .playing-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 0.875rem;
+  }
+
+  .playing-bar {
+    width: 2px;
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    transform-origin: bottom;
+    animation: playing-bar 0.55s ease-in-out -0.03s infinite paused;
+  }
+
+  .playing-bar:nth-child(2) {
+    animation-duration: 0.7s;
+    animation-delay: -0.32s;
+  }
+
+  .playing-bar:nth-child(3) {
+    animation-duration: 0.5s;
+    animation-delay: -0.37s;
+  }
+
+  .playing-bar:nth-child(4) {
+    animation-duration: 0.62s;
+    animation-delay: -0.1s;
+  }
+
+  .playing-bars[data-playing] .playing-bar {
+    animation-play-state: running;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .playing-bars[data-playing] .playing-bar {
+      animation-play-state: paused;
+    }
+  }
+
+  /* Frameless window: the title bar area drags the window, its controls do not */
+  .drag-region {
+    -webkit-app-region: drag;
+    app-region: drag;
+  }
+
+  .no-drag {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+  }
+
+  /* Window Controls Overlay: keep clear of the native buttons on Windows/Linux.
+     Without an overlay (browser demo, macOS) the env() fallbacks give 0.5rem */
+  .title-bar {
+    padding-right: max(
+      0.5rem,
+      calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw))
+    );
+  }
+}
+
+@keyframes playing-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
