@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useT } from '@/hooks/useT';
 import { usePlaylistsStore } from '@/stores/playlistsStore';
 
@@ -11,6 +11,8 @@ export const PlaylistTitle = () => {
   const rename = usePlaylistsStore((state) => state.rename);
   // undefined while not editing
   const [draft, setDraft] = useState<string>();
+  // Chromium fires blur on the field as Escape removes it; that blur must not save
+  const isCancelled = useRef(false);
   const displayName = name ?? t('untitled');
 
   if (draft === undefined) {
@@ -19,7 +21,10 @@ export const PlaylistTitle = () => {
         <button
           type="button"
           title={t('rename')}
-          onClick={() => setDraft(displayName)}
+          onClick={() => {
+            isCancelled.current = false;
+            setDraft(displayName);
+          }}
           className="no-drag block max-w-full cursor-text truncate rounded-md px-1 text-left text-lg font-medium hover:bg-raised md:text-xl"
         >
           {displayName}
@@ -29,7 +34,13 @@ export const PlaylistTitle = () => {
   }
 
   const commit = () => {
+    if (isCancelled.current) return;
     rename(draft);
+    setDraft(undefined);
+  };
+
+  const cancel = () => {
+    isCancelled.current = true;
     setDraft(undefined);
   };
 
@@ -45,7 +56,7 @@ export const PlaylistTitle = () => {
       onBlur={commit}
       onKeyDown={(event) => {
         if (event.key === 'Enter') commit();
-        if (event.key === 'Escape') setDraft(undefined);
+        if (event.key === 'Escape') cancel();
       }}
       className="no-drag min-w-0 flex-1 rounded-md border border-line bg-canvas px-1 text-lg font-medium md:text-xl"
     />

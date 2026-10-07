@@ -1,4 +1,10 @@
-import { act, screen, waitFor, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { Playlist } from '@shared/types';
 import { resetAllStores } from './zustandMock';
@@ -42,6 +48,24 @@ describe('playlists', () => {
     await user.click(screen.getByRole('button', { name: 'Domingo' }));
     await user.keyboard('{Control>}a{/Control}{Backspace}{Enter}');
     expect(screen.getByRole('button', { name: 'Domingo' })).toBeInTheDocument();
+  });
+
+  it('keeps the old name on Escape even if the field blurs while closing', async () => {
+    const { user } = await renderApp();
+    await user.click(screen.getByRole('button', { name: 'Nueva lista' }));
+    await user.keyboard('{Control>}a{/Control}Descartado');
+    const input = screen.getByRole('textbox', { name: 'Nombre de la lista' });
+
+    // Chromium fires blur on a focused field that is being removed, before
+    // React finishes the update; jsdom does not, so both run in one batch
+    act(() => {
+      fireEvent.keyDown(input, { key: 'Escape' });
+      fireEvent.blur(input);
+    });
+
+    expect(
+      screen.getByRole('button', { name: 'Nueva lista' })
+    ).toBeInTheDocument();
   });
 
   it('saves the queue as a playlist and clears the unsaved mark', async () => {

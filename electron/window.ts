@@ -19,6 +19,11 @@ interface MainWindowOptions {
   onBoundsChange: (bounds: WindowBounds) => void;
 }
 
+const boundsOf = (window: BrowserWindow): WindowBounds => ({
+  ...window.getNormalBounds(),
+  isMaximized: window.isMaximized(),
+});
+
 /** Saved bounds are only reused if they are still visible on a connected display */
 const isOnScreen = ({ x, y, width, height }: WindowBounds): boolean => {
   const area = screen.getDisplayMatching({ x, y, width, height }).workArea;
@@ -74,12 +79,13 @@ export const createMainWindow = ({
     if (!isTrustedUrl(url)) event.preventDefault();
   });
 
-  window.on('close', () => {
-    onBoundsChange({
-      ...window.getNormalBounds(),
-      isMaximized: window.isMaximized(),
-    });
-  });
+  // Kept current on every change: when quitting, the window may already be gone
+  // (closed from the page) or close after the final save (Cmd+Q on macOS)
+  const saveBounds = () => onBoundsChange(boundsOf(window));
+  window.on('resize', saveBounds);
+  window.on('move', saveBounds);
+  window.on('maximize', saveBounds);
+  window.on('unmaximize', saveBounds);
 
   return window;
 };
