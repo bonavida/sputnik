@@ -5,7 +5,7 @@
 A minimalist desktop music player for Windows, macOS and Linux.
 
 - Drop songs or whole folders, or add them from the menu. Reorder by dragging (or
-  Alt+↑/↓), shuffle, repeat the list or one song.
+  Alt+↑/↓), sort it by title, album or length, shuffle, repeat the list or one song.
 - Save playlists, rename them in place, and import or export them as M3U8 (they open
   in VLC, foobar2000 and most players).
 - Light and dark themes, plus a calm tint taken from the cover of the song that is
@@ -21,18 +21,19 @@ Plays MP3, AAC/M4A, FLAC, WAV, Ogg Vorbis and Opus (WMA and ALAC are not support
 
 ## Keyboard shortcuts
 
-| Key                | Action                       |
-| ------------------ | ---------------------------- |
-| Space              | Play / pause                 |
-| ← / →              | Seek 5 seconds               |
-| ↑ / ↓              | Move the selection           |
-| Enter              | Play the selected song       |
-| Delete / Backspace | Remove the selected song     |
-| Alt + ↑ / ↓        | Move the selected song       |
-| M / S / R          | Mute / shuffle / repeat mode |
-| Ctrl/Cmd + O       | Add songs                    |
-| Ctrl/Cmd + S       | Save the playlist            |
-| Ctrl/Cmd + E       | Export the playlist          |
+| Key                | Action                               |
+| ------------------ | ------------------------------------ |
+| Space              | Play / pause                         |
+| ← / →              | Seek 5 seconds                       |
+| ↑ / ↓              | Move the selection                   |
+| Enter              | Play the selected song               |
+| Delete / Backspace | Remove the selected song             |
+| Alt + ↑ / ↓        | Move the selected song               |
+| Alt + Enter        | Show the selected song in its folder |
+| M / S / R          | Mute / shuffle / repeat mode         |
+| Ctrl/Cmd + O       | Add songs                            |
+| Ctrl/Cmd + S       | Save the playlist                    |
+| Ctrl/Cmd + E       | Export the playlist                  |
 
 ## Download
 

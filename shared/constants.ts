@@ -22,6 +22,7 @@ export const coverUrl = (fileName: string): string =>
 export const IPC = {
   importPaths: 'library:import',
   restoreTracks: 'library:restore',
+  showInFolder: 'library:show-in-folder',
   openFiles: 'dialog:open-files',
   openFolder: 'dialog:open-folder',
   exportPlaylist: 'playlist:export',

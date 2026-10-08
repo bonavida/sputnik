@@ -7,6 +7,7 @@ import {
   createQueue,
   cycleRepeat,
   moveEntry,
+  sortEntries,
   neighborAfterRemoval,
   nextUid,
   playEntry,
@@ -46,6 +47,7 @@ interface PlayerActions {
   remove: (uids: string[]) => void;
   removeSelected: () => void;
   move: (fromUid: string, toUid: string) => void;
+  sort: (compare: (a: QueueEntry, b: QueueEntry) => number) => void;
   /** Keyboard alternative to drag and drop */
   moveSelected: (offset: 1 | -1) => void;
   select: (uid: string | undefined) => void;
@@ -213,6 +215,9 @@ export const usePlayerStore = create<PlayerStore>()((set, get) => {
       get().remove([selectedUid]);
       set({ selectedUid: neighbor });
     },
+
+    sort: (compare) =>
+      set(({ queue }) => ({ queue: sortEntries(queue, compare) })),
 
     move: (fromUid, toUid) =>
       set(({ queue }) => ({ queue: moveEntry(queue, fromUid, toUid) })),

@@ -166,6 +166,19 @@ export const moveEntry = (
   };
 };
 
+/** Puts the queue in a new visible order; while shuffling the play order stays */
+export const sortEntries = (
+  queue: Queue,
+  compare: (a: QueueEntry, b: QueueEntry) => number
+): Queue => {
+  const entries = queue.entries.toSorted(compare);
+  return {
+    ...queue,
+    entries,
+    order: queue.shuffle ? queue.order : uidsOf(entries),
+  };
+};
+
 /** Explicit play: while shuffling, the chosen track starts a new random order */
 export const playEntry = (queue: Queue, uid: string, random: Random): Queue => {
   if (!queue.entries.some((entry) => entry.uid === uid)) return queue;

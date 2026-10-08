@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { addSongs, exportPlaylist, savePlaylist } from '@/app/actions';
+import {
+  addSongs,
+  exportPlaylist,
+  savePlaylist,
+  showInFolder,
+} from '@/app/actions';
 import { SEEK_STEP_SECONDS, usePlayerStore } from '@/stores/playerStore';
 import { useUiStore } from '@/stores/uiStore';
 
@@ -24,6 +29,8 @@ const SHORTCUTS: Record<string, Handler> = {
 const ALT_SHORTCUTS: Record<string, Handler> = {
   arrowup: () => player().moveSelected(-1),
   arrowdown: () => player().moveSelected(1),
+  // Like "Properties" on Windows: about the selected file
+  enter: () => showInFolder(),
 };
 
 // Ctrl on Windows/Linux, Cmd on macOS

@@ -140,6 +140,8 @@ export interface SputnikApi {
   restoreTracks: (paths: string[]) => Promise<{ missing: string[] }>;
   /** URL the audio element loads a track from */
   mediaUrl: (trackId: string) => string;
+  /** Opens the folder of an imported song in the file manager */
+  showInFolder: (trackId: string) => Promise<boolean>;
   openFiles: (labels: DialogLabels) => Promise<string[]>;
   openFolder: (labels: DialogLabels) => Promise<string[]>;
   exportPlaylist: (

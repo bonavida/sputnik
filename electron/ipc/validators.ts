@@ -31,6 +31,9 @@ export const IPC_ARGS = {
     args.length === 1 && isPathList(args[0]),
   [IPC.restoreTracks]: (args: unknown[]): args is [string[]] =>
     args.length === 1 && isPathList(args[0]),
+  // A track id, never a path: only imported songs can be shown
+  [IPC.showInFolder]: (args: unknown[]): args is [string] =>
+    args.length === 1 && isText(args[0]),
   [IPC.openFiles]: (args: unknown[]): args is [DialogLabels] =>
     args.length === 1 && isDialogLabels(args[0]),
   [IPC.openFolder]: (args: unknown[]): args is [DialogLabels] =>

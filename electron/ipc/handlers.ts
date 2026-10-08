@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain, nativeTheme } from 'electron';
+import { BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron';
 import type { IpcMainInvokeEvent } from 'electron';
 import { AUDIO_EXTENSIONS, PLAYLIST_EXTENSIONS } from '@shared/audioFormats';
 import { IPC } from '@shared/constants';
@@ -96,6 +96,12 @@ export const registerIpc = ({
 
   handle(IPC.importPaths, (_, paths) => library.importPaths(paths));
   handle(IPC.restoreTracks, (_, paths) => library.restore(paths));
+  handle(IPC.showInFolder, (_, trackId) => {
+    const filePath = library.resolveMedia(trackId);
+    if (!filePath) return false;
+    shell.showItemInFolder(filePath);
+    return true;
+  });
 
   handle(IPC.openFiles, (event, { title, filterName }) =>
     openDialog(event, {

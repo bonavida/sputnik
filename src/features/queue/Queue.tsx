@@ -62,6 +62,7 @@ export const Queue = () => {
         items={entries.map(({ uid }) => uid)}
         strategy={verticalListSortingStrategy}
       >
+        <QueueHeader />
         <div
           // WAI-ARIA listbox: a native <select> cannot hold rich, draggable rows
           // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
@@ -69,11 +70,10 @@ export const Queue = () => {
           aria-label={t('playlist')}
           aria-activedescendant={selectedUid ? rowId(selectedUid) : undefined}
           tabIndex={0}
-          // Container queries: the album column depends on the list width, not the window.
-          // Scroll padding keeps rows reached with the keyboard below the sticky header
-          className="@container min-h-0 flex-1 scroll-pt-10 overflow-y-auto px-2 pb-4 md:px-4"
+          // Container queries: the album column depends on the list width, not the
+          // window. The stable gutter matches QueueHeader's, so columns line up
+          className="@container min-h-0 flex-1 overflow-y-auto px-2 pb-4 scrollbar-gutter-stable md:px-4"
         >
-          <QueueHeader />
           {entries.map((entry, index) => (
             <QueueRow
               key={entry.uid}

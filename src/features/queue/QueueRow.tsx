@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { CircleAlert, X } from 'lucide-react';
+import { CircleAlert, FolderOpen, X } from 'lucide-react';
+import { showInFolder } from '@/app/actions';
 import { CoverArt } from '@/ui/CoverArt';
 import { IconButton } from '@/ui/IconButton';
 import { useT } from '@/hooks/useT';
@@ -22,9 +23,13 @@ interface QueueRowProps {
 export const rowId = (uid: string): string => `queue-row-${uid}`;
 
 // Shared with QueueHeader: every row is its own grid, so columns align only if
-// all of them use fixed or fractional tracks (the last one fits duration + remove)
+// all of them use fixed or fractional tracks (the last one fits the duration and
+// the two row buttons)
 export const ROW_GRID =
-  'grid grid-cols-[2rem_minmax(0,1fr)_4.5rem] items-center gap-3 px-3 @2xl:grid-cols-[2rem_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem]';
+  'grid grid-cols-[2rem_minmax(0,1fr)_6.5rem] items-center gap-3 px-3 @2xl:grid-cols-[2rem_minmax(0,1.4fr)_minmax(0,1fr)_6.5rem]';
+
+const ROW_BUTTON =
+  'text-fg-muted opacity-0 group-hover:opacity-100 group-aria-selected:opacity-100';
 
 const player = () => usePlayerStore.getState();
 
@@ -119,7 +124,19 @@ export const QueueRow = ({
         <span className="w-10 text-right text-sm tabular-nums text-fg-muted">
           {formatTime(track.duration)}
         </span>
-        {/* Mouse shortcut; keyboard users press Delete on the selected row */}
+        {/* Mouse shortcuts; keyboard users press Alt+Enter or Delete on the selected row */}
+        <IconButton
+          label={t('showInFolder')}
+          icon={FolderOpen}
+          size="sm"
+          tabIndex={-1}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            showInFolder(uid);
+          }}
+          className={ROW_BUTTON}
+        />
         <IconButton
           label={t('remove')}
           icon={X}
@@ -130,7 +147,7 @@ export const QueueRow = ({
             event.stopPropagation();
             player().remove([uid]);
           }}
-          className="text-fg-muted opacity-0 group-hover:opacity-100 group-aria-selected:opacity-100"
+          className={ROW_BUTTON}
         />
       </span>
     </div>

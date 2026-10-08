@@ -24,6 +24,7 @@ describe('IPC_ARGS (E7)', () => {
     [IPC.lastfmNowPlaying, [scrobbleTrack]],
     [IPC.lastfmScrobble, [{ ...scrobbleTrack, timestamp: 1_791_400_000 }]],
     [IPC.updatesInstall, []],
+    [IPC.showInFolder, ['3f2a9c']],
     [IPC.updatesSetAutomatic, [true]],
   ])('%s accepts valid arguments', (channel, args) => {
     expect(IPC_ARGS[channel](args)).toBe(true);
@@ -48,6 +49,8 @@ describe('IPC_ARGS (E7)', () => {
     [IPC.updatesOpenDownload, ['https://evil.example/Sputnik-setup.exe']],
     [IPC.updatesInstall, ['C:/Windows/System32/cmd.exe']],
     [IPC.updatesSetAutomatic, ['true']],
+    [IPC.showInFolder, [['C:/Windows']]],
+    [IPC.showInFolder, ['']],
   ])('%s rejects %j', (channel, args) => {
     expect(IPC_ARGS[channel](args)).toBe(false);
   });

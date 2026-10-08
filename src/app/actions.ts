@@ -9,6 +9,8 @@ import { usePlayerStore } from '@/stores/playerStore';
 import { hasUnsavedChanges, usePlaylistsStore } from '@/stores/playlistsStore';
 import { getTranslate, useSettingsStore } from '@/stores/settingsStore';
 import { useUiStore } from '@/stores/uiStore';
+import { compareTracks, nextSortOrder, sortOrderOf } from '@/utils/trackSort';
+import type { SortKey } from '@/utils/trackSort';
 
 const labels = (
   title: TranslationKey,
@@ -63,6 +65,25 @@ export const addSongs = async (): Promise<void> =>
 
 export const addFolder = async (): Promise<void> =>
   importPaths(await bridge().openFolder(labels('addFolder', 'audioFiles')));
+
+/** Sorts the list by a column: ascending first, then toggling */
+export const sortQueue = (key: SortKey, locale: string): void => {
+  const player = usePlayerStore.getState();
+  const tracks = player.queue.entries.map(({ track }) => track);
+  const compare = compareTracks(
+    nextSortOrder(key, sortOrderOf(tracks, locale)),
+    locale
+  );
+  player.sort((a, b) => compare(a.track, b.track));
+};
+
+/** Opens the song's folder in the file manager, with the file selected */
+export const showInFolder = (uid?: string): void => {
+  const { queue, selectedUid } = usePlayerStore.getState();
+  const target = uid ?? selectedUid;
+  const track = queue.entries.find((entry) => entry.uid === target)?.track;
+  if (track) void bridge().showInFolder(track.id);
+};
 
 export const savePlaylist = (): void =>
   usePlaylistsStore.getState().save(queuedTracks(), getTranslate()('untitled'));

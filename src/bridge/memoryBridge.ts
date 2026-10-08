@@ -54,6 +54,7 @@ export interface MemoryBridge extends SputnikApi {
   };
   calls: {
     updates: Array<'install' | 'download' | 'notes'>;
+    shownInFolder: string[];
     dialogLabels: DialogLabels[];
     exported: Array<{ name: string; tracks: Track[] }>;
     themes: Array<{ source: ThemeSource; titleBar: TitleBarColors }>;
@@ -130,6 +131,7 @@ export const createMemoryBridge = ({
     },
     calls: {
       updates: [],
+      shownInFolder: [],
       dialogLabels: [],
       exported: [],
       themes: [],
@@ -139,6 +141,14 @@ export const createMemoryBridge = ({
 
     getPathForFile: (file) => file.name,
     mediaUrl,
+
+    showInFolder: async (trackId) => {
+      const isImported = Object.values(bridge.files).some(
+        (file) => isTrack(file) && file.id === trackId
+      );
+      if (isImported) bridge.calls.shownInFolder.push(trackId);
+      return isImported;
+    },
 
     importPaths: async (paths) => {
       const resolved = [...new Set(paths.flatMap(expand))];

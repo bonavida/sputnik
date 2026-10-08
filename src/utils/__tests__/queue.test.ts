@@ -14,6 +14,7 @@ import {
   removeEntries,
   setShuffle,
   shuffled,
+  sortEntries,
 } from '../queue';
 
 /** Deterministic pseudo-random generator (LCG) so shuffles are reproducible */
@@ -283,6 +284,34 @@ describe('moveEntry', () => {
   it('ignores unknown uids', () => {
     const queue = queueOf(['a', 'b']);
     expect(moveEntry(queue, 'a', 'zzz')).toBe(queue);
+  });
+});
+
+const byUidDescending = (a: QueueEntry, b: QueueEntry) =>
+  b.uid.localeCompare(a.uid);
+
+describe('sortEntries', () => {
+  it('reorders the list and the play order without changing the current track', () => {
+    const queue = queueOf(['a', 'b', 'c', 'd'], { currentUid: 'b' });
+
+    const result = sortEntries(queue, byUidDescending);
+
+    expect(visible(result)).toEqual(['d', 'c', 'b', 'a']);
+    expect(result.currentUid).toBe('b');
+    expect(nextUid(result)).toBe('a');
+  });
+
+  it('keeps the shuffled play order untouched', () => {
+    const queue = queueOf(['a', 'b', 'c'], {
+      currentUid: 'a',
+      shuffle: true,
+      order: ['a', 'c', 'b'],
+    });
+
+    const result = sortEntries(queue, byUidDescending);
+
+    expect(visible(result)).toEqual(['c', 'b', 'a']);
+    expect(result.order).toEqual(['a', 'c', 'b']);
   });
 });
 
