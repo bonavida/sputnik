@@ -12,6 +12,7 @@ import {
   playEntry,
   previousUid,
   removeEntries,
+  restoreOrder,
   setShuffle,
   shuffled,
   sortEntries,
@@ -312,6 +313,29 @@ describe('sortEntries', () => {
 
     expect(visible(result)).toEqual(['c', 'b', 'a']);
     expect(result.order).toEqual(['a', 'c', 'b']);
+  });
+});
+
+describe('restoreOrder', () => {
+  it('puts the entries back in the remembered order', () => {
+    const queue = queueOf(['c', 'a', 'b'], { currentUid: 'a' });
+
+    const result = restoreOrder(queue, ['a', 'b', 'c']);
+
+    expect(visible(result)).toEqual(['a', 'b', 'c']);
+    expect(result.order).toEqual(['a', 'b', 'c']);
+    expect(result.currentUid).toBe('a');
+  });
+
+  it('keeps songs added since at the end and skips removed ones', () => {
+    const queue = queueOf(['d', 'c', 'a', 'e']);
+
+    expect(visible(restoreOrder(queue, ['a', 'b', 'c', 'd']))).toEqual([
+      'a',
+      'c',
+      'd',
+      'e',
+    ]);
   });
 });
 

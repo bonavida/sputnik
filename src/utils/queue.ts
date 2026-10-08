@@ -179,6 +179,17 @@ export const sortEntries = (
   };
 };
 
+/**
+ * Puts the entries back in a remembered order (by uid). Entries added since go
+ * after the remembered ones, in their current order; removed ones are skipped.
+ */
+export const restoreOrder = (queue: Queue, uids: readonly string[]): Queue => {
+  const rank = new Map(uids.map((uid, index) => [uid, index]));
+  const position = ({ uid }: QueueEntry) =>
+    rank.get(uid) ?? Number.POSITIVE_INFINITY;
+  return sortEntries(queue, (a, b) => position(a) - position(b));
+};
+
 /** Explicit play: while shuffling, the chosen track starts a new random order */
 export const playEntry = (queue: Queue, uid: string, random: Random): Queue => {
   if (!queue.entries.some((entry) => entry.uid === uid)) return queue;

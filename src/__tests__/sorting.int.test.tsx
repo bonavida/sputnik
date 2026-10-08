@@ -55,6 +55,44 @@ describe('sorting the list by a column', () => {
     ).toBeInTheDocument();
   });
 
+  it('goes back to the original order on a third click', async () => {
+    const { user } = await setup();
+
+    await user.click(
+      screen.getByRole('button', { name: 'Ordenar por título' })
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Ordenar por título (ascendente)' })
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Ordenar por título (descendente)' })
+    );
+
+    expect(rowTitles()).toEqual(['Glass Harbor', 'Neon Tide', 'apogee']);
+    expect(
+      screen.getByRole('button', { name: 'Ordenar por título' })
+    ).toBeInTheDocument();
+    // Back to the saved order: nothing left to save
+    expect(screen.queryByText('Cambios sin guardar')).not.toBeInTheDocument();
+  });
+
+  it('goes back to the order before sorting, even after switching columns', async () => {
+    const { user } = await setup();
+
+    await user.click(
+      screen.getByRole('button', { name: 'Ordenar por título' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Ordenar por álbum' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Ordenar por álbum (ascendente)' })
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Ordenar por álbum (descendente)' })
+    );
+
+    expect(rowTitles()).toEqual(['Glass Harbor', 'Neon Tide', 'apogee']);
+  });
+
   it('sorts by album, with songs without one last', async () => {
     const { user } = await setup();
 

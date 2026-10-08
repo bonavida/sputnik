@@ -103,14 +103,23 @@ describe('sortOrderOf', () => {
 });
 
 describe('nextSortOrder', () => {
-  it('starts ascending and toggles on the same column', () => {
-    const ascending = nextSortOrder('title', undefined);
-    expect(ascending).toEqual({ key: 'title', direction: 'ascending' });
-    expect(nextSortOrder('title', ascending).direction).toBe('descending');
-    expect(
-      nextSortOrder('title', { key: 'title', direction: 'descending' })
-        .direction
-    ).toBe('ascending');
-    expect(nextSortOrder('album', ascending).direction).toBe('ascending');
+  const ascending = { key: 'title', direction: 'ascending' } as const;
+  const descending = { key: 'title', direction: 'descending' } as const;
+
+  it('cycles ascending, descending and back to unsorted', () => {
+    expect(nextSortOrder('title', undefined, false)).toEqual(ascending);
+    expect(nextSortOrder('title', ascending, true)).toEqual(descending);
+    expect(nextSortOrder('title', descending, true)).toBeUndefined();
+  });
+
+  it('starts over when there is no previous order to go back to', () => {
+    expect(nextSortOrder('title', descending, false)).toEqual(ascending);
+  });
+
+  it('starts ascending on another column', () => {
+    expect(nextSortOrder('album', descending, true)).toEqual({
+      key: 'album',
+      direction: 'ascending',
+    });
   });
 });

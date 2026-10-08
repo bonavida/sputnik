@@ -7,6 +7,7 @@ import {
   createQueue,
   cycleRepeat,
   moveEntry,
+  restoreOrder,
   sortEntries,
   neighborAfterRemoval,
   nextUid,
@@ -38,6 +39,8 @@ interface PlayerState {
   /** Changes whenever the current track must (re)start from the beginning */
   playToken: number;
   seekRequest: { time: number; token: number };
+  /** Order (uids) before the list was sorted by a column, to go back to it */
+  unsortedOrder?: string[];
 }
 
 interface PlayerActions {
@@ -47,7 +50,12 @@ interface PlayerActions {
   remove: (uids: string[]) => void;
   removeSelected: () => void;
   move: (fromUid: string, toUid: string) => void;
-  sort: (compare: (a: QueueEntry, b: QueueEntry) => number) => void;
+  /** `isFromUnsorted` remembers the current order so it can be restored */
+  sort: (
+    compare: (a: QueueEntry, b: QueueEntry) => number,
+    isFromUnsorted: boolean
+  ) => void;
+  restoreUnsortedOrder: () => void;
   /** Keyboard alternative to drag and drop */
   moveSelected: (offset: 1 | -1) => void;
   select: (uid: string | undefined) => void;
@@ -182,6 +190,7 @@ export const usePlayerStore = create<PlayerStore>()((set, get) => {
         position: 0,
         duration: current?.track.duration ?? 0,
         selectedUid: undefined,
+        unsortedOrder: undefined,
         playToken: playToken + 1,
       });
     },
@@ -216,8 +225,23 @@ export const usePlayerStore = create<PlayerStore>()((set, get) => {
       set({ selectedUid: neighbor });
     },
 
-    sort: (compare) =>
-      set(({ queue }) => ({ queue: sortEntries(queue, compare) })),
+    sort: (compare, isFromUnsorted) =>
+      set(({ queue, unsortedOrder }) => ({
+        queue: sortEntries(queue, compare),
+        unsortedOrder: isFromUnsorted
+          ? queue.entries.map(({ uid }) => uid)
+          : unsortedOrder,
+      })),
+
+    restoreUnsortedOrder: () =>
+      set(({ queue, unsortedOrder }) =>
+        unsortedOrder
+          ? {
+              queue: restoreOrder(queue, unsortedOrder),
+              unsortedOrder: undefined,
+            }
+          : {}
+      ),
 
     move: (fromUid, toUid) =>
       set(({ queue }) => ({ queue: moveEntry(queue, fromUid, toUid) })),

@@ -66,14 +66,17 @@ export const sortOrderOf = (
   ).find(isSorted);
 };
 
-/** Clicking a column sorts ascending, and toggles once it is sorted by it */
+/**
+ * Clicking a column cycles ascending → descending → unsorted (undefined: back to
+ * the order before sorting). Without an order to go back to, it starts over.
+ */
 export const nextSortOrder = (
   key: SortKey,
-  current: SortOrder | undefined
-): SortOrder => ({
-  key,
-  direction:
-    current?.key === key && current.direction === 'ascending'
-      ? 'descending'
-      : 'ascending',
-});
+  current: SortOrder | undefined,
+  canRestore: boolean
+): SortOrder | undefined => {
+  if (current?.key !== key) return { key, direction: 'ascending' };
+  if (current.direction === 'ascending')
+    return { key, direction: 'descending' };
+  return canRestore ? undefined : { key, direction: 'ascending' };
+};

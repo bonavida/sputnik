@@ -66,15 +66,15 @@ export const addSongs = async (): Promise<void> =>
 export const addFolder = async (): Promise<void> =>
   importPaths(await bridge().openFolder(labels('addFolder', 'audioFiles')));
 
-/** Sorts the list by a column: ascending first, then toggling */
+/** Sorts the list by a column: ascending, descending, then back to unsorted */
 export const sortQueue = (key: SortKey, locale: string): void => {
   const player = usePlayerStore.getState();
   const tracks = player.queue.entries.map(({ track }) => track);
-  const compare = compareTracks(
-    nextSortOrder(key, sortOrderOf(tracks, locale)),
-    locale
-  );
-  player.sort((a, b) => compare(a.track, b.track));
+  const current = sortOrderOf(tracks, locale);
+  const next = nextSortOrder(key, current, Boolean(player.unsortedOrder));
+  if (!next) return player.restoreUnsortedOrder();
+  const compare = compareTracks(next, locale);
+  player.sort((a, b) => compare(a.track, b.track), current === undefined);
 };
 
 /** Opens the song's folder in the file manager, with the file selected */
