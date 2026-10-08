@@ -19,10 +19,16 @@ export interface StoredLastfm {
   queue: Scrobble[];
 }
 
+export interface StoredUpdates {
+  checkAutomatically: boolean;
+  skippedVersion?: string;
+}
+
 /** What `sputnik.json` holds: the renderer's state plus main-only data */
 export interface StoredState extends PersistedState {
   windowBounds?: WindowBounds;
   lastfm?: StoredLastfm;
+  updates?: StoredUpdates;
 }
 
 // Two weeks of nonstop listening is about 5,000 songs; Last.fm drops older ones
@@ -47,6 +53,11 @@ const isStoredLastfm = (value: unknown): value is StoredLastfm =>
   value.queue.length <= MAX_PENDING_SCROBBLES &&
   value.queue.every(isScrobble);
 
+const isStoredUpdates = (value: unknown): value is StoredUpdates =>
+  isRecord(value) &&
+  typeof value.checkAutomatically === 'boolean' &&
+  (value.skippedVersion === undefined || isText(value.skippedVersion));
+
 /**
  * Validates the stored JSON. Missing keys and settings added in newer versions
  * fall back to their defaults, so old files keep working.
@@ -54,7 +65,7 @@ const isStoredLastfm = (value: unknown): value is StoredLastfm =>
 export const parseStoredState = (value: unknown): StoredState | undefined => {
   if (!isRecord(value)) return undefined;
 
-  const { windowBounds, lastfm, playlists, session, settings } = value;
+  const { windowBounds, lastfm, updates, playlists, session, settings } = value;
   const state = {
     playlists: playlists ?? DEFAULT_STATE.playlists,
     session,
@@ -69,6 +80,7 @@ export const parseStoredState = (value: unknown): StoredState | undefined => {
     windowBounds: isWindowBounds(windowBounds) ? windowBounds : undefined,
     // An invalid Last.fm entry only costs a reconnection, never the playlists
     lastfm: isStoredLastfm(lastfm) ? lastfm : undefined,
+    updates: isStoredUpdates(updates) ? updates : undefined,
   };
 };
 

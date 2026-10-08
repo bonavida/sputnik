@@ -70,6 +70,25 @@ export const en = {
   lastfmTimedOut: 'Last.fm was not approved in time. Please try again.',
   lastfmFailed: 'Could not connect to Last.fm. Check your internet connection.',
 
+  // Updates
+  updates: 'Updates',
+  currentVersion: 'Version {version}',
+  checkAutomatically: 'Check automatically',
+  checkNow: 'Check for updates now',
+  checkingUpdates: 'Checking for updates…',
+  updateAvailable: 'Sputnik {version} is available',
+  updateDownloading: 'Downloading Sputnik {version} ({size})…',
+  updateInstall: 'Download and install',
+  updateDownload: 'Download',
+  updateNotes: "What's new",
+  updateSkip: 'Skip this version',
+  upToDate: 'You have the latest version ({version})',
+  updateCheckFailed:
+    'Could not check for updates. Check your internet connection.',
+  updateInstallFailed: 'Could not download the update. Please try again later.',
+  updateVerificationFailed:
+    'The download does not match the published one and was discarded for safety.',
+
   // Playlists
   untitled: 'New playlist',
   playlistName: 'Playlist name',

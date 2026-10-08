@@ -1,5 +1,6 @@
 import { DEFAULT_SETTINGS } from '@shared/constants';
 import type {
+  AvailableUpdate,
   DialogLabels,
   ImportFailure,
   ImportFailureReason,
@@ -14,6 +15,8 @@ import type {
   ThemeSource,
   TitleBarColors,
   Track,
+  UpdateInstallResult,
+  UpdateStatus,
 } from '@shared/types';
 
 /** What each path resolves to when imported */
@@ -27,6 +30,7 @@ interface MemoryBridgeOptions {
   platform?: Platform;
   mediaUrl?: (trackId: string) => string;
   lastfm?: Partial<LastfmStatus>;
+  updates?: Partial<MemoryBridge['updates']>;
 }
 
 export interface MemoryBridge extends SputnikApi {
@@ -41,7 +45,15 @@ export interface MemoryBridge extends SputnikApi {
     /** User name that connecting signs in as */
     connectAs: string;
   };
+  /** Updates as the main process would report them; `latest` is what GitHub has */
+  updates: UpdateStatus & {
+    latest?: AvailableUpdate;
+    isOffline: boolean;
+    nextInstall: UpdateInstallResult;
+    skippedVersion?: string;
+  };
   calls: {
+    updates: Array<'install' | 'download' | 'notes'>;
     dialogLabels: DialogLabels[];
     exported: Array<{ name: string; tracks: Track[] }>;
     themes: Array<{ source: ThemeSource; titleBar: TitleBarColors }>;
@@ -64,7 +76,24 @@ export const createMemoryBridge = ({
   platform = 'win32',
   mediaUrl = (trackId) => `memory://media/${trackId}`,
   lastfm = {},
+  updates = {},
 }: MemoryBridgeOptions = {}): MemoryBridge => {
+  const updateStatus = (): UpdateStatus => {
+    const {
+      currentVersion,
+      checkAutomatically,
+      isChecking,
+      isInstalling,
+      available,
+    } = bridge.updates;
+    return {
+      currentVersion,
+      checkAutomatically,
+      isChecking,
+      isInstalling,
+      available,
+    };
+  };
   const expand = (path: string) => folders[path] ?? [path];
   const lastfmStatus = (): LastfmStatus => {
     const { isAvailable, user, isEnabled, pending } = bridge.lastfm;
@@ -90,7 +119,17 @@ export const createMemoryBridge = ({
       connectAs: 'sputnik-fan',
       ...lastfm,
     },
+    updates: {
+      currentVersion: '2.1.0',
+      checkAutomatically: true,
+      isChecking: false,
+      isInstalling: false,
+      isOffline: false,
+      nextInstall: 'started',
+      ...updates,
+    },
     calls: {
+      updates: [],
       dialogLabels: [],
       exported: [],
       themes: [],
@@ -177,6 +216,42 @@ export const createMemoryBridge = ({
     // Like the main process: ignored unless connected and enabled
     lastfmNowPlaying: async (track) => {
       if (isScrobbling()) bridge.calls.nowPlaying.push(structuredClone(track));
+    },
+
+    updatesStatus: async () => updateStatus(),
+
+    updatesCheck: async () => {
+      if (bridge.updates.isOffline) return 'failed';
+      const { latest } = bridge.updates;
+      bridge.updates = { ...bridge.updates, available: latest };
+      return latest ? 'available' : 'up-to-date';
+    },
+
+    updatesInstall: async () => {
+      bridge.calls.updates.push('install');
+      return bridge.updates.nextInstall;
+    },
+
+    updatesOpenDownload: async () => {
+      bridge.calls.updates.push('download');
+    },
+
+    updatesOpenNotes: async () => {
+      bridge.calls.updates.push('notes');
+    },
+
+    updatesSkip: async () => {
+      bridge.updates = {
+        ...bridge.updates,
+        skippedVersion: bridge.updates.available?.version,
+        available: undefined,
+      };
+      return updateStatus();
+    },
+
+    updatesSetAutomatic: async (checkAutomatically) => {
+      bridge.updates = { ...bridge.updates, checkAutomatically };
+      return updateStatus();
     },
 
     lastfmScrobble: async (scrobble) => {

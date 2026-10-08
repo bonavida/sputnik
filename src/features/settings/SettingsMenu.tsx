@@ -1,17 +1,24 @@
 import { Settings2 } from 'lucide-react';
-import type { LastfmStatus, LocaleSetting, ThemeSource } from '@shared/types';
+import type {
+  LastfmStatus,
+  LocaleSetting,
+  ThemeSource,
+  UpdateStatus,
+} from '@shared/types';
 import {
   cancelLastfmConnect,
   connectLastfm,
   disconnectLastfm,
   setScrobbling,
 } from '@/app/lastfm';
+import { checkForUpdates, setAutomaticUpdates } from '@/app/updates';
 import { Menu } from '@/ui/Menu';
 import type { MenuItem } from '@/ui/Menu';
 import { useT } from '@/hooks/useT';
 import type { Translate, TranslationKey } from '@/i18n/t';
 import { useLastfmStore } from '@/stores/lastfmStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { useUpdateStore } from '@/stores/updateStore';
 
 const THEMES: Array<[ThemeSource, TranslationKey]> = [
   ['system', 'themeSystem'],
@@ -92,12 +99,42 @@ const lastfmItems = (
   ];
 };
 
+const updateItems = (t: Translate, status?: UpdateStatus): MenuItem[] => {
+  if (!status) return [];
+  const { currentVersion, checkAutomatically, isChecking } = status;
+  return [
+    { kind: 'separator', id: 'updates-separator' },
+    { kind: 'heading', id: 'updates-heading', label: t('updates') },
+    {
+      kind: 'note',
+      id: 'updates-version',
+      label: t('currentVersion', { version: currentVersion }),
+    },
+    {
+      kind: 'checkbox',
+      id: 'updates-automatic',
+      label: t('checkAutomatically'),
+      isChecked: checkAutomatically,
+      onSelect: () => void setAutomaticUpdates(!checkAutomatically),
+    },
+    isChecking
+      ? { kind: 'note', id: 'updates-checking', label: t('checkingUpdates') }
+      : {
+          kind: 'action',
+          id: 'updates-check',
+          label: t('checkNow'),
+          onSelect: () => void checkForUpdates(),
+        },
+  ];
+};
+
 export const SettingsMenu = () => {
   const t = useT();
   const { theme, albumTint, locale, setTheme, setAlbumTint, setLocale } =
     useSettingsStore();
   const lastfmStatus = useLastfmStore((state) => state.status);
   const isConnecting = useLastfmStore((state) => state.isConnecting);
+  const updateStatus = useUpdateStore((state) => state.status);
 
   const items: MenuItem[] = [
     { kind: 'heading', id: 'theme-heading', label: t('theme') },
@@ -126,6 +163,7 @@ export const SettingsMenu = () => {
       onSelect: () => setLocale(value),
     })),
     ...lastfmItems(t, lastfmStatus, isConnecting),
+    ...updateItems(t, updateStatus),
   ];
 
   return <Menu label={t('settings')} icon={Settings2} items={items} />;

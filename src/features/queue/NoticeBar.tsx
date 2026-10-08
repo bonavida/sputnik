@@ -53,10 +53,27 @@ const describe = (
       ),
       details: [],
     };
+  if (notice.kind === 'upToDate')
+    return { message: t('upToDate', { version: notice.version }), details: [] };
+  if (notice.kind === 'updateCheckFailed')
+    return { message: t('updateCheckFailed'), details: [] };
+  if (notice.kind === 'updateInstallFailed')
+    return {
+      message: t(
+        notice.reason === 'verification-failed'
+          ? 'updateVerificationFailed'
+          : 'updateInstallFailed'
+      ),
+      details: [],
+    };
   return { message: t('exported'), details: [] };
 };
 
-const SUCCESS_KINDS = new Set<Notice['kind']>(['exported', 'lastfmConnected']);
+const SUCCESS_KINDS = new Set<Notice['kind']>([
+  'exported',
+  'lastfmConnected',
+  'upToDate',
+]);
 
 const NoticeContent = ({ notice }: { notice: Notice }) => {
   const t = useT();

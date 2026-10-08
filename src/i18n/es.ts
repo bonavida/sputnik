@@ -70,6 +70,26 @@ export const es = {
   lastfmFailed:
     'No se pudo conectar con Last.fm. Comprueba tu conexión a internet.',
 
+  // Updates
+  updates: 'Actualizaciones',
+  currentVersion: 'Versión {version}',
+  checkAutomatically: 'Buscar automáticamente',
+  checkNow: 'Buscar actualizaciones ahora',
+  checkingUpdates: 'Buscando actualizaciones…',
+  updateAvailable: 'Sputnik {version} está disponible',
+  updateDownloading: 'Descargando Sputnik {version} ({size})…',
+  updateInstall: 'Descargar e instalar',
+  updateDownload: 'Descargar',
+  updateNotes: 'Novedades',
+  updateSkip: 'Omitir esta versión',
+  upToDate: 'Tienes la última versión ({version})',
+  updateCheckFailed:
+    'No se pudo comprobar si hay actualizaciones. Comprueba tu conexión a internet.',
+  updateInstallFailed:
+    'No se pudo descargar la actualización. Inténtalo de nuevo más tarde.',
+  updateVerificationFailed:
+    'La descarga no coincide con la publicada y se ha descartado por seguridad.',
+
   // Playlists
   untitled: 'Nueva lista',
   playlistName: 'Nombre de la lista',

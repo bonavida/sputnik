@@ -59,6 +59,16 @@ export const IPC_ARGS = {
     args.length === 1 && isScrobbleTrack(args[0]),
   [IPC.lastfmScrobble]: (args: unknown[]): args is [Scrobble] =>
     args.length === 1 && isScrobble(args[0]),
+  // Update channels take no URLs or paths: the main process only acts on the
+  // release it fetched and validated itself
+  [IPC.updatesStatus]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.updatesCheck]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.updatesInstall]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.updatesOpenDownload]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.updatesOpenNotes]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.updatesSkip]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.updatesSetAutomatic]: (args: unknown[]): args is [boolean] =>
+    args.length === 1 && typeof args[0] === 'boolean',
 } satisfies Record<Channel, (args: unknown[]) => boolean>;
 
 /** Only frames loaded from the app itself (or the Vite dev server) may call IPC */

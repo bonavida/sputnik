@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process';
 import path from 'node:path';
 import {
   app,
@@ -10,7 +11,7 @@ import {
   shell,
 } from 'electron';
 import { APP_ID, APP_ORIGIN, APP_SCHEME } from '@shared/constants';
-import type { PersistedState } from '@shared/types';
+import type { PersistedState, Platform } from '@shared/types';
 import { createCoverStore } from './library/covers';
 import { registerIpc } from './ipc/handlers';
 import { isTrustedUrl } from './ipc/validators';
@@ -27,6 +28,8 @@ import {
   toPersistedState,
 } from './storage/state';
 import type { StoredState } from './storage/state';
+import { downloadInstaller } from './updates/installer';
+import { DEFAULT_UPDATE_SETTINGS, createUpdater } from './updates/updater';
 import { createMainWindow } from './window/window';
 
 const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
@@ -73,6 +76,13 @@ const keychain: Cipher = {
   encrypt: (text) => safeStorage.encryptString(text).toString('base64'),
   decrypt: (data) => safeStorage.decryptString(Buffer.from(data, 'base64')),
 };
+
+const FIRST_UPDATE_CHECK_MS = 10_000;
+const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60_000;
+// Dev only: pretend to be an older version to try the update flow, e.g.
+// SPUTNIK_FAKE_VERSION=2.0.0 pnpm dev
+const CURRENT_VERSION =
+  (IS_DEV && process.env.SPUTNIK_FAKE_VERSION) || app.getVersion();
 
 const trusted = (url: string) => isTrustedUrl(url, APP_ORIGIN, DEV_SERVER_URL);
 
@@ -134,9 +144,39 @@ const start = async () => {
   });
   void lastfm.start();
 
+  const updater = createUpdater({
+    currentVersion: CURRENT_VERSION,
+    platform: process.platform as Platform,
+    arch: process.arch,
+    initial: state.updates ?? DEFAULT_UPDATE_SETTINGS,
+    save: (updates) => update({ updates }),
+    openExternal: (url) => shell.openExternal(url),
+    download: (asset) =>
+      downloadInstaller(
+        asset,
+        path.join(app.getPath('temp'), 'sputnik-update')
+      ),
+    launch: (file) => {
+      // In dev only show the verified installer: running it would replace the
+      // installed app
+      if (IS_DEV) return shell.showItemInFolder(file);
+      // The per-user installer updates the app in place and opens it again
+      spawn(file, [], { detached: true, stdio: 'ignore' }).unref();
+      app.quit();
+    },
+  });
+  if (!IS_DEV) {
+    setTimeout(() => void updater.checkInBackground(), FIRST_UPDATE_CHECK_MS);
+    setInterval(
+      () => void updater.checkInBackground(),
+      UPDATE_CHECK_INTERVAL_MS
+    );
+  }
+
   registerIpc({
     library,
     lastfm,
+    updater,
     isTrustedUrl: trusted,
     loadState: (): PersistedState => toPersistedState(state),
     saveState: update,

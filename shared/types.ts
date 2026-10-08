@@ -112,6 +112,26 @@ export interface LastfmStatus {
 export type LastfmConnectResult =
   'connected' | 'cancelled' | 'timed-out' | 'failed';
 
+export interface AvailableUpdate {
+  version: string;
+  /** Installer size in bytes, when there is one for this system */
+  size?: number;
+  /** Windows: the app downloads, verifies and runs the installer itself */
+  canInstall: boolean;
+}
+
+export interface UpdateStatus {
+  currentVersion: string;
+  checkAutomatically: boolean;
+  isChecking: boolean;
+  isInstalling: boolean;
+  /** A newer release that the user has not skipped */
+  available?: AvailableUpdate;
+}
+
+export type UpdateCheckResult = 'available' | 'up-to-date' | 'failed';
+export type UpdateInstallResult = 'started' | 'failed' | 'verification-failed';
+
 /** API exposed by the preload script as `window.sputnik` */
 export interface SputnikApi {
   platform: Platform;
@@ -141,4 +161,14 @@ export interface SputnikApi {
   lastfmSetEnabled: (isEnabled: boolean) => Promise<LastfmStatus>;
   lastfmNowPlaying: (track: ScrobbleTrack) => Promise<void>;
   lastfmScrobble: (scrobble: Scrobble) => Promise<void>;
+  updatesStatus: () => Promise<UpdateStatus>;
+  /** Asks GitHub for the latest release; manual checks also show skipped versions */
+  updatesCheck: () => Promise<UpdateCheckResult>;
+  /** Windows only: downloads and verifies the installer, then runs it and quits */
+  updatesInstall: () => Promise<UpdateInstallResult>;
+  /** Opens the installer for this system (or the release page) in the browser */
+  updatesOpenDownload: () => Promise<void>;
+  updatesOpenNotes: () => Promise<void>;
+  updatesSkip: () => Promise<UpdateStatus>;
+  updatesSetAutomatic: (isEnabled: boolean) => Promise<UpdateStatus>;
 }

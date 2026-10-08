@@ -2,6 +2,8 @@ import type { Settings } from './types';
 
 export const APP_ID = 'org.bonavida.sputnik';
 export const APP_SCHEME = 'sputnik';
+/** Where releases are published (owner/name) */
+export const GITHUB_REPO = 'bonavida/sputnik';
 
 export const PROTOCOL_HOST = {
   app: 'app',
@@ -34,6 +36,13 @@ export const IPC = {
   lastfmSetEnabled: 'lastfm:set-enabled',
   lastfmNowPlaying: 'lastfm:now-playing',
   lastfmScrobble: 'lastfm:scrobble',
+  updatesStatus: 'updates:status',
+  updatesCheck: 'updates:check',
+  updatesInstall: 'updates:install',
+  updatesOpenDownload: 'updates:open-download',
+  updatesOpenNotes: 'updates:open-notes',
+  updatesSkip: 'updates:skip',
+  updatesSetAutomatic: 'updates:set-automatic',
 } as const;
 
 export const DEFAULT_SETTINGS: Settings = {

@@ -13,6 +13,8 @@ A minimalist desktop music player for Windows, macOS and Linux.
 - Keyboard shortcuts, media keys and the OS media controls. Spanish and English.
 - Scrobbling to Last.fm (Settings → Connect to Last.fm). Listens made offline are
   kept and sent later.
+- Tells you when a new version is out. On Windows it downloads, verifies and installs
+  it for you; on macOS and Linux it opens the right download.
 - Your queue, volume and settings are restored on the next start.
 
 Plays MP3, AAC/M4A, FLAC, WAV, Ogg Vorbis and Opus (WMA and ALAC are not supported).

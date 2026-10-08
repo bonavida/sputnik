@@ -8,6 +8,7 @@ import { PlaylistHeader } from '@/features/playlists/PlaylistHeader';
 import { DropOverlay } from '@/features/queue/DropOverlay';
 import { NoticeBar } from '@/features/queue/NoticeBar';
 import { Queue } from '@/features/queue/Queue';
+import { UpdateBanner } from '@/features/updates/UpdateBanner';
 import { useAppTheme } from '@/hooks/useAppTheme';
 import { useFileDrop } from '@/hooks/useFileDrop';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -30,6 +31,7 @@ export const App = () => {
         <NowPlaying />
         <section className="relative flex min-h-0 flex-col overflow-hidden rounded-xl bg-panel transition-colors duration-500 motion-reduce:transition-none">
           <PlaylistHeader />
+          <UpdateBanner />
           <NoticeBar />
           <Queue />
           {isDropping && <DropOverlay />}

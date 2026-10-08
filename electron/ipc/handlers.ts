@@ -6,6 +6,7 @@ import type { PersistedState, PlaylistFileResult } from '@shared/types';
 import { IPC_ARGS } from './validators';
 import type { Scrobbler } from '../lastfm/scrobbler';
 import type { Library } from '../library/library';
+import type { Updater } from '../updates/updater';
 import { readM3uFile, writeM3uFile } from '../library/m3uFiles';
 
 type Channel = keyof typeof IPC_ARGS;
@@ -19,6 +20,7 @@ type ArgsOf<C extends Channel> = (typeof IPC_ARGS)[C] extends ((
 interface IpcOptions {
   library: Library;
   lastfm: Scrobbler;
+  updater: Updater;
   isTrustedUrl: (url: string) => boolean;
   loadState: () => PersistedState;
   saveState: (patch: Partial<PersistedState>) => void;
@@ -69,6 +71,7 @@ const openDialog = async (
 export const registerIpc = ({
   library,
   lastfm,
+  updater,
   isTrustedUrl,
   loadState,
   saveState,
@@ -177,4 +180,14 @@ export const registerIpc = ({
   handle(IPC.lastfmSetEnabled, (_, isEnabled) => lastfm.setEnabled(isEnabled));
   handle(IPC.lastfmNowPlaying, (_, track) => lastfm.nowPlaying(track));
   handle(IPC.lastfmScrobble, (_, scrobble) => lastfm.scrobble(scrobble));
+
+  handle(IPC.updatesStatus, () => updater.status());
+  handle(IPC.updatesCheck, () => updater.check());
+  handle(IPC.updatesInstall, () => updater.install());
+  handle(IPC.updatesOpenDownload, () => updater.openDownload());
+  handle(IPC.updatesOpenNotes, () => updater.openNotes());
+  handle(IPC.updatesSkip, () => updater.skip());
+  handle(IPC.updatesSetAutomatic, (_, isEnabled) =>
+    updater.setAutomatic(isEnabled)
+  );
 };

@@ -6,7 +6,10 @@ export type Notice =
   | { kind: 'missingTracks'; paths: string[] }
   | { kind: 'exported' }
   | { kind: 'lastfmConnected'; user: string }
-  | { kind: 'lastfmFailed'; reason: 'timed-out' | 'failed' };
+  | { kind: 'lastfmFailed'; reason: 'timed-out' | 'failed' }
+  | { kind: 'upToDate'; version: string }
+  | { kind: 'updateCheckFailed' }
+  | { kind: 'updateInstallFailed'; reason: 'verification-failed' | 'failed' };
 
 export interface Confirmation {
   title: string;

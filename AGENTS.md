@@ -24,7 +24,8 @@ Before finishing or committing any change: `pnpm verify`.
 - `electron/`: main process, grouped by area. `main.ts` and `preload.ts` (the two
   bundle entries), `window/`, `ipc/` (`handlers.ts` + `validators.ts`), `protocol/`
   (`sputnik://` and HTTP ranges), `library/` (import, metadata, covers, dominant color,
-  M3U files), `lastfm/` (API client, account and scrobble queue), `storage/`
+  M3U files), `lastfm/` (API client, account and scrobble queue), `updates/` (new release
+  check, verified installer download), `storage/`
   (`jsonStore.ts`, `state.ts`), `testing/` (audio fixtures).
 - `shared/`: types, constants, IPC guards and pure logic used by both sides. Never
   imports Electron, Node or the DOM.
@@ -53,6 +54,11 @@ Before finishing or committing any change: `pnpm verify`.
   commit them or pass them to the renderer. The session key is stored encrypted with
   `safeStorage`. The renderer decides _when_ a listen counts (`src/app/lastfm.ts`);
   the main process owns the account and the offline queue (`electron/lastfm/`).
+- **Updates**: the app only downloads from this repository's GitHub releases and runs
+  an installer only after its SHA-256 matches the `digest` GitHub publishes
+  (`electron/updates/`). Update channels never take URLs or paths from the renderer.
+  Try the flow in dev with `SPUTNIK_FAKE_VERSION=2.0.0`: installing only downloads,
+  verifies and shows the file.
 - **Size**: `dependencies` in package.json stays empty. Ask before adding any package
   and measure the installer with `release-check`.
 - **React Compiler is on**: no `useMemo`, `useCallback`, `memo`, `forwardRef` or
