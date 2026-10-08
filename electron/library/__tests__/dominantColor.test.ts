@@ -36,6 +36,25 @@ describe('dominantColor', () => {
     expect(dominantColor(cover)).toEqual(RED);
   });
 
+  // Gorillaz' first album: a camouflage jeep in several greens and a small red
+  // logo. The greens fell into three hue buckets and the red one beat each
+  it('does not let a color lose because it spreads over close hues', () => {
+    const greens: Rgb[] = [
+      [80, 118, 58],
+      [65, 106, 58],
+      [51, 105, 57],
+    ];
+    const cover = bitmap((x, y) => {
+      if (y < 6) return greens[Math.floor(y / 2)] ?? WHITE;
+      if (y === 10 && x < 20) return [200, 60, 60];
+      return WHITE;
+    });
+
+    const [r = 0, g = 0, b = 0] = dominantColor(cover) ?? [];
+    expect(g).toBeGreaterThan(r);
+    expect(g).toBeGreaterThan(b);
+  });
+
   it('reads RGBA bitmaps when asked to', () => {
     const rgba = Uint8Array.from(
       Array.from({ length: SIDE * SIDE }, () => [...RED, 255]).flat()

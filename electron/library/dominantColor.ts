@@ -2,6 +2,9 @@ import type { Rgb } from '@shared/types';
 
 const BYTES_PER_PIXEL = 4;
 const HUE_BUCKETS = 24;
+// A color competes with its neighbors (±15°): shades of one color (a camouflage
+// green) must not split their votes and lose to a smaller, uniform area
+const NEIGHBOR_BUCKETS = 1;
 const MIN_ALPHA = 128;
 const MIN_SATURATION = 0.18;
 const MIN_VALUE = 0.15;
@@ -26,7 +29,8 @@ const hueOf = (r: number, g: number, b: number, max: number, delta: number) => {
 /**
  * Most representative saturated color of a small bitmap (e.g. a 32×32 cover).
  * Pixels are grouped by hue and weighted by chroma, so a vivid area wins over a
- * larger washed-out one and white/black backgrounds are ignored.
+ * larger washed-out one and white/black backgrounds are ignored. The winner is
+ * the hue range (a bucket and its neighbors) with the most weight.
  * Returns undefined for achromatic images.
  */
 export const dominantColor = (
@@ -77,8 +81,26 @@ export const dominantColor = (
   if (opaque === 0 || chromatic / opaque < MIN_CHROMATIC_SHARE)
     return undefined;
 
-  const best = buckets.reduce((top, bucket) =>
-    bucket.weight > top.weight ? bucket : top
+  // Each bucket together with its neighbors, wrapping around red
+  const ranges = buckets.map((_, index) =>
+    Array.from(
+      { length: NEIGHBOR_BUCKETS * 2 + 1 },
+      (__, offset) =>
+        buckets[
+          (index + offset - NEIGHBOR_BUCKETS + HUE_BUCKETS) % HUE_BUCKETS
+        ] as Bucket
+    ).reduce<Bucket>(
+      (sum, bucket) => ({
+        weight: sum.weight + bucket.weight,
+        r: sum.r + bucket.r,
+        g: sum.g + bucket.g,
+        b: sum.b + bucket.b,
+      }),
+      { weight: 0, r: 0, g: 0, b: 0 }
+    )
+  );
+  const best = ranges.reduce((top, range) =>
+    range.weight > top.weight ? range : top
   );
   if (best.weight === 0) return undefined;
   return [
