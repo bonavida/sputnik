@@ -15,6 +15,7 @@ pnpm lint           # oxlint
 pnpm test           # all Vitest tests (test:unit, test:int, test:coverage)
 pnpm format         # Prettier
 pnpm dist:win       # Windows installer in release/ (dist:mac, dist:linux)
+pnpm downloads      # download counts of every release installer on GitHub
 ```
 
 Before finishing or committing any change: `pnpm verify`.

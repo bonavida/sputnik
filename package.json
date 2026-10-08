@@ -27,6 +27,7 @@
     "test:int": "vitest run int.test",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "downloads": "node scripts/downloads.mjs",
     "dist": "pnpm build && electron-builder --publish never",
     "dist:win": "pnpm build && electron-builder --win --publish never",
     "dist:mac": "pnpm build && electron-builder --mac --publish never",
