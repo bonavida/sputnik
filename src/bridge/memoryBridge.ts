@@ -1,6 +1,7 @@
 import { DEFAULT_SETTINGS } from '@shared/constants';
 import type {
   AvailableUpdate,
+  CoverColor,
   DialogLabels,
   ImportFailure,
   ImportFailureReason,
@@ -31,6 +32,8 @@ interface MemoryBridgeOptions {
   mediaUrl?: (trackId: string) => string;
   lastfm?: Partial<LastfmStatus>;
   updates?: Partial<MemoryBridge['updates']>;
+  /** Cached cover file names and the color the current algorithm gives them */
+  covers?: Record<string, CoverColor['color']>;
 }
 
 export interface MemoryBridge extends SputnikApi {
@@ -45,6 +48,7 @@ export interface MemoryBridge extends SputnikApi {
     /** User name that connecting signs in as */
     connectAs: string;
   };
+  covers: Record<string, CoverColor['color']>;
   /** Updates as the main process would report them; `latest` is what GitHub has */
   updates: UpdateStatus & {
     latest?: AvailableUpdate;
@@ -55,6 +59,7 @@ export interface MemoryBridge extends SputnikApi {
   calls: {
     updates: Array<'install' | 'download' | 'notes'>;
     shownInFolder: string[];
+    coverColors: string[][];
     dialogLabels: DialogLabels[];
     exported: Array<{ name: string; tracks: Track[] }>;
     themes: Array<{ source: ThemeSource; titleBar: TitleBarColors }>;
@@ -78,6 +83,7 @@ export const createMemoryBridge = ({
   mediaUrl = (trackId) => `memory://media/${trackId}`,
   lastfm = {},
   updates = {},
+  covers = {},
 }: MemoryBridgeOptions = {}): MemoryBridge => {
   const updateStatus = (): UpdateStatus => {
     const {
@@ -111,6 +117,7 @@ export const createMemoryBridge = ({
       ...structuredClone(state),
     },
     files,
+    covers,
     dialogs: { files: [], folder: [] },
     lastfm: {
       isAvailable: true,
@@ -132,6 +139,7 @@ export const createMemoryBridge = ({
     calls: {
       updates: [],
       shownInFolder: [],
+      coverColors: [],
       dialogLabels: [],
       exported: [],
       themes: [],
@@ -141,6 +149,13 @@ export const createMemoryBridge = ({
 
     getPathForFile: (file) => file.name,
     mediaUrl,
+
+    coverColors: async (fileNames) => {
+      bridge.calls.coverColors.push([...fileNames]);
+      return fileNames
+        .filter((fileName) => fileName in bridge.covers)
+        .map((fileName) => ({ fileName, color: bridge.covers[fileName] }));
+    },
 
     showInFolder: async (trackId) => {
       const isImported = Object.values(bridge.files).some(

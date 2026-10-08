@@ -1,4 +1,5 @@
 import { mkdtemp, readdir, rm } from 'node:fs/promises';
+import { COVER_COLOR_VERSION } from '@shared/constants';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -146,6 +147,7 @@ describe('importPaths', () => {
     const { tracks } = await setup().importPaths([file]);
 
     expect(tracks[0]?.color).toEqual([220, 30, 40]);
+    expect(tracks[0]?.colorVersion).toBe(COVER_COLOR_VERSION);
   });
 
   it('imports the readable folders and reports the ones it cannot list', async () => {
@@ -184,6 +186,38 @@ describe('importPaths', () => {
     const { tracks } = await setup().importPaths([file, file, root]);
 
     expect(tracks).toHaveLength(1);
+  });
+});
+
+describe('recalculating cover colors', () => {
+  it('reads the color again from a cached cover', async () => {
+    const file = await writeFixture(
+      root,
+      'a.mp3',
+      mp3({ title: 'A', cover: COVER_PNG })
+    );
+    const covers = createCoverStore({
+      dir: coversDir,
+      toBitmap: () => RED_BGRA,
+    });
+    const { tracks } = await createLibrary({ covers }).importPaths([file]);
+    const fileName = tracks[0]?.coverUrl?.split('/').at(-1) ?? '';
+
+    expect(await covers.colorOf(fileName)).toEqual({
+      fileName,
+      color: [220, 30, 40],
+    });
+  });
+
+  it('only reads cached covers, never other files', async () => {
+    const covers = createCoverStore({
+      dir: coversDir,
+      toBitmap: () => RED_BGRA,
+    });
+    await writeFixture(root, 'secret.png', COVER_PNG);
+
+    expect(await covers.colorOf('../secret.png')).toBeUndefined();
+    expect(await covers.colorOf(`${'a'.repeat(40)}.png`)).toBeUndefined();
   });
 });
 

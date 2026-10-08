@@ -19,9 +19,23 @@ export const mediaUrl = (trackId: string): string =>
 export const coverUrl = (fileName: string): string =>
   `${APP_SCHEME}://${PROTOCOL_HOST.cover}/${fileName}`;
 
+/** Cover file name inside a cover URL; undefined for anything else */
+export const coverFileOf = (url: string): string | undefined => {
+  const prefix = coverUrl('');
+  return url.startsWith(prefix) ? url.slice(prefix.length) : undefined;
+};
+
+/**
+ * Version of the dominant color algorithm (electron/library/dominantColor.ts).
+ * Bump it when the algorithm changes: songs imported with an older version get
+ * their color recalculated from the cached cover on the next start.
+ */
+export const COVER_COLOR_VERSION = 2;
+
 export const IPC = {
   importPaths: 'library:import',
   restoreTracks: 'library:restore',
+  coverColors: 'library:cover-colors',
   showInFolder: 'library:show-in-folder',
   openFiles: 'dialog:open-files',
   openFolder: 'dialog:open-folder',

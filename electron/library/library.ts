@@ -3,7 +3,7 @@ import { readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { parseFile } from 'music-metadata';
 import { isAudioPath } from '@shared/audioFormats';
-import { coverUrl } from '@shared/constants';
+import { COVER_COLOR_VERSION, coverUrl } from '@shared/constants';
 import { MAX_TEXT_LENGTH } from '@shared/guards';
 import type { ImportFailure, ImportResult, Track } from '@shared/types';
 import type { CoverStore } from './covers';
@@ -141,6 +141,7 @@ export const createLibrary = ({ covers }: { covers: CoverStore }): Library => {
         duration: finiteOrZero(format.duration),
         coverUrl: cover && coverUrl(cover.fileName),
         color: cover?.color,
+        colorVersion: cover ? COVER_COLOR_VERSION : undefined,
       };
     } catch {
       return { path: filePath, reason: 'unreadable' };

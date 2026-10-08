@@ -2,6 +2,7 @@ import type { AudioLike, MediaSessionLike } from '@/audio/audioEngine';
 import { createAudioEngine } from '@/audio/audioEngine';
 import { bridge } from '@/bridge/bridge';
 import { restoreState } from './actions';
+import { refreshCoverColors } from './coverColors';
 import { loadLastfmStatus, startScrobbling } from './lastfm';
 import { loadUpdateStatus, watchUpdates } from './updates';
 import { startPersistence } from './persistence';
@@ -23,6 +24,8 @@ export const boot = async ({
   await restoreState().catch(() => undefined);
   await Promise.all([loadLastfmStatus(), loadUpdateStatus()]);
   const stopPersistence = startPersistence();
+  // After persistence starts, so the recalculated colors get saved
+  void refreshCoverColors();
   const stopScrobbling = startScrobbling();
   const stopWatchingUpdates = watchUpdates();
   const stopEngine = createAudioEngine({

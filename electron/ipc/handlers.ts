@@ -5,6 +5,7 @@ import { IPC } from '@shared/constants';
 import type { PersistedState, PlaylistFileResult } from '@shared/types';
 import { IPC_ARGS } from './validators';
 import type { Scrobbler } from '../lastfm/scrobbler';
+import type { CoverStore } from '../library/covers';
 import type { Library } from '../library/library';
 import type { Updater } from '../updates/updater';
 import { readM3uFile, writeM3uFile } from '../library/m3uFiles';
@@ -19,6 +20,7 @@ type ArgsOf<C extends Channel> = (typeof IPC_ARGS)[C] extends ((
 
 interface IpcOptions {
   library: Library;
+  covers: CoverStore;
   lastfm: Scrobbler;
   updater: Updater;
   isTrustedUrl: (url: string) => boolean;
@@ -70,6 +72,7 @@ const openDialog = async (
 
 export const registerIpc = ({
   library,
+  covers,
   lastfm,
   updater,
   isTrustedUrl,
@@ -96,6 +99,12 @@ export const registerIpc = ({
 
   handle(IPC.importPaths, (_, paths) => library.importPaths(paths));
   handle(IPC.restoreTracks, (_, paths) => library.restore(paths));
+  handle(IPC.coverColors, async (_, fileNames) => {
+    const results = await Promise.all(
+      [...new Set(fileNames)].map((fileName) => covers.colorOf(fileName))
+    );
+    return results.filter((result) => result !== undefined);
+  });
   handle(IPC.showInFolder, (_, trackId) => {
     const filePath = library.resolveMedia(trackId);
     if (!filePath) return false;

@@ -14,6 +14,8 @@ export interface Track {
   coverUrl?: string;
   /** Dominant cover color, used to tint the theme */
   color?: Rgb;
+  /** COVER_COLOR_VERSION the color was computed with (none: version 1) */
+  colorVersion?: number;
 }
 
 export type ImportFailureReason = 'unsupported' | 'unreadable' | 'missing';
@@ -85,6 +87,13 @@ export interface TitleBarColors {
 
 export type Platform = 'win32' | 'darwin' | 'linux';
 
+export interface CoverColor {
+  /** Cover file name, as in the cover URL */
+  fileName: string;
+  /** Undefined for black, white or gray covers */
+  color?: Rgb;
+}
+
 /** What Last.fm needs to know about a song: it cannot match one without an artist */
 export interface ScrobbleTrack {
   artist: string;
@@ -140,6 +149,8 @@ export interface SputnikApi {
   restoreTracks: (paths: string[]) => Promise<{ missing: string[] }>;
   /** URL the audio element loads a track from */
   mediaUrl: (trackId: string) => string;
+  /** Recalculates the color of cached covers; unknown files are left out */
+  coverColors: (fileNames: string[]) => Promise<CoverColor[]>;
   /** Opens the folder of an imported song in the file manager */
   showInFolder: (trackId: string) => Promise<boolean>;
   openFiles: (labels: DialogLabels) => Promise<string[]>;

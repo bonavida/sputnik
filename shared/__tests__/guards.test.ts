@@ -69,6 +69,7 @@ describe('isTitleBarColors', () => {
 describe('isTrack', () => {
   it('accepts a valid track', () => {
     expect(isTrack(track)).toBe(true);
+    expect(isTrack({ ...track, colorVersion: 2 })).toBe(true);
   });
 
   it.each([
@@ -78,6 +79,8 @@ describe('isTrack', () => {
     ['a color with 4 channels', { ...track, color: [0, 0, 0, 0] }],
     ['a missing title', { ...track, title: undefined }],
     ['a non-string artist', { ...track, artist: 7 }],
+    ['a color version of 0', { ...track, colorVersion: 0 }],
+    ['a fractional color version', { ...track, colorVersion: 1.5 }],
   ])('rejects %s', (_, value) => {
     expect(isTrack(value)).toBe(false);
   });

@@ -66,6 +66,9 @@ Before finishing or committing any change: `pnpm verify`.
   `defaultProps`. Effects only sync with external systems.
 - **Zustand**: select primitives or use `useShallow`; a selector that returns a new
   object loops. Event handlers read actions with `useXStore.getState()` when they fire.
+- **Cover colors**: a song's color is computed once, on import. After changing
+  `electron/library/dominantColor.ts`, bump `COVER_COLOR_VERSION` in
+  `shared/constants.ts` so existing songs are recalculated on the next start.
 - **Colors**: only theme tokens (`bg-canvas` for the window, `bg-panel` for the two
   panels, `bg-raised` for surfaces on a panel, `text-fg`, `text-fg-muted`, `border-line`,
   `text-accent`), never hex values in components: the cover tint and the contrast

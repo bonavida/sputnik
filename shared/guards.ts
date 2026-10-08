@@ -73,7 +73,10 @@ export const isTrack = (value: unknown): value is Track =>
   isFiniteNumber(value.duration) &&
   value.duration >= 0 &&
   isOptionalText(value.coverUrl) &&
-  (value.color === undefined || isRgb(value.color));
+  (value.color === undefined || isRgb(value.color)) &&
+  (value.colorVersion === undefined ||
+    (Number.isInteger(value.colorVersion) &&
+      (value.colorVersion as number) >= 1));
 
 export const isScrobbleTrack = (value: unknown): value is ScrobbleTrack =>
   isRecord(value) &&

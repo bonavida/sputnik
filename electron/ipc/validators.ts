@@ -32,6 +32,9 @@ export const IPC_ARGS = {
   [IPC.restoreTracks]: (args: unknown[]): args is [string[]] =>
     args.length === 1 && isPathList(args[0]),
   // A track id, never a path: only imported songs can be shown
+  // Cover file names; anything that is not a cached cover is skipped by the handler
+  [IPC.coverColors]: (args: unknown[]): args is [string[]] =>
+    args.length === 1 && isPathList(args[0]),
   [IPC.showInFolder]: (args: unknown[]): args is [string] =>
     args.length === 1 && isText(args[0]),
   [IPC.openFiles]: (args: unknown[]): args is [DialogLabels] =>

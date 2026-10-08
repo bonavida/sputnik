@@ -12,6 +12,7 @@ const api: SputnikApi = {
   importPaths: (paths) => ipcRenderer.invoke(IPC.importPaths, paths),
   restoreTracks: (paths) => ipcRenderer.invoke(IPC.restoreTracks, paths),
   mediaUrl,
+  coverColors: (fileNames) => ipcRenderer.invoke(IPC.coverColors, fileNames),
   showInFolder: (trackId) => ipcRenderer.invoke(IPC.showInFolder, trackId),
   openFiles: (labels) => ipcRenderer.invoke(IPC.openFiles, labels),
   openFolder: (labels) => ipcRenderer.invoke(IPC.openFolder, labels),

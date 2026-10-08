@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { Rgb } from '@shared/types';
 import { dominantColor } from './dominantColor';
@@ -32,6 +32,8 @@ export interface SavedCover {
 export interface CoverStore {
   dir: string;
   save: (data: Uint8Array, mimeType: string) => Promise<SavedCover | undefined>;
+  /** Dominant color of a cached cover, recalculated; undefined if not cached */
+  colorOf: (fileName: string) => Promise<SavedCover | undefined>;
 }
 
 interface CoverStoreOptions {
@@ -80,5 +82,16 @@ export const createCoverStore = ({
     return pending;
   };
 
-  return { dir, save };
+  // Only names of cached covers, so the renderer cannot make it read other files
+  const colorOf = async (fileName: string) => {
+    if (!COVER_FILE_NAME.test(fileName)) return undefined;
+    try {
+      const bitmap = toBitmap(await readFile(path.join(dir, fileName)));
+      return { fileName, color: bitmap ? dominantColor(bitmap) : undefined };
+    } catch {
+      return undefined;
+    }
+  };
+
+  return { dir, save, colorOf };
 };

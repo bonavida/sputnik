@@ -175,6 +175,7 @@ const start = async () => {
 
   registerIpc({
     library,
+    covers,
     lastfm,
     updater,
     isTrustedUrl: trusted,
