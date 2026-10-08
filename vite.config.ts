@@ -2,13 +2,23 @@ import path from 'node:path';
 import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import electron from 'vite-plugin-electron/simple';
 
 // `vite --mode web` runs only the renderer in a browser with a fake bridge (demo mode)
 const WEB_MODE = 'web';
 
 const sharedAlias = { '@shared': path.resolve(import.meta.dirname, 'shared') };
+
+// Read from .env.local or the environment (CI secrets); only the main process
+// gets them, the renderer never sees the API secret
+const lastfmDefines = (mode: string) => {
+  const env = loadEnv(mode, import.meta.dirname, 'LASTFM_');
+  return {
+    BUILD_LASTFM_API_KEY: JSON.stringify(env.LASTFM_API_KEY ?? ''),
+    BUILD_LASTFM_API_SECRET: JSON.stringify(env.LASTFM_API_SECRET ?? ''),
+  };
+};
 
 export default defineConfig(({ mode }) => ({
   resolve: {
@@ -29,7 +39,10 @@ export default defineConfig(({ mode }) => ({
       electron({
         main: {
           entry: 'electron/main.ts',
-          vite: { resolve: { alias: sharedAlias } },
+          vite: {
+            resolve: { alias: sharedAlias },
+            define: lastfmDefines(mode),
+          },
           // The plugin adds --no-sandbox by default; keep the OS sandbox in dev too
           onstart: ({ startup }) => {
             void startup(['.']);

@@ -24,7 +24,8 @@ Before finishing or committing any change: `pnpm verify`.
 - `electron/`: main process, grouped by area. `main.ts` and `preload.ts` (the two
   bundle entries), `window/`, `ipc/` (`handlers.ts` + `validators.ts`), `protocol/`
   (`sputnik://` and HTTP ranges), `library/` (import, metadata, covers, dominant color,
-  M3U files), `storage/` (`jsonStore.ts`, `state.ts`), `testing/` (audio fixtures).
+  M3U files), `lastfm/` (API client, account and scrobble queue), `storage/`
+  (`jsonStore.ts`, `state.ts`), `testing/` (audio fixtures).
 - `shared/`: types, constants, IPC guards and pure logic used by both sides. Never
   imports Electron, Node or the DOM.
 - `src/`: renderer. `app/` (user flows, persistence, boot), `audio/` (the `<audio>`
@@ -47,6 +48,11 @@ Before finishing or committing any change: `pnpm verify`.
   a server other than its own, because touching one makes Windows send the user's NTLM
   credentials there (`resolveM3uLocations` in `electron/m3uFiles.ts`). Paths the user
   picks in a dialog or drops are fine, NAS included.
+- **Last.fm**: the API key and secret are injected at build time into the main process
+  only (`BUILD_LASTFM_*` in `vite.config.ts`, from `.env.local` or CI secrets); never
+  commit them or pass them to the renderer. The session key is stored encrypted with
+  `safeStorage`. The renderer decides _when_ a listen counts (`src/app/lastfm.ts`);
+  the main process owns the account and the offline queue (`electron/lastfm/`).
 - **Size**: `dependencies` in package.json stays empty. Ask before adding any package
   and measure the installer with `release-check`.
 - **React Compiler is on**: no `useMemo`, `useCallback`, `memo`, `forwardRef` or

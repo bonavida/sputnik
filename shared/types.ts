@@ -85,6 +85,33 @@ export interface TitleBarColors {
 
 export type Platform = 'win32' | 'darwin' | 'linux';
 
+/** What Last.fm needs to know about a song: it cannot match one without an artist */
+export interface ScrobbleTrack {
+  artist: string;
+  title: string;
+  album?: string;
+  /** Whole seconds */
+  duration: number;
+}
+
+export interface Scrobble extends ScrobbleTrack {
+  /** Unix time in seconds when the song started playing */
+  timestamp: number;
+}
+
+export interface LastfmStatus {
+  /** False when the build has no Last.fm API key: the feature is hidden */
+  isAvailable: boolean;
+  /** Last.fm user name once connected */
+  user?: string;
+  isEnabled: boolean;
+  /** Scrobbles waiting to be sent (offline or Last.fm unavailable) */
+  pending: number;
+}
+
+export type LastfmConnectResult =
+  'connected' | 'cancelled' | 'timed-out' | 'failed';
+
 /** API exposed by the preload script as `window.sputnik` */
 export interface SputnikApi {
   platform: Platform;
@@ -106,4 +133,12 @@ export interface SputnikApi {
   loadState: () => Promise<PersistedState>;
   saveState: (patch: Partial<PersistedState>) => Promise<void>;
   setTheme: (source: ThemeSource, titleBar: TitleBarColors) => Promise<void>;
+  lastfmStatus: () => Promise<LastfmStatus>;
+  /** Opens Last.fm in the browser and resolves once the user approves (or not) */
+  lastfmConnect: () => Promise<LastfmConnectResult>;
+  lastfmCancelConnect: () => Promise<void>;
+  lastfmDisconnect: () => Promise<LastfmStatus>;
+  lastfmSetEnabled: (isEnabled: boolean) => Promise<LastfmStatus>;
+  lastfmNowPlaying: (track: ScrobbleTrack) => Promise<void>;
+  lastfmScrobble: (scrobble: Scrobble) => Promise<void>;
 }

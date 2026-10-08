@@ -4,6 +4,7 @@ import { AUDIO_EXTENSIONS, PLAYLIST_EXTENSIONS } from '@shared/audioFormats';
 import { IPC } from '@shared/constants';
 import type { PersistedState, PlaylistFileResult } from '@shared/types';
 import { IPC_ARGS } from './validators';
+import type { Scrobbler } from '../lastfm/scrobbler';
 import type { Library } from '../library/library';
 import { readM3uFile, writeM3uFile } from '../library/m3uFiles';
 
@@ -17,6 +18,7 @@ type ArgsOf<C extends Channel> = (typeof IPC_ARGS)[C] extends ((
 
 interface IpcOptions {
   library: Library;
+  lastfm: Scrobbler;
   isTrustedUrl: (url: string) => boolean;
   loadState: () => PersistedState;
   saveState: (patch: Partial<PersistedState>) => void;
@@ -66,6 +68,7 @@ const openDialog = async (
 
 export const registerIpc = ({
   library,
+  lastfm,
   isTrustedUrl,
   loadState,
   saveState,
@@ -166,4 +169,12 @@ export const registerIpc = ({
     if (process.platform !== 'darwin')
       window.setTitleBarOverlay({ color: background, symbolColor: symbol });
   });
+
+  handle(IPC.lastfmStatus, () => lastfm.status());
+  handle(IPC.lastfmConnect, () => lastfm.connect());
+  handle(IPC.lastfmCancelConnect, () => lastfm.cancelConnect());
+  handle(IPC.lastfmDisconnect, () => lastfm.disconnect());
+  handle(IPC.lastfmSetEnabled, (_, isEnabled) => lastfm.setEnabled(isEnabled));
+  handle(IPC.lastfmNowPlaying, (_, track) => lastfm.nowPlaying(track));
+  handle(IPC.lastfmScrobble, (_, scrobble) => lastfm.scrobble(scrobble));
 };

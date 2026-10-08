@@ -45,4 +45,22 @@ describe('parseStoredState', () => {
   ])('rejects %s', (_, value) => {
     expect(parseStoredState(value)).toBeUndefined();
   });
+
+  it('keeps a valid Last.fm entry and drops a broken one without losing the rest', () => {
+    const lastfm = {
+      user: 'diego',
+      sessionKey: 'ZW5jcnlwdGVk',
+      isEnabled: true,
+      queue: [
+        { artist: 'A', title: 'One', duration: 200, timestamp: 1_791_400_000 },
+      ],
+    };
+    expect(parseStoredState({ lastfm })?.lastfm).toEqual(lastfm);
+
+    const broken = parseStoredState({
+      playlists: [],
+      lastfm: { ...lastfm, queue: [{ title: 'No artist' }] },
+    });
+    expect(broken).toMatchObject({ playlists: [], lastfm: undefined });
+  });
 });

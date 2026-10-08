@@ -3,9 +3,13 @@ import type {
   DialogLabels,
   ImportFailure,
   ImportFailureReason,
+  LastfmConnectResult,
+  LastfmStatus,
   PersistedState,
   Platform,
   PlaylistFileResult,
+  Scrobble,
+  ScrobbleTrack,
   SputnikApi,
   ThemeSource,
   TitleBarColors,
@@ -22,6 +26,7 @@ interface MemoryBridgeOptions {
   state?: Partial<PersistedState>;
   platform?: Platform;
   mediaUrl?: (trackId: string) => string;
+  lastfm?: Partial<LastfmStatus>;
 }
 
 export interface MemoryBridge extends SputnikApi {
@@ -30,10 +35,18 @@ export interface MemoryBridge extends SputnikApi {
   files: Record<string, MemoryFile>;
   /** What the next file/folder/playlist dialogs return (empty or undefined = canceled) */
   dialogs: { files: string[]; folder: string[]; playlist?: PlaylistFileResult };
+  /** Last.fm as the main process would report it, and the outcome of the next connect */
+  lastfm: LastfmStatus & {
+    nextConnect: LastfmConnectResult;
+    /** User name that connecting signs in as */
+    connectAs: string;
+  };
   calls: {
     dialogLabels: DialogLabels[];
     exported: Array<{ name: string; tracks: Track[] }>;
     themes: Array<{ source: ThemeSource; titleBar: TitleBarColors }>;
+    nowPlaying: ScrobbleTrack[];
+    scrobbles: Scrobble[];
   };
 }
 
@@ -50,8 +63,15 @@ export const createMemoryBridge = ({
   state = {},
   platform = 'win32',
   mediaUrl = (trackId) => `memory://media/${trackId}`,
+  lastfm = {},
 }: MemoryBridgeOptions = {}): MemoryBridge => {
   const expand = (path: string) => folders[path] ?? [path];
+  const lastfmStatus = (): LastfmStatus => {
+    const { isAvailable, user, isEnabled, pending } = bridge.lastfm;
+    return { isAvailable, user, isEnabled, pending };
+  };
+  const isScrobbling = () =>
+    Boolean(bridge.lastfm.user && bridge.lastfm.isEnabled);
 
   const bridge: MemoryBridge = {
     platform,
@@ -62,7 +82,21 @@ export const createMemoryBridge = ({
     },
     files,
     dialogs: { files: [], folder: [] },
-    calls: { dialogLabels: [], exported: [], themes: [] },
+    lastfm: {
+      isAvailable: true,
+      isEnabled: true,
+      pending: 0,
+      nextConnect: 'connected',
+      connectAs: 'sputnik-fan',
+      ...lastfm,
+    },
+    calls: {
+      dialogLabels: [],
+      exported: [],
+      themes: [],
+      nowPlaying: [],
+      scrobbles: [],
+    },
 
     getPathForFile: (file) => file.name,
     mediaUrl,
@@ -113,6 +147,41 @@ export const createMemoryBridge = ({
 
     setTheme: async (source, titleBar) => {
       bridge.calls.themes.push({ source, titleBar });
+    },
+
+    lastfmStatus: async () => lastfmStatus(),
+
+    lastfmConnect: async () => {
+      const result = bridge.lastfm.nextConnect;
+      if (result === 'connected')
+        bridge.lastfm = {
+          ...bridge.lastfm,
+          user: bridge.lastfm.connectAs,
+          isEnabled: true,
+        };
+      return result;
+    },
+
+    lastfmCancelConnect: async () => undefined,
+
+    lastfmDisconnect: async () => {
+      bridge.lastfm = { ...bridge.lastfm, user: undefined, pending: 0 };
+      return lastfmStatus();
+    },
+
+    lastfmSetEnabled: async (isEnabled) => {
+      bridge.lastfm = { ...bridge.lastfm, isEnabled };
+      return lastfmStatus();
+    },
+
+    // Like the main process: ignored unless connected and enabled
+    lastfmNowPlaying: async (track) => {
+      if (isScrobbling()) bridge.calls.nowPlaying.push(structuredClone(track));
+    },
+
+    lastfmScrobble: async (scrobble) => {
+      if (isScrobbling())
+        bridge.calls.scrobbles.push(structuredClone(scrobble));
     },
   };
 

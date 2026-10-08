@@ -3,6 +3,8 @@ import type {
   PersistedState,
   Playlist,
   Rgb,
+  Scrobble,
+  ScrobbleTrack,
   Session,
   Settings,
   ThemeSource,
@@ -72,6 +74,19 @@ export const isTrack = (value: unknown): value is Track =>
   value.duration >= 0 &&
   isOptionalText(value.coverUrl) &&
   (value.color === undefined || isRgb(value.color));
+
+export const isScrobbleTrack = (value: unknown): value is ScrobbleTrack =>
+  isRecord(value) &&
+  isText(value.artist) &&
+  isText(value.title) &&
+  isOptionalText(value.album) &&
+  Number.isInteger(value.duration) &&
+  (value.duration as number) >= 0;
+
+export const isScrobble = (value: unknown): value is Scrobble =>
+  isScrobbleTrack(value) &&
+  Number.isInteger((value as Scrobble).timestamp) &&
+  (value as Scrobble).timestamp > 0;
 
 export const isTrackList = (value: unknown): value is Track[] =>
   Array.isArray(value) && value.length <= MAX_PATHS && value.every(isTrack);

@@ -4,7 +4,9 @@ import type { ImportFailure } from '@shared/types';
 export type Notice =
   | { kind: 'failedFiles'; failures: ImportFailure[] }
   | { kind: 'missingTracks'; paths: string[] }
-  | { kind: 'exported' };
+  | { kind: 'exported' }
+  | { kind: 'lastfmConnected'; user: string }
+  | { kind: 'lastfmFailed'; reason: 'timed-out' | 'failed' };
 
 export interface Confirmation {
   title: string;

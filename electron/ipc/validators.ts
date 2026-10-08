@@ -3,6 +3,8 @@ import {
   isDialogLabels,
   isPathList,
   isPersistedPatch,
+  isScrobble,
+  isScrobbleTrack,
   isText,
   isThemeSource,
   isTitleBarColors,
@@ -11,6 +13,8 @@ import {
 import type {
   DialogLabels,
   PersistedState,
+  Scrobble,
+  ScrobbleTrack,
   ThemeSource,
   TitleBarColors,
   Track,
@@ -45,6 +49,16 @@ export const IPC_ARGS = {
     args.length === 1 && isPersistedPatch(args[0]),
   [IPC.setTheme]: (args: unknown[]): args is [ThemeSource, TitleBarColors] =>
     args.length === 2 && isThemeSource(args[0]) && isTitleBarColors(args[1]),
+  [IPC.lastfmStatus]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.lastfmConnect]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.lastfmCancelConnect]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.lastfmDisconnect]: (args: unknown[]): args is [] => args.length === 0,
+  [IPC.lastfmSetEnabled]: (args: unknown[]): args is [boolean] =>
+    args.length === 1 && typeof args[0] === 'boolean',
+  [IPC.lastfmNowPlaying]: (args: unknown[]): args is [ScrobbleTrack] =>
+    args.length === 1 && isScrobbleTrack(args[0]),
+  [IPC.lastfmScrobble]: (args: unknown[]): args is [Scrobble] =>
+    args.length === 1 && isScrobble(args[0]),
 } satisfies Record<Channel, (args: unknown[]) => boolean>;
 
 /** Only frames loaded from the app itself (or the Vite dev server) may call IPC */

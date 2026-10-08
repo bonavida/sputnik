@@ -27,6 +27,13 @@ export const IPC = {
   loadState: 'state:load',
   saveState: 'state:save',
   setTheme: 'window:set-theme',
+  lastfmStatus: 'lastfm:status',
+  lastfmConnect: 'lastfm:connect',
+  lastfmCancelConnect: 'lastfm:cancel-connect',
+  lastfmDisconnect: 'lastfm:disconnect',
+  lastfmSetEnabled: 'lastfm:set-enabled',
+  lastfmNowPlaying: 'lastfm:now-playing',
+  lastfmScrobble: 'lastfm:scrobble',
 } as const;
 
 export const DEFAULT_SETTINGS: Settings = {

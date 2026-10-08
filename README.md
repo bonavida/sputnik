@@ -11,6 +11,8 @@ A minimalist desktop music player for Windows, macOS and Linux.
 - Light and dark themes, plus a calm tint taken from the cover of the song that is
   playing. Text contrast is guaranteed (WCAG AA) for any cover.
 - Keyboard shortcuts, media keys and the OS media controls. Spanish and English.
+- Scrobbling to Last.fm (Settings → Connect to Last.fm). Listens made offline are
+  kept and sent later.
 - Your queue, volume and settings are restored on the next start.
 
 Plays MP3, AAC/M4A, FLAC, WAV, Ogg Vorbis and Opus (WMA and ALAC are not supported).
@@ -82,6 +84,10 @@ pnpm dev:web      # UI only, in the browser, with demo data
 pnpm test         # unit and integration tests
 pnpm dist         # installer for the current OS, in release/
 ```
+
+To build with Last.fm scrobbling, copy `.env.example` to `.env.local` and fill in
+the key and secret of a [Last.fm API account](https://www.last.fm/api/account/create).
+Without them everything works and the Last.fm option is hidden.
 
 Built with Electron, React 19 (with React Compiler), TypeScript, Vite, Tailwind CSS,
 Zustand, dnd-kit and music-metadata. Tested with Vitest and Testing Library.

@@ -38,6 +38,10 @@ jobs:
         env:
           # Unsigned builds: no certificates in CI yet
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          # Built into the main process only; empty (feature hidden) when unset,
+          # e.g. for pull requests from forks
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_API_SECRET: ${{ secrets.LASTFM_API_SECRET }}
 
       - uses: actions/upload-artifact@v7
         with:

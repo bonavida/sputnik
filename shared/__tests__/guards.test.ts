@@ -6,6 +6,7 @@ import {
   isDialogLabels,
   isPathList,
   isPersistedPatch,
+  isScrobble,
   isTitleBarColors,
   isTrack,
 } from '../guards';
@@ -79,6 +80,32 @@ describe('isTrack', () => {
     ['a non-string artist', { ...track, artist: 7 }],
   ])('rejects %s', (_, value) => {
     expect(isTrack(value)).toBe(false);
+  });
+});
+
+describe('isScrobble', () => {
+  const scrobble = {
+    artist: 'Mira Calder',
+    title: 'Neon Tide',
+    album: 'Low Orbit',
+    duration: 150,
+    timestamp: 1_791_400_000,
+  };
+
+  it('accepts a song with artist, title and start time', () => {
+    expect(isScrobble(scrobble)).toBe(true);
+    expect(isScrobble({ ...scrobble, album: undefined })).toBe(true);
+  });
+
+  it.each([
+    ['no artist', { ...scrobble, artist: '' }],
+    ['a huge title', { ...scrobble, title: 'x'.repeat(5_000) }],
+    ['a fractional duration', { ...scrobble, duration: 150.5 }],
+    ['no start time', { ...scrobble, timestamp: undefined }],
+    ['a negative start time', { ...scrobble, timestamp: -1 }],
+    ['a start time in milliseconds as text', { ...scrobble, timestamp: '1' }],
+  ])('rejects %s', (_, value) => {
+    expect(isScrobble(value)).toBe(false);
   });
 });
 

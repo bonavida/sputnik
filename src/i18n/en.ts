@@ -56,6 +56,20 @@ export const en = {
   dismiss: 'Dismiss',
   audioFiles: 'Audio files',
 
+  // Last.fm
+  lastfm: 'Last.fm',
+  lastfmConnect: 'Connect to Last.fm',
+  lastfmWaiting: 'Approve Sputnik in your browser…',
+  lastfmCancel: 'Cancel connection',
+  lastfmConnectedAs: 'Connected as {user}',
+  lastfmScrobbling: 'Scrobble',
+  lastfmPending_one: '{count} scrobble waiting to be sent',
+  lastfmPending_other: '{count} scrobbles waiting to be sent',
+  lastfmDisconnect: 'Disconnect',
+  lastfmConnected: 'Connected to Last.fm as {user}',
+  lastfmTimedOut: 'Last.fm was not approved in time. Please try again.',
+  lastfmFailed: 'Could not connect to Last.fm. Check your internet connection.',
+
   // Playlists
   untitled: 'New playlist',
   playlistName: 'Playlist name',

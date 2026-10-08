@@ -41,15 +41,29 @@ const describe = (
       details: notice.paths.map((path) => ({ path })),
     };
   }
+  if (notice.kind === 'lastfmConnected')
+    return {
+      message: t('lastfmConnected', { user: notice.user }),
+      details: [],
+    };
+  if (notice.kind === 'lastfmFailed')
+    return {
+      message: t(
+        notice.reason === 'timed-out' ? 'lastfmTimedOut' : 'lastfmFailed'
+      ),
+      details: [],
+    };
   return { message: t('exported'), details: [] };
 };
+
+const SUCCESS_KINDS = new Set<Notice['kind']>(['exported', 'lastfmConnected']);
 
 const NoticeContent = ({ notice }: { notice: Notice }) => {
   const t = useT();
   const dismiss = useUiStore((state) => state.dismissNotice);
   const [isExpanded, setIsExpanded] = useState(false);
   const { message, details } = describe(notice, t);
-  const isSuccess = notice.kind === 'exported';
+  const isSuccess = SUCCESS_KINDS.has(notice.kind);
   const Icon = isSuccess ? CircleCheck : CircleAlert;
 
   useEffect(() => {

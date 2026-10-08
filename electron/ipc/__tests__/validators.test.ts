@@ -4,6 +4,11 @@ import { IPC_ARGS, isTrustedUrl } from '../validators';
 
 const labels = { title: 'Añadir canciones', filterName: 'Audio' };
 const track = { id: 'a', path: '/a.mp3', title: 'A', duration: 1 };
+const scrobbleTrack = {
+  artist: 'Mira Calder',
+  title: 'Neon Tide',
+  duration: 150,
+};
 
 describe('IPC_ARGS (E7)', () => {
   it.each([
@@ -14,6 +19,10 @@ describe('IPC_ARGS (E7)', () => {
     [IPC.loadState, []],
     [IPC.saveState, [{ settings: DEFAULT_SETTINGS }]],
     [IPC.setTheme, ['dark', { background: '#101010', symbol: '#ffffff' }]],
+    [IPC.lastfmConnect, []],
+    [IPC.lastfmSetEnabled, [false]],
+    [IPC.lastfmNowPlaying, [scrobbleTrack]],
+    [IPC.lastfmScrobble, [{ ...scrobbleTrack, timestamp: 1_791_400_000 }]],
   ])('%s accepts valid arguments', (channel, args) => {
     expect(IPC_ARGS[channel](args)).toBe(true);
   });
@@ -30,6 +39,10 @@ describe('IPC_ARGS (E7)', () => {
     [IPC.loadState, ['unexpected']],
     [IPC.saveState, [{ windowBounds: {} }]],
     [IPC.setTheme, ['sepia', { background: '#101010', symbol: '#ffffff' }]],
+    [IPC.lastfmConnect, ['token']],
+    [IPC.lastfmSetEnabled, ['yes']],
+    [IPC.lastfmNowPlaying, [{ ...scrobbleTrack, artist: undefined }]],
+    [IPC.lastfmScrobble, [scrobbleTrack]],
   ])('%s rejects %j', (channel, args) => {
     expect(IPC_ARGS[channel](args)).toBe(false);
   });

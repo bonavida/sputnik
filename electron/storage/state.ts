@@ -1,6 +1,6 @@
 import { DEFAULT_SETTINGS } from '@shared/constants';
-import { isPersistedPatch, isRecord } from '@shared/guards';
-import type { PersistedState } from '@shared/types';
+import { isPersistedPatch, isRecord, isScrobble, isText } from '@shared/guards';
+import type { PersistedState, Scrobble } from '@shared/types';
 
 export interface WindowBounds {
   x: number;
@@ -10,10 +10,23 @@ export interface WindowBounds {
   isMaximized: boolean;
 }
 
+/** Last.fm account and pending scrobbles, as written to disk */
+export interface StoredLastfm {
+  user?: string;
+  /** Session key encrypted with the OS keychain (safeStorage), base64 */
+  sessionKey?: string;
+  isEnabled: boolean;
+  queue: Scrobble[];
+}
+
 /** What `sputnik.json` holds: the renderer's state plus main-only data */
 export interface StoredState extends PersistedState {
   windowBounds?: WindowBounds;
+  lastfm?: StoredLastfm;
 }
+
+// Two weeks of nonstop listening is about 5,000 songs; Last.fm drops older ones
+const MAX_PENDING_SCROBBLES = 10_000;
 
 export const DEFAULT_STATE: StoredState = {
   playlists: [],
@@ -25,6 +38,15 @@ const isWindowBounds = (value: unknown): value is WindowBounds =>
   ['x', 'y', 'width', 'height'].every((key) => Number.isFinite(value[key])) &&
   typeof value.isMaximized === 'boolean';
 
+const isStoredLastfm = (value: unknown): value is StoredLastfm =>
+  isRecord(value) &&
+  (value.user === undefined || isText(value.user)) &&
+  (value.sessionKey === undefined || isText(value.sessionKey)) &&
+  typeof value.isEnabled === 'boolean' &&
+  Array.isArray(value.queue) &&
+  value.queue.length <= MAX_PENDING_SCROBBLES &&
+  value.queue.every(isScrobble);
+
 /**
  * Validates the stored JSON. Missing keys and settings added in newer versions
  * fall back to their defaults, so old files keep working.
@@ -32,7 +54,7 @@ const isWindowBounds = (value: unknown): value is WindowBounds =>
 export const parseStoredState = (value: unknown): StoredState | undefined => {
   if (!isRecord(value)) return undefined;
 
-  const { windowBounds, playlists, session, settings } = value;
+  const { windowBounds, lastfm, playlists, session, settings } = value;
   const state = {
     playlists: playlists ?? DEFAULT_STATE.playlists,
     session,
@@ -45,6 +67,8 @@ export const parseStoredState = (value: unknown): StoredState | undefined => {
     session: state.session,
     settings: state.settings ?? DEFAULT_SETTINGS,
     windowBounds: isWindowBounds(windowBounds) ? windowBounds : undefined,
+    // An invalid Last.fm entry only costs a reconnection, never the playlists
+    lastfm: isStoredLastfm(lastfm) ? lastfm : undefined,
   };
 };
 

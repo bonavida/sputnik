@@ -5,13 +5,19 @@ import {
   nativeImage,
   nativeTheme,
   protocol,
+  safeStorage,
   session,
+  shell,
 } from 'electron';
 import { APP_ID, APP_ORIGIN, APP_SCHEME } from '@shared/constants';
 import type { PersistedState } from '@shared/types';
 import { createCoverStore } from './library/covers';
 import { registerIpc } from './ipc/handlers';
 import { isTrustedUrl } from './ipc/validators';
+import { createLastfmClient } from './lastfm/client';
+import { createScrobbler } from './lastfm/scrobbler';
+import { fromStoredLastfm, toStoredLastfm } from './lastfm/storage';
+import type { Cipher } from './lastfm/storage';
 import { createJsonStore } from './storage/jsonStore';
 import { createLibrary } from './library/library';
 import { createProtocolHandler } from './protocol/protocol';
@@ -51,6 +57,22 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ]);
+
+// Injected at build time from LASTFM_API_KEY / LASTFM_API_SECRET (vite.config.ts);
+// empty in builds without them, which hides the feature
+const lastfmClient =
+  BUILD_LASTFM_API_KEY && BUILD_LASTFM_API_SECRET
+    ? createLastfmClient({
+        apiKey: BUILD_LASTFM_API_KEY,
+        apiSecret: BUILD_LASTFM_API_SECRET,
+      })
+    : undefined;
+
+const keychain: Cipher = {
+  isAvailable: () => safeStorage.isEncryptionAvailable(),
+  encrypt: (text) => safeStorage.encryptString(text).toString('base64'),
+  decrypt: (data) => safeStorage.decryptString(Buffer.from(data, 'base64')),
+};
 
 const trusted = (url: string) => isTrustedUrl(url, APP_ORIGIN, DEV_SERVER_URL);
 
@@ -103,8 +125,18 @@ const start = async () => {
 
   nativeTheme.themeSource = state.settings.theme;
 
+  const lastfm = createScrobbler({
+    client: lastfmClient,
+    initial: fromStoredLastfm(state.lastfm, keychain),
+    save: (lastfmState) =>
+      update({ lastfm: toStoredLastfm(lastfmState, keychain) }),
+    openUrl: (url) => shell.openExternal(url),
+  });
+  void lastfm.start();
+
   registerIpc({
     library,
+    lastfm,
     isTrustedUrl: trusted,
     loadState: (): PersistedState => toPersistedState(state),
     saveState: update,

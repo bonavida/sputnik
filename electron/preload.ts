@@ -21,6 +21,15 @@ const api: SputnikApi = {
   saveState: (patch) => ipcRenderer.invoke(IPC.saveState, patch),
   setTheme: (source, titleBar) =>
     ipcRenderer.invoke(IPC.setTheme, source, titleBar),
+  lastfmStatus: () => ipcRenderer.invoke(IPC.lastfmStatus),
+  lastfmConnect: () => ipcRenderer.invoke(IPC.lastfmConnect),
+  lastfmCancelConnect: () => ipcRenderer.invoke(IPC.lastfmCancelConnect),
+  lastfmDisconnect: () => ipcRenderer.invoke(IPC.lastfmDisconnect),
+  lastfmSetEnabled: (isEnabled) =>
+    ipcRenderer.invoke(IPC.lastfmSetEnabled, isEnabled),
+  lastfmNowPlaying: (track) => ipcRenderer.invoke(IPC.lastfmNowPlaying, track),
+  lastfmScrobble: (scrobble) =>
+    ipcRenderer.invoke(IPC.lastfmScrobble, scrobble),
 };
 
 contextBridge.exposeInMainWorld('sputnik', api);
