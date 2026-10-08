@@ -4,6 +4,8 @@
 
 A minimalist desktop music player for Windows, macOS and Linux.
 
+![Sputnik on macOS, tinted green by the cover of the song that is playing](docs/screenshot-macos.png)
+
 - Drop songs or whole folders, or add them from the menu. Reorder by dragging (or
   Alt+↑/↓), sort it by title, album or length, shuffle, repeat the list or one song.
 - Save playlists, rename them in place, and import or export them as M3U8 (they open
