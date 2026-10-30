@@ -153,4 +153,27 @@ describe('M3U files', () => {
       'A',
     ]);
   });
+
+  it('places a song once when it is inside nested folder entries', async () => {
+    await writeFixture(root, 'music/a.mp3', mp3({ title: 'A' }));
+    await writeFixture(root, 'music/album/1.mp3', mp3({ title: 'One' }));
+    await writeFixture(root, 'music/album/2.mp3', mp3({ title: 'Two' }));
+    const file = await writeFixture(
+      root,
+      'list.m3u8',
+      ['music', 'music/album'].join('\n')
+    );
+
+    const { paths } = await readM3uFile(file);
+    const { tracks } = await createLibrary({
+      covers: createCoverStore({
+        dir: path.join(root, 'covers'),
+        toBitmap: () => undefined,
+      }),
+    }).importPaths(paths);
+
+    // Folder listing order depends on the file system, so compare sorted
+    const titles = inPlaylistOrder(paths, tracks).map(({ title }) => title);
+    expect(titles.sort()).toEqual(['A', 'One', 'Two']);
+  });
 });
