@@ -6,6 +6,7 @@ import {
   within,
 } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { isPersistedPatch, MAX_TEXT_LENGTH } from '@shared/guards';
 import type { Playlist } from '@shared/types';
 import { resetAllStores } from '@/testing/zustandMock';
 import {
@@ -252,6 +253,29 @@ describe('playlists', () => {
     expect(
       screen.getByRole('button', { name: 'Nueva lista (copia)' })
     ).toBeInTheDocument();
+  });
+
+  it('keeps a copy of a playlist with the longest name savable', async () => {
+    const tracks = makeTracks(2);
+    const bridge = createTestBridge({ tracks });
+    bridge.dialogs.playlist = {
+      name: 'n'.repeat(MAX_TEXT_LENGTH),
+      tracks,
+      failed: [],
+    };
+    const { user } = await renderApp({ bridge });
+    await openPlaylistsMenu(user);
+    await user.click(screen.getByRole('menuitem', { name: 'Importar lista…' }));
+    await waitFor(() => expect(rowTitles()).toEqual(['Song 1', 'Song 2']));
+
+    await openPlaylistsMenu(user);
+    await user.click(
+      screen.getByRole('menuitem', { name: 'Guardar como copia' })
+    );
+
+    await waitFor(() => expect(bridge.state.playlists).toHaveLength(1));
+    const { playlists, session } = bridge.state;
+    expect(isPersistedPatch({ playlists, session })).toBe(true);
   });
 
   it('deletes the current saved playlist after confirming, keeping the songs in the queue', async () => {
