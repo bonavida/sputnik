@@ -8,7 +8,7 @@ import type { Track } from '@shared/types';
 import { mp3, writeFixture } from '../../testing/makeAudio';
 import { createCoverStore } from '../covers';
 import { createLibrary } from '../library';
-import { readM3uFile, writeM3uFile } from '../m3uFiles';
+import { inPlaylistOrder, readM3uFile, writeM3uFile } from '../m3uFiles';
 
 let root: string;
 
@@ -100,6 +100,57 @@ describe('M3U files', () => {
     expect(tracks.map(({ path: trackPath }) => trackPath)).toEqual([present]);
     expect(failed).toEqual([
       { path: path.join(root, 'gone.mp3'), reason: 'missing' },
+    ]);
+  });
+
+  it('keeps songs that appear more than once, in playlist order', async () => {
+    const a = await writeFixture(root, 'a.mp3', mp3({ title: 'A' }));
+    const b = await writeFixture(root, 'b.mp3', mp3({ title: 'B' }));
+    const file = path.join(root, 'list.m3u8');
+    await writeM3uFile(file, 'Mix', [
+      track(a, 'A'),
+      track(b, 'B'),
+      track(a, 'A'),
+    ]);
+
+    const { paths } = await readM3uFile(file);
+    const { tracks } = await createLibrary({
+      covers: createCoverStore({
+        dir: path.join(root, 'covers'),
+        toBitmap: () => undefined,
+      }),
+    }).importPaths(paths);
+
+    expect(inPlaylistOrder(paths, tracks).map(({ title }) => title)).toEqual([
+      'A',
+      'B',
+      'A',
+    ]);
+  });
+
+  it('keeps the songs of a folder entry where the folder is listed', async () => {
+    await writeFixture(root, 'album/1.mp3', mp3({ title: 'One' }));
+    await writeFixture(root, 'album/2.mp3', mp3({ title: 'Two' }));
+    await writeFixture(root, 'a.mp3', mp3({ title: 'A' }));
+    const file = await writeFixture(
+      root,
+      'list.m3u8',
+      ['a.mp3', 'album', 'gone.mp3', 'a.mp3'].join('\n')
+    );
+
+    const { paths } = await readM3uFile(file);
+    const { tracks } = await createLibrary({
+      covers: createCoverStore({
+        dir: path.join(root, 'covers'),
+        toBitmap: () => undefined,
+      }),
+    }).importPaths(paths);
+
+    expect(inPlaylistOrder(paths, tracks).map(({ title }) => title)).toEqual([
+      'A',
+      'One',
+      'Two',
+      'A',
     ]);
   });
 });
