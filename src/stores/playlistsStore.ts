@@ -68,7 +68,7 @@ export const usePlaylistsStore = create<PlaylistsState & PlaylistsActions>()((
     },
 
     saveCopy: (tracks, fullName) => {
-      // The suffix can push the longest imported name past what saving accepts
+      // Safety net: never store a name longer than what saving accepts
       const name = fullName.slice(0, MAX_TEXT_LENGTH);
       const playlist: Playlist = {
         id: crypto.randomUUID(),

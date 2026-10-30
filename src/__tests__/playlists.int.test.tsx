@@ -276,6 +276,7 @@ describe('playlists', () => {
     await waitFor(() => expect(bridge.state.playlists).toHaveLength(1));
     const { playlists, session } = bridge.state;
     expect(isPersistedPatch({ playlists, session })).toBe(true);
+    expect(playlists[0]?.name.endsWith(' (copia)')).toBe(true);
   });
 
   it('deletes the current saved playlist after confirming, keeping the songs in the queue', async () => {
