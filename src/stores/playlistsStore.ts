@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { MAX_TEXT_LENGTH } from '@shared/guards';
 import type { Playlist, Track } from '@shared/types';
 
 interface PlaylistsState {
@@ -66,7 +67,9 @@ export const usePlaylistsStore = create<PlaylistsState & PlaylistsActions>()((
       set({ currentId: playlist.id, name: playlistName });
     },
 
-    saveCopy: (tracks, name) => {
+    saveCopy: (tracks, fullName) => {
+      // Safety net: never store a name longer than what saving accepts
+      const name = fullName.slice(0, MAX_TEXT_LENGTH);
       const playlist: Playlist = {
         id: crypto.randomUUID(),
         name,

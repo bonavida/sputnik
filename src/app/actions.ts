@@ -2,6 +2,7 @@
  * User flows that span several stores and the bridge. Components and keyboard
  * shortcuts call these instead of orchestrating stores themselves.
  */
+import { MAX_TEXT_LENGTH } from '@shared/guards';
 import type { DialogLabels, Playlist, Track } from '@shared/types';
 import type { TranslationKey } from '@/i18n/t';
 import { bridge } from '@/bridge/bridge';
@@ -88,13 +89,17 @@ export const showInFolder = (uid?: string): void => {
 export const savePlaylist = (): void =>
   usePlaylistsStore.getState().save(queuedTracks(), getTranslate()('untitled'));
 
-export const savePlaylistCopy = (): void =>
+export const savePlaylistCopy = (): void => {
+  const t = getTranslate();
+  // Leave room for the suffix so the copy keeps it and stays savable
+  const room = MAX_TEXT_LENGTH - t('copyOf', { name: '' }).length;
   usePlaylistsStore
     .getState()
     .saveCopy(
       queuedTracks(),
-      getTranslate()('copyOf', { name: currentName() })
+      t('copyOf', { name: currentName().slice(0, room) })
     );
+};
 
 /** Runs `action` right away, or after confirming when there are unsaved changes */
 export const confirmDiscard = (action: () => void): void => {
