@@ -172,8 +172,10 @@ describe('M3U files', () => {
       }),
     }).importPaths(paths);
 
-    // Folder listing order depends on the file system, so compare sorted
-    const titles = inPlaylistOrder(paths, tracks).map(({ title }) => title);
-    expect(titles.sort()).toEqual(['A', 'One', 'Two']);
+    expect(inPlaylistOrder(paths, tracks).map(({ title }) => title)).toEqual([
+      'A',
+      'One',
+      'Two',
+    ]);
   });
 });
