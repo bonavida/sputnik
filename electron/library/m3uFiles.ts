@@ -94,3 +94,30 @@ export const readM3uFile = async (file: string): Promise<M3uFileContent> => {
     ),
   };
 };
+
+/**
+ * The imported tracks in playlist order, keeping songs listed more than once
+ * (importing reads each file once). A folder entry brings the tracks found
+ * inside it that the playlist does not list on their own, each placed only
+ * once, at the first folder entry that contains it.
+ */
+export const inPlaylistOrder = (paths: string[], tracks: Track[]): Track[] => {
+  const byPath = new Map(tracks.map((track) => [track.path, track]));
+  const listed = new Set(paths.filter((entry) => byPath.has(entry)));
+  const fromFolders = tracks.filter(
+    ({ path: trackPath }) => !listed.has(trackPath)
+  );
+  const placed = new Set<string>();
+
+  return paths.flatMap((entry) => {
+    const track = byPath.get(entry);
+    if (track) return [track];
+    const folder = path.join(entry, path.sep);
+    const found = fromFolders.filter(
+      ({ path: trackPath }) =>
+        !placed.has(trackPath) && trackPath.startsWith(folder)
+    );
+    for (const { path: trackPath } of found) placed.add(trackPath);
+    return found;
+  });
+};

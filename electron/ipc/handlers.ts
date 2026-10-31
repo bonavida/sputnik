@@ -8,7 +8,11 @@ import type { Scrobbler } from '../lastfm/scrobbler';
 import type { CoverStore } from '../library/covers';
 import type { Library } from '../library/library';
 import type { Updater } from '../updates/updater';
-import { readM3uFile, writeM3uFile } from '../library/m3uFiles';
+import {
+  inPlaylistOrder,
+  readM3uFile,
+  writeM3uFile,
+} from '../library/m3uFiles';
 
 type Channel = keyof typeof IPC_ARGS;
 /** Tuple type a channel's validator narrows its arguments to */
@@ -164,7 +168,7 @@ export const registerIpc = ({
       const { tracks, failed } = await library.importPaths(paths);
       return {
         name,
-        tracks,
+        tracks: inPlaylistOrder(paths, tracks),
         failed: [
           ...failed,
           ...unsupported.map((path) => ({
